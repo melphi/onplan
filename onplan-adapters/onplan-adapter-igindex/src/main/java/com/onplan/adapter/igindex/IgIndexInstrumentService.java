@@ -1,0 +1,45 @@
+package com.onplan.adapter.igindex;
+
+import com.onplan.adapter.InstrumentService;
+import com.onplan.service.ServiceConnectionInfo;
+import com.onplan.adapter.igindex.client.IgIndexClient;
+import com.onplan.domain.InstrumentInfo;
+import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.util.List;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
+public class IgIndexInstrumentService implements InstrumentService {
+  private static final Logger logger = Logger.getLogger(IgIndexInstrumentService.class);
+
+  private final IgIndexConnection igIndexConnection;
+  private final IgIndexClient igIndexClient;
+
+  public IgIndexInstrumentService(IgIndexConnection igIndexConnection) {
+    logger.info("Setting IgIndexConnection in IgIndexInstrumentService.");
+    this.igIndexConnection = checkNotNull(igIndexConnection);
+    this.igIndexClient = igIndexConnection.getIgIndexClient();
+  }
+
+  @Override
+  public ServiceConnectionInfo getServiceConnectionInfo() {
+    return igIndexConnection.getConnectionInfo();
+  }
+
+  @Override
+  public InstrumentInfo getInstrumentInfo(String instrumentId) {
+    throw new IllegalArgumentException("Not yet implemented.");
+  }
+
+  @Override
+  public List<InstrumentInfo> findInstrumentsBySearchTerm(String searchTerm) throws Exception {
+    try {
+      return igIndexClient.findInstrumentsBySearchTerm(searchTerm);
+    } catch (IOException e) {
+      logger.error(e.getMessage());
+      throw new Exception(e);
+    }
+  }
+}

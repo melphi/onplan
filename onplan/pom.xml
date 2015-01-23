@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <properties>
+    <org.springframework.version>4.1.1.RELEASE</org.springframework.version>
+    <com.java.version>1.8</com.java.version>
+    <com.onplan.version>1.0-SNAPSHOT</com.onplan.version>
+  </properties>
+
+  <profiles>
+    <profile>
+      <id>development</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+    </profile>
+  </profiles>
+
+  <groupId>com.melphi</groupId>
+  <artifactId>onplan</artifactId>
+  <version>${com.onplan.version}</version>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>../onplan-core</module>
+    <module>../onplan-core-adapter</module>
+    <module>../onplan-core-strategy</module>
+    <module>../onplan-service-trader</module>
+    <module>../onplan-service</module>
+    <module>../onplan-service-crawler</module>
+    <module>../onplan-service-web</module>
+    <module>../onplan-adapters/onplan-adapter-igindex</module>
+  </modules>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.2</version>
+        <configuration>
+          <source>${com.java.version}</source>
+          <target>${com.java.version}</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

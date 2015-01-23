@@ -1,0 +1,169 @@
+package com.onplan.adapter.igindex;
+
+import com.google.common.base.Preconditions;
+import com.lightstreamer.ls_client.*;
+import com.onplan.adapter.AbstractServiceConnection;
+import com.onplan.service.ServiceConnectionInfo;
+import com.onplan.adapter.igindex.client.IgIndexClient;
+import com.onplan.adapter.igindex.client.IgIndexConnectionCredentials;
+import com.onplan.adapter.igindex.client.IgIndexConstant;
+import com.onplan.util.MorePreconditions;
+import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+
+import java.io.IOException;
+import java.util.Optional;
+
+public class IgIndexConnection extends AbstractServiceConnection {
+  private static final Logger logger = Logger.getLogger(IgIndexPriceService.class);
+
+  private final String apiKey;
+  private final String username;
+  private final String password;
+  private final IgIndexClient igIndexClient;
+  private final ServiceConnectionListener serviceConnectionListener =
+      new ServiceConnectionListener();
+  private final LSClient lightStreamerClient = new LSClient();
+
+  private volatile boolean isConnected = false;
+  private volatile Optional<DateTime> connectionUpdateDate = Optional.empty();
+
+  public IgIndexConnection(String apiKey, String username, String password, String severUrl) {
+    this.apiKey = MorePreconditions.checkNotNullOrEmpty(apiKey);
+    this.username = MorePreconditions.checkNotNullOrEmpty(username);
+    this.password = MorePreconditions.checkNotNullOrEmpty(password);
+    this.igIndexClient = new IgIndexClient(MorePreconditions.checkNotNullOrEmpty(severUrl));
+  }
+
+  @Override
+  public boolean isConnected() {
+    return isConnected;
+  }
+
+  @Override
+  public ServiceConnectionInfo getConnectionInfo() {
+    Long connectionUpdateTimestamp =
+        connectionUpdateDate.isPresent() ? connectionUpdateDate.get().getMillis() : null;
+    return new ServiceConnectionInfo(
+        IgIndexConstant.PROVIDER_NAME, isConnected, connectionUpdateTimestamp);
+  }
+
+  public LSClient getLightStreamerClient() {
+    return lightStreamerClient;
+  }
+
+  public IgIndexClient getIgIndexClient() {
+    return igIndexClient;
+  }
+
+  @Override
+  public void connect() {
+    logger.info("Opening IgIndex connection.");
+    if (isConnected()) {
+      logger.warn("Service already connected, no need to reconnect.");
+      return;
+    }
+    (new ConnectionThread()).start();
+  }
+
+  @Override
+  public void disconnect() {
+    logger.info("Closing IgIndex connection.");
+    lightStreamerClient.closeConnection();
+  }
+
+  private void updateConnectionStatus(boolean isConnected) {
+   if(this.isConnected && !isConnected) {
+      dispatchServiceDisconnectedEvent();
+    } else if(!this.isConnected && isConnected) {
+      dispatchServiceConnectionEstablishedEvent();
+    }
+    this.isConnected = isConnected;
+    this.connectionUpdateDate = Optional.of(DateTime.now());
+  }
+
+  private void validateConnection() {
+    try {
+      logger.warn("Trying to send a ping to the service..");
+      lightStreamerClient.sendMessage("Ping");
+      // If it reaches this point it means that the connection is broken.
+      logger.error("..service ping failed");
+      updateConnectionStatus(false);
+    } catch (PushServerException | PushUserException | PushConnException e1) {
+      logger.warn("..service ping replied.", e1);
+    }
+  }
+
+  private class ServiceConnectionListener implements ConnectionListener {
+    @Override
+    public void onConnectionEstablished() {
+      logger.info("Broker connection established.");
+      updateConnectionStatus(true);
+    }
+
+    @Override
+    public void onSessionStarted(boolean b) {
+      logger.info("Broker session started.");
+    }
+
+    @Override
+    public void onNewBytes(long l) {
+      // Intentionally empty.
+    }
+
+    @Override
+    public void onDataError(PushServerException e) {
+      logger.error("onDataError event.", e);
+    }
+
+    @Override
+    public void onActivityWarning(boolean b) {
+      // Intentionally empty.
+    }
+
+    @Override
+    public void onClose() {
+      logger.warn("Broker connection closed.");
+      updateConnectionStatus(false);
+    }
+
+    @Override
+    public void onEnd(int i) {
+      // Intentionally empty.
+    }
+
+    @Override
+    public void onFailure(PushServerException e) {
+      logger.error("onFailure event.", e);
+      validateConnection();
+    }
+
+    @Override
+    public void onFailure(PushConnException e) {
+      logger.error("onFailure.", e);
+      validateConnection();
+    }
+  }
+
+  private class ConnectionThread extends Thread {
+    @Override
+    public void run() {
+      Preconditions.checkNotNull(lightStreamerClient);
+      try {
+        logger.info("Retrieving IgIndex connection info.");
+        IgIndexConnectionCredentials connectionCredentials =
+            igIndexClient.login(apiKey, username, password);
+        ConnectionInfo connectionInfo = new ConnectionInfo();
+        connectionInfo.user = username;
+        connectionInfo.password = String.format("CST-%s|XST-%s",
+            connectionCredentials.getClientSessionToken(),
+            connectionCredentials.getAccountSessionToken());
+        connectionInfo.pushServerUrl = connectionCredentials.getLightStreamerEndpoint();
+        logger.info("Connecting to IgIndex LightStreamer.");
+        lightStreamerClient.openConnection(connectionInfo, serviceConnectionListener);
+      } catch (PushConnException | PushUserException| PushServerException | IOException e) {
+        logger.error("Error while connecting to the service.", e);
+      }
+    }
+  }
+}
