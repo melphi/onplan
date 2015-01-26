@@ -4,4 +4,6 @@ import com.onplan.service.PriceServiceRemote;
 
 public interface PriceService extends PriceServiceRemote {
   public void setPriceListener(PriceListener listener);
+  public void subscribeInstrument(String instrumentId) throws Exception;
+  public void unsubscribeInstrument(String instrumentId) throws Exception;
 }

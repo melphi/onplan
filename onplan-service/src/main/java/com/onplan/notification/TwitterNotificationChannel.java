@@ -14,7 +14,7 @@ import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 @Component
 public class TwitterNotificationChannel implements NotificationChannel {
-  private static final Logger logger = Logger.getLogger(TwitterNotificationChannel.class);
+  private static final Logger LOGGER = Logger.getLogger(TwitterNotificationChannel.class);
   private static final int MESSAGE_MAX_LENGTH = 140;
   private static final String MESSAGE_TRIMMED_SUFFIX = "..";
 
@@ -26,7 +26,7 @@ public class TwitterNotificationChannel implements NotificationChannel {
   @Override
   public void notifyStrategyEvent(StrategyEvent strategyEvent) throws Exception {
     checkNotNullOrEmpty(destinationRecipentScreenName);
-    logger.info(String.format(
+    LOGGER.info(String.format(
         "Sending Twitter notification to recipient [%s]: [%s]",
         destinationRecipentScreenName,
         strategyEvent.getMessage()));
@@ -37,7 +37,7 @@ public class TwitterNotificationChannel implements NotificationChannel {
   public void notifyMessage(String title, String body) throws Exception {
     checkNotNullOrEmpty(destinationRecipentScreenName);
     String message = String.format("[%s] %s", title, body);
-    logger.info(String.format(
+    LOGGER.info(String.format(
         "Sending Twitter notification to recipient [%s]: [%s]",
         destinationRecipentScreenName,
         message));
@@ -51,7 +51,7 @@ public class TwitterNotificationChannel implements NotificationChannel {
           destinationRecipentScreenName,
           StringUtil.trimMessage(message, MESSAGE_MAX_LENGTH, MESSAGE_TRIMMED_SUFFIX));
     } catch (TwitterException e) {
-      logger.error(String.format(
+      LOGGER.error(String.format(
           "Error while sending Twitter notification to recipient [%s]: [%s].",
           destinationRecipentScreenName,
           e.getMessage()));

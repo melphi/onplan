@@ -6,9 +6,7 @@
     <import resource="applicationContext-resources.xml"/>
 
     <!-- IG Index -->
-    <bean id="igIndexConnection"
-          class="com.onplan.adapter.igindex.IgIndexConnection"
-          init-method="connect">
+    <bean id="igIndexConnection" class="com.onplan.adapter.igindex.IgIndexConnection">
         <constructor-arg name="apiKey" value="${com.onplan.adapter.igindex.apiKey}"/>
         <constructor-arg name="username" value="${com.onplan.adapter.igindex.username}"/>
         <constructor-arg name="password" value="${com.onplan.adapter.igindex.password}"/>

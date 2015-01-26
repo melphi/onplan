@@ -12,7 +12,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 @Service
 public class EventNotificationService {
-  private static final Logger logger = Logger.getLogger(EventNotificationService.class);
+  private static final Logger LOGGER = Logger.getLogger(EventNotificationService.class);
 
   @Value("${notification.notify.service.connection}")
   private boolean notifyServiceConnection;
@@ -36,12 +36,12 @@ public class EventNotificationService {
     @Override
     public void onConnectionEstablished() {
       if(notifyServiceConnection) {
-        logger.info("Notifying ServiceConnection connection.");
+        LOGGER.info("Notifying ServiceConnection connection.");
         try {
           twitterNotificationChannel.notifyMessage(
               "ServiceConnection.", "Service connected $_$");
         } catch (Exception e) {
-          logger.error(e);
+          LOGGER.error(e);
         }
       }
     }
@@ -49,12 +49,12 @@ public class EventNotificationService {
     @Override
     public void onDisconnected() {
       if(notifyServiceDisconnection) {
-        logger.info("Notifying service disconnection.");
+        LOGGER.info("Notifying service disconnection.");
         try {
           twitterNotificationChannel.notifyMessage(
               "ServiceConnection.", "Service disconnected (-_-)zzZ");
         } catch (Exception e) {
-          logger.error(e);
+          LOGGER.error(e);
         }
       }
     }

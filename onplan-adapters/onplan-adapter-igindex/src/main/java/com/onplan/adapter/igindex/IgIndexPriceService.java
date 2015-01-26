@@ -1,45 +1,40 @@
 package com.onplan.adapter.igindex;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import com.lightstreamer.ls_client.*;
+import com.lightstreamer.ls_client.ExtendedTableInfo;
+import com.lightstreamer.ls_client.HandyTableListener;
+import com.lightstreamer.ls_client.SubscribedTableKey;
+import com.lightstreamer.ls_client.UpdateInfo;
 import com.onplan.adapter.AbstractPriceService;
-import com.onplan.service.ServiceConnectionInfo;
 import com.onplan.adapter.ServiceConnectionListener;
 import com.onplan.domain.PriceTick;
+import com.onplan.service.ServiceConnectionInfo;
 import org.apache.log4j.Logger;
 
 import java.util.Collection;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.onplan.adapter.igindex.IgIndexMapper.getEpicByInstrumentId;
+import static com.onplan.adapter.igindex.IgIndexMapper.getInstrumentIdByEpic;
+import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 public class IgIndexPriceService extends AbstractPriceService {
-  private static final Logger logger = Logger.getLogger(IgIndexPriceService.class);
+  private static final Logger LOGGER = Logger.getLogger(IgIndexPriceService.class);
   private static final String UPDATE_MODE = "DISTINCT";
+  private static final String[] PRICE_TICK_FIELDS = {"OFR", "BID", "UTM"};
+  private static final Map<String, SubscribedTableKey> SUBSCRIBED_INSTRUMENTS =
+      Maps.newConcurrentMap();
 
   private final ServiceConnectionListener serviceConnectionListener =
       new IgIndexServiceConnectionListener();
-  private final PriceTickTableListener priceTickTableListener = new PriceTickTableListener();
   private final Map<String, PriceTick> lastPriceTicks = Maps.newHashMap();
-
   private final IgIndexConnection igIndexConnection;
 
-  private ImmutableSet<String> priceTickInstruments = ImmutableSet.of(
-      "CHART:CS.D.EURUSD.TODAY.IP:TICK",
-      "CHART:CS.D.AUDUSD.TODAY.IP:TICK",
-      "CHART:IX.D.FTSE.DAILY.IP:TICK",
-      "CHART:IX.D.DAX.DAILY.IP:TICK");
-
-  private ImmutableSet<String> priceTickFields = ImmutableSet.of(
-      "OFR",
-      "BID",
-      "UTM");
-
   public IgIndexPriceService(IgIndexConnection igIndexConnection) {
-    logger.info("Setting IgIndexConnection in IgIndexPriceService.");
+    LOGGER.info("Setting IgIndexConnection in IgIndexPriceService.");
     this.igIndexConnection = checkNotNull(igIndexConnection);
     this.igIndexConnection.addServiceConnectionListener(serviceConnectionListener);
   }
@@ -57,8 +52,8 @@ public class IgIndexPriceService extends AbstractPriceService {
   @Override
   public Collection<String> getSubscribedInstruments() {
     ImmutableList.Builder subscribedInstrument = ImmutableList.builder();
-    for (String instrument : priceTickInstruments) {
-      subscribedInstrument.add(IgIndexMapper.getInstrumentIdByEpic(instrument));
+    for (String instrument : SUBSCRIBED_INSTRUMENTS.keySet()) {
+      subscribedInstrument.add(getInstrumentIdByEpic(instrument));
     }
     return subscribedInstrument.build();
   }
@@ -70,19 +65,46 @@ public class IgIndexPriceService extends AbstractPriceService {
     }
   }
 
-  private void subscribeInstruments()
-      throws SubscrException, PushUserException, PushServerException, PushConnException {
-    String[] ticksItems = priceTickInstruments.toArray(new String[priceTickInstruments.size()]);
-    String[] ticksFields = priceTickFields.toArray(new String[priceTickFields.size()]);
-    ExtendedTableInfo ticksTableInfo = new ExtendedTableInfo(ticksItems, UPDATE_MODE, ticksFields, true);
-    igIndexConnection.getLightStreamerClient().subscribeItems(ticksTableInfo, priceTickTableListener);
-    logger.info(String.format(
-        "Subscribed instruments [%s].",
-        Joiner.on(", ").join(priceTickInstruments)));
+//  = ImmutableSet.of(
+//      "CHART:CS.D.EURUSD.TODAY.IP:TICK",
+//      "CHART:CS.D.AUDUSD.TODAY.IP:TICK",
+//      "CHART:IX.D.FTSE.DAILY.IP:TICK",
+//      "CHART:IX.D.DAX.DAILY.IP:TICK");
+
+  @Override
+  public void subscribeInstrument(String instrumentId) throws Exception {
+    checkNotNullOrEmpty(instrumentId);
+    checkArgument(igIndexConnection.isConnected(), "Service not connected.");
+    if (SUBSCRIBED_INSTRUMENTS.containsKey(instrumentId)) {
+      LOGGER.warn(String.format("Instrument [%s] already subscribed.", instrumentId));
+      return;
+    }
+    String instrumentEpic = getEpicByInstrumentId(instrumentId);
+    LOGGER.info(String.format(
+        "Subscribing instrument id [%s] as IgIndex epic [%s].", instrumentId, instrumentEpic));
+    ExtendedTableInfo extendedTableInfo =
+        new ExtendedTableInfo(new String[] {instrumentEpic}, UPDATE_MODE, PRICE_TICK_FIELDS, true);
+    SubscribedTableKey subscribedTableKey = igIndexConnection.getLightStreamerClient()
+        .subscribeTable(extendedTableInfo, new PriceTickTableListener(), false);
+    SUBSCRIBED_INSTRUMENTS.put(instrumentId, subscribedTableKey);
+    LOGGER.info(String.format("Instrument [%s] subscribed.", instrumentId));
+  }
+
+  @Override
+  public void unsubscribeInstrument(String instrumentId) throws Exception {
+    checkNotNullOrEmpty(instrumentId);
+    checkArgument(igIndexConnection.isConnected(), "Service not connected.");
+    if (!SUBSCRIBED_INSTRUMENTS.containsKey(instrumentId)) {
+      LOGGER.warn(String.format("Instrument [%s] is not subscribed.", instrumentId));
+      return;
+    }
+    SubscribedTableKey subscribedTableKey = checkNotNull(SUBSCRIBED_INSTRUMENTS.get(instrumentId));
+    igIndexConnection.getLightStreamerClient().unsubscribeTable(subscribedTableKey);
+    LOGGER.info(String.format("Instrument [%s] un-subscribed.", instrumentId));
   }
 
   private PriceTick createPriceTick(UpdateInfo updateInfo) {
-    String instrumentId = IgIndexMapper.getInstrumentIdByEpic(updateInfo.getItemName());
+    String instrumentId = getInstrumentIdByEpic(updateInfo.getItemName());
     double askPrice = Double.parseDouble(updateInfo.getNewValue(1));
     double bidPrice = Double.parseDouble(updateInfo.getNewValue(2));
     long timestamp = Long.parseLong(updateInfo.getNewValue(3));
@@ -92,16 +114,13 @@ public class IgIndexPriceService extends AbstractPriceService {
   private class IgIndexServiceConnectionListener implements ServiceConnectionListener {
     @Override
     public void onConnectionEstablished() {
-      try {
-        subscribeInstruments();
-      } catch (SubscrException | PushUserException | PushServerException | PushConnException e) {
-        logger.error(String.format("Error while subscribing instruments: [%s]", e.getMessage()));
-      }
+      // Intentionally empty.
     }
 
     @Override
     public void onDisconnected() {
-      // Intentionally empty.
+      LOGGER.info("Service disconnection, clearing subscribed instruments.");
+      SUBSCRIBED_INSTRUMENTS.clear();
     }
   }
 
@@ -122,18 +141,18 @@ public class IgIndexPriceService extends AbstractPriceService {
 
     @Override
     public void onRawUpdatesLost(int itemPos, String itemName, int lostUpdates) {
-      logger.warn(
+      LOGGER.warn(
           String.format("Raw update lost: Item name [%s], item position [%d].", itemName, itemPos));
     }
 
     @Override
     public void onUnsubscr(int itemPos, String itemName) {
-      logger.info(String.format("Instrument [%s] un-subscribed.", itemName));
+      LOGGER.info(String.format("Instrument [%s] un-subscribed.", itemName));
     }
 
     @Override
     public void onUnsubscrAll() {
-      logger.info("All instrument un-subscribed");
+      LOGGER.info("All instrument un-subscribed");
     }
   }
 }

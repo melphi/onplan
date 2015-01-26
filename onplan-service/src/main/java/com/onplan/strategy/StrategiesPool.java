@@ -3,18 +3,20 @@ package com.onplan.strategy;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.onplan.domain.PriceTick;
 import org.apache.log4j.Logger;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 public class StrategiesPool {
-  private static final Logger logger = Logger.getLogger(StrategiesPool.class);
+  private static final Logger LOGGER = Logger.getLogger(StrategiesPool.class);
 
   private Map<String, Iterable<Strategy>> strategies = ImmutableMap.of();
 
@@ -22,8 +24,8 @@ public class StrategiesPool {
     this.strategies = ImmutableMap.copyOf(checkNotNull(strategies));
   }
 
-  public Iterable<String> getInstruments() {
-    return strategies.keySet();
+  public Set<String> getInstruments() {
+    return ImmutableSet.copyOf(strategies.keySet());
   }
 
   public List<Strategy> getStrategiesList() {
@@ -53,7 +55,7 @@ public class StrategiesPool {
     if (elementRemoved) {
       strategies = result.build();
     } else {
-      logger.warn(String.format("Tried to remove strategy id [%s] but was not found.", strategyId));
+      LOGGER.warn(String.format("Tried to remove strategy id [%s] but was not found.", strategyId));
     }
   }
 

@@ -30,4 +30,14 @@ public class DummyPriceService implements PriceService {
   public void setPriceListener(PriceListener listener) {
     // Intentionally empty.
   }
+
+  @Override
+  public void subscribeInstrument(String instrumentId) throws Exception {
+    throw new IllegalArgumentException("Not yet implemented.");
+  }
+
+  @Override
+  public void unsubscribeInstrument(String instrumentId) throws Exception {
+    throw new IllegalArgumentException("Not yet implemented.");
+  }
 }

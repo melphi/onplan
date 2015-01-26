@@ -19,7 +19,7 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
 public abstract class AbstractMongoDbDao<T extends PersistentObject> implements GenericDao<T> {
-  private static final Logger logger = Logger.getLogger(AbstractMongoDbDao.class);
+  private static final Logger LOGGER = Logger.getLogger(AbstractMongoDbDao.class);
 
   private final String collectionName;
   private final Class<T> clazz;
@@ -33,9 +33,9 @@ public abstract class AbstractMongoDbDao<T extends PersistentObject> implements 
 
   @Autowired
   private void setSimpleMongoDbFactory(SimpleMongoDbFactory simpleMongoDbFactory) {
-    logger.info("Initializing MongoDb operations.");
+    LOGGER.info("Initializing MongoDb operations.");
     mongoOperations = new MongoTemplate(simpleMongoDbFactory);
-    logger.info(String.format(
+    LOGGER.info(String.format(
         "MongoDb initialized, available collections [%s].",
         Joiner.on(", ").join(mongoOperations.getCollectionNames())));
   }

@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 public class IgIndexConnection extends AbstractServiceConnection {
-  private static final Logger logger = Logger.getLogger(IgIndexPriceService.class);
+  private static final Logger LOGGER = Logger.getLogger(IgIndexPriceService.class);
 
   private final String apiKey;
   private final String username;
@@ -58,9 +58,9 @@ public class IgIndexConnection extends AbstractServiceConnection {
 
   @Override
   public void connect() {
-    logger.info("Opening IgIndex connection.");
+    LOGGER.info("Opening IgIndex connection.");
     if (isConnected()) {
-      logger.warn("Service already connected, no need to reconnect.");
+      LOGGER.warn("Service already connected, no need to reconnect.");
       return;
     }
     (new ConnectionThread()).start();
@@ -68,7 +68,7 @@ public class IgIndexConnection extends AbstractServiceConnection {
 
   @Override
   public void disconnect() {
-    logger.info("Closing IgIndex connection.");
+    LOGGER.info("Closing IgIndex connection.");
     lightStreamerClient.closeConnection();
   }
 
@@ -84,26 +84,26 @@ public class IgIndexConnection extends AbstractServiceConnection {
 
   private void validateConnection() {
     try {
-      logger.warn("Trying to send a ping to the service..");
+      LOGGER.warn("Trying to send a ping to the service..");
       lightStreamerClient.sendMessage("Ping");
       // If it reaches this point it means that the connection is broken.
-      logger.error("..service ping failed");
+      LOGGER.error("..service ping failed");
       updateConnectionStatus(false);
     } catch (PushServerException | PushUserException | PushConnException e1) {
-      logger.warn("..service ping replied.", e1);
+      LOGGER.warn("..service ping replied.", e1);
     }
   }
 
   private class ServiceConnectionListener implements ConnectionListener {
     @Override
     public void onConnectionEstablished() {
-      logger.info("Broker connection established.");
+      LOGGER.info("Broker connection established.");
       updateConnectionStatus(true);
     }
 
     @Override
     public void onSessionStarted(boolean b) {
-      logger.info("Broker session started.");
+      LOGGER.info("Broker session started.");
     }
 
     @Override
@@ -113,7 +113,7 @@ public class IgIndexConnection extends AbstractServiceConnection {
 
     @Override
     public void onDataError(PushServerException e) {
-      logger.error("onDataError event.", e);
+      LOGGER.error("onDataError event.", e);
     }
 
     @Override
@@ -123,7 +123,7 @@ public class IgIndexConnection extends AbstractServiceConnection {
 
     @Override
     public void onClose() {
-      logger.warn("Broker connection closed.");
+      LOGGER.warn("Broker connection closed.");
       updateConnectionStatus(false);
     }
 
@@ -134,13 +134,13 @@ public class IgIndexConnection extends AbstractServiceConnection {
 
     @Override
     public void onFailure(PushServerException e) {
-      logger.error("onFailure event.", e);
+      LOGGER.error("onFailure event.", e);
       validateConnection();
     }
 
     @Override
     public void onFailure(PushConnException e) {
-      logger.error("onFailure.", e);
+      LOGGER.error("onFailure.", e);
       validateConnection();
     }
   }
@@ -150,7 +150,7 @@ public class IgIndexConnection extends AbstractServiceConnection {
     public void run() {
       Preconditions.checkNotNull(lightStreamerClient);
       try {
-        logger.info("Retrieving IgIndex connection info.");
+        LOGGER.info("Retrieving IgIndex connection info.");
         IgIndexConnectionCredentials connectionCredentials =
             igIndexClient.login(apiKey, username, password);
         ConnectionInfo connectionInfo = new ConnectionInfo();
@@ -159,10 +159,10 @@ public class IgIndexConnection extends AbstractServiceConnection {
             connectionCredentials.getClientSessionToken(),
             connectionCredentials.getAccountSessionToken());
         connectionInfo.pushServerUrl = connectionCredentials.getLightStreamerEndpoint();
-        logger.info("Connecting to IgIndex LightStreamer.");
+        LOGGER.info("Connecting to IgIndex LightStreamer.");
         lightStreamerClient.openConnection(connectionInfo, serviceConnectionListener);
       } catch (PushConnException | PushUserException| PushServerException | IOException e) {
-        logger.error("Error while connecting to the service.", e);
+        LOGGER.error("Error while connecting to the service.", e);
       }
     }
   }

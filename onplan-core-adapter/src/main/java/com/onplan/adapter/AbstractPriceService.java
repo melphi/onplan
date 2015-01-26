@@ -17,10 +17,14 @@ public abstract class AbstractPriceService implements PriceService {
   }
 
   protected void dispatchPriceTick(final PriceTick priceTick) {
-    priceListener.onPriceTick(priceTick);
+    synchronized (priceListener) {
+      priceListener.onPriceTick(priceTick);
+    }
   }
 
   protected void dispatchPriceBar(final PriceBar priceBar) {
-    priceListener.onPriceBar(priceBar);
+    synchronized (priceListener) {
+      priceListener.onPriceBar(priceBar);
+    }
   }
 }

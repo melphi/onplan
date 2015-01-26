@@ -12,13 +12,13 @@ import java.util.List;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class IgIndexInstrumentService implements InstrumentService {
-  private static final Logger logger = Logger.getLogger(IgIndexInstrumentService.class);
+  private static final Logger LOGGER = Logger.getLogger(IgIndexInstrumentService.class);
 
   private final IgIndexConnection igIndexConnection;
   private final IgIndexClient igIndexClient;
 
   public IgIndexInstrumentService(IgIndexConnection igIndexConnection) {
-    logger.info("Setting IgIndexConnection in IgIndexInstrumentService.");
+    LOGGER.info("Setting IgIndexConnection in IgIndexInstrumentService.");
     this.igIndexConnection = checkNotNull(igIndexConnection);
     this.igIndexClient = igIndexConnection.getIgIndexClient();
   }
@@ -38,7 +38,7 @@ public class IgIndexInstrumentService implements InstrumentService {
     try {
       return igIndexClient.findInstrumentsBySearchTerm(searchTerm);
     } catch (IOException e) {
-      logger.error(e.getMessage());
+      LOGGER.error(e.getMessage());
       throw new Exception(e);
     }
   }

@@ -12,7 +12,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 @Component
 public class StrategyEventProcessor {
-  private static Logger logger = Logger.getLogger(StrategyEventProcessor.class);
+  private static Logger LOGGER = Logger.getLogger(StrategyEventProcessor.class);
 
   private TwitterNotificationChannel twitterNotificationChannel;
 
@@ -20,9 +20,9 @@ public class StrategyEventProcessor {
   public void setTwitterNotificationChannel(TwitterNotificationChannel twitterNotificationChannel) {
     this.twitterNotificationChannel = checkNotNull(twitterNotificationChannel);
     if(twitterNotificationChannel.isActive()) {
-      logger.info("TwitterNotificationChannel loaded and active.");
+      LOGGER.info("TwitterNotificationChannel loaded and active.");
     } else {
-      logger.warn("TwitterNotificationChannel is not active.");
+      LOGGER.warn("TwitterNotificationChannel is not active.");
     }
   }
 
@@ -42,7 +42,7 @@ public class StrategyEventProcessor {
       if (eventHandler.getEventScheduler().isTimeValid(DateTime.now())) {
         twitterNotificationChannel.notifyStrategyEvent(strategyEvent);
       } else {
-        logger.info(String.format(
+        LOGGER.info(String.format(
             "Event not processed because out of scheduled interval [%s].", strategyEvent));
       }
     }

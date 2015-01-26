@@ -10,12 +10,12 @@ import java.util.Collection;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class IgIndexHistoricalPriceService implements HistoricalPriceService {
-  private static final Logger logger = Logger.getLogger(HistoricalPriceService.class);
+  private static final Logger LOGGER = Logger.getLogger(HistoricalPriceService.class);
 
   private final IgIndexConnection igIndexConnection;
 
   public IgIndexHistoricalPriceService(IgIndexConnection igIndexConnection) {
-    logger.info("Setting IgIndexConnection in IgIndexHistoricalPriceService.");
+    LOGGER.info("Setting IgIndexConnection in IgIndexHistoricalPriceService.");
     this.igIndexConnection = checkNotNull(igIndexConnection);
   }
 

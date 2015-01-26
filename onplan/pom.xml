@@ -30,7 +30,7 @@
     <module>../onplan-core-strategy</module>
     <module>../onplan-service-trader</module>
     <module>../onplan-service</module>
-    <module>../onplan-service-crawler</module>
+    <module>../onplan-service-esb</module>
     <module>../onplan-service-web</module>
     <module>../onplan-adapters/onplan-adapter-igindex</module>
   </modules>

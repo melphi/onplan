@@ -11,9 +11,12 @@
     <task:executor id="executor" pool-size="3"/>
     <task:scheduler id="scheduler" pool-size="6"/>
 
-    <bean id="priceServiceActivatorJob" class="com.onplan.scheduler.PriceServiceActivatorJob"/>
+    <!-- Instantiates bean and run it once -->
+    <bean id="adapterServicesActivatorJob"
+          class="com.onplan.scheduler.AdapterServicesActivator"
+          init-method="run"/>
 
     <task:scheduled-tasks scheduler="scheduler">
-      <task:scheduled ref="priceServiceActivatorJob" method="run" cron="0 * * * * SUN-FRI"/>
+      <task:scheduled ref="adapterServicesActivatorJob" method="run" fixed-delay="60000"/>
     </task:scheduled-tasks>
 </beans>

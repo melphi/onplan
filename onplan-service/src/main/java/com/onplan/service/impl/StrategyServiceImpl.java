@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -31,7 +32,7 @@ import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 @Service(value = "strategyService")
 public class StrategyServiceImpl implements StrategyService {
-  private static final Logger logger = Logger.getLogger(StrategyServiceImpl.class);
+  private static final Logger LOGGER = Logger.getLogger(StrategyServiceImpl.class);
 
   private final PriceListener priceListener = new InternalPriceListener();
   private final StrategyListener strategyListener = new InternalStrategyListener();
@@ -52,19 +53,24 @@ public class StrategyServiceImpl implements StrategyService {
   public void setPriceService(PriceService priceService) {
     checkArgument(this.priceService == null, "PriceService is already set.");
     this.priceService = checkNotNull(priceService);
-    logger.info("Setting price listener.");
+    LOGGER.info("Setting price listener.");
     priceService.setPriceListener(priceListener);
-    logger.info("Loading strategies.");
+    LOGGER.info("Loading strategies.");
     try {
       loadAllStrategies();
     } catch (Exception e) {
-      logger.error(String.format("Error while loading strategies: [%s].", e.getMessage()));
+      LOGGER.error(String.format("Error while loading strategies: [%s].", e.getMessage()));
     }
   }
 
   @Override
   public List<Strategy> getStrategies() {
     return strategiesPool.getStrategiesList();
+  }
+
+  @Override
+  public Set<String> getSubscribedInstruments() {
+    return strategiesPool.getInstruments();
   }
 
   @Override
@@ -84,7 +90,7 @@ public class StrategyServiceImpl implements StrategyService {
           createStrategyTemplateInfo(PriceSpikeStrategy.class),
           createStrategyTemplateInfo(IntegrationTestStrategy.class));
     } catch (Exception e) {
-      logger.error(
+      LOGGER.error(
           String.format("Error while loading available strategies [%s].", e.getMessage()));
       throw e;
     }
@@ -102,7 +108,7 @@ public class StrategyServiceImpl implements StrategyService {
     try {
       return createStrategyTemplateInfo(clazz);
     } catch (Exception e) {
-      logger.warn(String.format(
+      LOGGER.warn(String.format(
           "Error while getting the strategy template info for [%s]: [%s]",
           clazz.getName(),
           e.getMessage()));
@@ -113,11 +119,11 @@ public class StrategyServiceImpl implements StrategyService {
   @Override
   public void removeStrategy(String strategyId) {
     checkNotNullOrEmpty(strategyId);
-    logger.info(String.format("Removing strategy [%s].", strategyId));
+    LOGGER.info(String.format("Removing strategy [%s].", strategyId));
     strategiesPool.removeStrategy(strategyId);
     boolean result = strategyConfigurationDao.removeById(strategyId);
     if (!result) {
-      logger.warn(String.format("Strategy [%s] not found in database.", strategyId));
+      LOGGER.warn(String.format("Strategy [%s] not found in database.", strategyId));
     }
   }
 
@@ -132,7 +138,7 @@ public class StrategyServiceImpl implements StrategyService {
     List<StrategyConfiguration> oldStrategies = strategyConfigurationDao.findAll();
     List<StrategyConfiguration> sampleStrategies =
         strategyConfigurationDao.getSampleStrategiesConfiguration();
-    logger.info(String.format(
+    LOGGER.info(String.format(
         "Replacing [%d] old strategies with [%d] sample strategies.",
         oldStrategies.size(),
         sampleStrategies.size()));
@@ -141,7 +147,7 @@ public class StrategyServiceImpl implements StrategyService {
     try {
       loadAllStrategies();
     } catch (Exception e) {
-      logger.error(String.format("Error while loading strategies: [%s].", e.getMessage()));
+      LOGGER.error(String.format("Error while loading strategies: [%s].", e.getMessage()));
       strategyConfigurationDao.insertAll(oldStrategies);
       throw e;
     }
@@ -175,7 +181,7 @@ public class StrategyServiceImpl implements StrategyService {
 
   private void loadAllStrategies() throws Exception {
     checkNotNull(strategyListener);
-    logger.info("Loading strategies configuration from database.");
+    LOGGER.info("Loading strategies configuration from database.");
     List<StrategyConfiguration> strategyConfigurations = strategyConfigurationDao.findAll();
     Map<String, Iterable<Strategy>> strategies = Maps.newHashMap();
     for (StrategyConfiguration strategyConfiguration : strategyConfigurations) {
@@ -189,7 +195,7 @@ public class StrategyServiceImpl implements StrategyService {
       }
     }
     strategiesPool.setStrategies(strategies);
-    logger.info(String.format(
+    LOGGER.info(String.format(
         "[%d] strategies loaded for instruments [%s].",
         strategyConfigurations.size(),
         Joiner.on(", ").join(strategiesPool.getInstruments())));
@@ -222,7 +228,7 @@ public class StrategyServiceImpl implements StrategyService {
       strategy.setExecutionContext(strategyExecutionContext);
       strategy.initStrategy();
     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-      logger.error(e);
+      LOGGER.error(e);
       throw new Exception(String.format(
           "[%] exception while loading strategy id [%s] for class [%s]: [%s].",
           e,
@@ -230,7 +236,7 @@ public class StrategyServiceImpl implements StrategyService {
           strategyConfiguration.getClassName(),
           e.getMessage()));
     }
-    logger.info(String.format(
+    LOGGER.info(String.format(
         "Strategy [%s] created and initialized for instruments [%s].",
         clazz.getName(),
         Joiner.on(", ").join(strategyConfiguration.getInstruments())));
@@ -253,10 +259,10 @@ public class StrategyServiceImpl implements StrategyService {
     @Override
     public void onEvent(StrategyEvent strategyEvent) {
       try {
-        logger.info(String.format("StrategyEvent [%s].", strategyEvent));
+        LOGGER.info(String.format("StrategyEvent [%s].", strategyEvent));
         eventProcessor.processStrategyEvent(strategyEvent);
       } catch (Exception e) {
-        logger.error(String.format(
+        LOGGER.error(String.format(
             "Error while processor event. Message: [%s] Event: [%s]",
             e.getMessage(),
             strategyEvent));
