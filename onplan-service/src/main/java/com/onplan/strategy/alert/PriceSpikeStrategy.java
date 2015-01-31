@@ -38,6 +38,7 @@ public class PriceSpikeStrategy extends AbstractStrategy {
       dispatchEvent(createStrategyEvent(priceTick, pipsVariation));
       eventDispatched = true;
     }
+    updateStatistics(priceTick);
   }
 
   @Override

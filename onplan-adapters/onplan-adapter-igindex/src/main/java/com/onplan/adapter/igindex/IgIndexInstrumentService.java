@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.onplan.adapter.igindex.IgIndexMapper.getEpicByInstrumentId;
 
 public class IgIndexInstrumentService implements InstrumentService {
   private static final Logger LOGGER = Logger.getLogger(IgIndexInstrumentService.class);
@@ -29,8 +30,8 @@ public class IgIndexInstrumentService implements InstrumentService {
   }
 
   @Override
-  public InstrumentInfo getInstrumentInfo(String instrumentId) {
-    throw new IllegalArgumentException("Not yet implemented.");
+  public InstrumentInfo getInstrumentInfo(String instrumentId) throws IOException {
+    return igIndexClient.getInstrumentInfo(getEpicByInstrumentId(instrumentId));
   }
 
   @Override

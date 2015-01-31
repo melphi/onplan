@@ -1,10 +1,12 @@
 package com.onplan.persistence.mongodb;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.mongodb.WriteResult;
 import com.onplan.domain.PersistentObject;
 import com.onplan.persistence.GenericDao;
 import org.apache.log4j.Logger;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -13,6 +15,7 @@ import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 import java.util.Collection;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
@@ -31,18 +34,12 @@ public abstract class AbstractMongoDbDao<T extends PersistentObject> implements 
     this.clazz = checkNotNull(clazz);
   }
 
-  @Autowired
-  private void setSimpleMongoDbFactory(SimpleMongoDbFactory simpleMongoDbFactory) {
-    LOGGER.info("Initializing MongoDb operations.");
-    mongoOperations = new MongoTemplate(simpleMongoDbFactory);
-    LOGGER.info(String.format(
-        "MongoDb initialized, available collections [%s].",
-        Joiner.on(", ").join(mongoOperations.getCollectionNames())));
-  }
-
   @Override
   public void insert(T object) {
     checkNotNull(object);
+    checkArgument(
+        Strings.isNullOrEmpty(object.getId()), "Object id should be null to perform insert.");
+    object.setId(new ObjectId().toString());
     mongoOperations.insert(object, collectionName);
   }
 
@@ -55,7 +52,20 @@ public abstract class AbstractMongoDbDao<T extends PersistentObject> implements 
   @Override
   public void update(T object) {
     checkNotNull(object);
-    throw new IllegalArgumentException("Not yet implemented");
+    checkNotNullOrEmpty(object.getId(), "Object id should be set to perform update.");
+    mongoOperations.save(object, collectionName);
+  }
+
+  @Override
+  public T save(T object) {
+    checkNotNull(object);
+    if (Strings.isNullOrEmpty(object.getId())) {
+      object.setId(new ObjectId().toString());
+      mongoOperations.insert(object, collectionName);
+    } else {
+      mongoOperations.save(object, collectionName);
+    }
+    return object;
   }
 
   @Override
@@ -86,5 +96,14 @@ public abstract class AbstractMongoDbDao<T extends PersistentObject> implements 
   @Override
   public List<T> findAll() {
     return mongoOperations.findAll(clazz, collectionName);
+  }
+
+  @Autowired
+  private void setSimpleMongoDbFactory(SimpleMongoDbFactory simpleMongoDbFactory) {
+    LOGGER.info("Initializing MongoDb operations.");
+    mongoOperations = new MongoTemplate(simpleMongoDbFactory);
+    LOGGER.info(String.format(
+        "MongoDb initialized, available collections [%s].",
+        Joiner.on(", ").join(mongoOperations.getCollectionNames())));
   }
 }

@@ -1,6 +1,6 @@
 package com.onplan.adapter.igindex;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.lightstreamer.ls_client.ExtendedTableInfo;
 import com.lightstreamer.ls_client.HandyTableListener;
@@ -17,8 +17,8 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.onplan.adapter.igindex.IgIndexMapper.getEpicByInstrumentId;
 import static com.onplan.adapter.igindex.IgIndexMapper.getInstrumentIdByEpic;
+import static com.onplan.adapter.igindex.IgIndexMapper.getTickSubscriptionEpicByInstrumentId;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 public class IgIndexPriceService extends AbstractPriceService {
@@ -51,11 +51,7 @@ public class IgIndexPriceService extends AbstractPriceService {
 
   @Override
   public Collection<String> getSubscribedInstruments() {
-    ImmutableList.Builder subscribedInstrument = ImmutableList.builder();
-    for (String instrument : SUBSCRIBED_INSTRUMENTS.keySet()) {
-      subscribedInstrument.add(getInstrumentIdByEpic(instrument));
-    }
-    return subscribedInstrument.build();
+    return ImmutableSet.copyOf(SUBSCRIBED_INSTRUMENTS.keySet());
   }
 
   @Override
@@ -65,12 +61,6 @@ public class IgIndexPriceService extends AbstractPriceService {
     }
   }
 
-//  = ImmutableSet.of(
-//      "CHART:CS.D.EURUSD.TODAY.IP:TICK",
-//      "CHART:CS.D.AUDUSD.TODAY.IP:TICK",
-//      "CHART:IX.D.FTSE.DAILY.IP:TICK",
-//      "CHART:IX.D.DAX.DAILY.IP:TICK");
-
   @Override
   public void subscribeInstrument(String instrumentId) throws Exception {
     checkNotNullOrEmpty(instrumentId);
@@ -79,7 +69,7 @@ public class IgIndexPriceService extends AbstractPriceService {
       LOGGER.warn(String.format("Instrument [%s] already subscribed.", instrumentId));
       return;
     }
-    String instrumentEpic = getEpicByInstrumentId(instrumentId);
+    String instrumentEpic = getTickSubscriptionEpicByInstrumentId(instrumentId);
     LOGGER.info(String.format(
         "Subscribing instrument id [%s] as IgIndex epic [%s].", instrumentId, instrumentEpic));
     ExtendedTableInfo extendedTableInfo =

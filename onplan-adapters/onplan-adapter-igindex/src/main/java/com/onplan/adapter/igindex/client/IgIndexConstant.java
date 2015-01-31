@@ -4,8 +4,12 @@ public class IgIndexConstant {
   public static final String PROVIDER_NAME = "IG Index Ltd.";
 
   public static final String TAG_MARKETS = "markets";
+  public static final String TAG_INSTRUMENT = "instrument";
+  public static final String TAG_SNAPSHOT = "snapshot";
   public static final String TAG_SESSION = "session";
   public static final String TAG_EPIC = "epic";
+  public static final String TAG_NAME = "name";
+  public static final String TAG_TYPE = "type";
   public static final String TAG_INSTRUMENT_NAME = "instrumentName";
   public static final String TAG_INSTRUMENT_TYPE = "instrumentType";
   public static final String TAG_EXPIRY = "expiry";

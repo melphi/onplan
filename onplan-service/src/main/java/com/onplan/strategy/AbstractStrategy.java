@@ -3,6 +3,7 @@ package com.onplan.strategy;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.onplan.domain.PriceTick;
 
 import java.util.Collection;
 import java.util.Map;
@@ -15,6 +16,12 @@ import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 public abstract class AbstractStrategy implements Strategy {
   protected StrategyExecutionContext executionContext;
 
+  private final StrategyStatistics strategyStatistics = new StrategyStatistics();
+
+  private long receivedTicks = 0;
+  private long eventsDispatchedCounter = 0;
+  private long maxCompletionNanoTime = 0;
+
   public void setExecutionContext(StrategyExecutionContext executionContext) {
     checkArgument(this.executionContext == null, "Execution context already set.");
     this.executionContext = checkNotNull(executionContext);
@@ -23,6 +30,9 @@ public abstract class AbstractStrategy implements Strategy {
   protected void dispatchEvent(StrategyEvent strategyEvent) {
     checkNotNull(strategyEvent);
     executionContext.getStrategyListener().onEvent(strategyEvent);
+    synchronized (strategyStatistics) {
+      strategyStatistics.setEventsDispatchedCounter(++eventsDispatchedCounter);
+    }
   }
 
   public Map<String, String> getExecutionParameters() {
@@ -37,6 +47,29 @@ public abstract class AbstractStrategy implements Strategy {
 
   public String getId() {
     return executionContext.getStrategyId();
+  }
+
+  public StrategyStatistics getStrategyStatistics() {
+    synchronized (strategyStatistics) {
+      return new StrategyStatistics(
+          strategyStatistics.getLastReceivedTickTimestamp(),
+          strategyStatistics.getReceivedTicks(),
+          strategyStatistics.getEventsDispatchedCounter(),
+          strategyStatistics.getLastCompletionNanoTime(),
+          strategyStatistics.getMaxCompletionNanoTime());
+    }
+  }
+
+  public void updateStatistics(final PriceTick priceTick) {
+    final long lastCompletionNanoTime = System.nanoTime() - priceTick.getReceivedNanoTime();
+    synchronized (strategyStatistics) {
+      strategyStatistics.setLastCompletionNanoTime(lastCompletionNanoTime);
+      strategyStatistics.setReceivedTicks(++receivedTicks);
+      strategyStatistics.setLastReceivedTickTimestamp(priceTick.getTimestamp());
+      strategyStatistics.setMaxCompletionNanoTime(
+          Math.max(maxCompletionNanoTime, lastCompletionNanoTime));
+    }
+    System.out.println("Update statistics " + strategyStatistics);
   }
 
   protected Optional<String> getStringProperty(String propertyName) {

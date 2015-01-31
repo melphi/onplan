@@ -1,5 +1,6 @@
 package com.onplan.integration.adapter;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.onplan.adapter.InstrumentService;
 import com.onplan.domain.InstrumentInfo;
@@ -12,26 +13,36 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class InstrumentServiceIT extends AbstractIntegrationTest {
-  private static final String SEARCH_EXAMPLE_1 = "EUR";
+  private static final String SEARCH_EXAMPLE = "EUR";
+  private static final String EPIC_EXAMPLE = "CF.EURAUD.MAR";
 
   @Autowired
   private InstrumentService instrumentService;
 
   @Test
   public void testFindInstrumentsBySearchTerm() throws Exception {
-    List<InstrumentInfo> result = instrumentService.findInstrumentsBySearchTerm(SEARCH_EXAMPLE_1);
-
+    List<InstrumentInfo> result = instrumentService.findInstrumentsBySearchTerm(SEARCH_EXAMPLE);
     List<String> instrumentIds = Lists.newArrayList();
     assertTrue(!result.isEmpty());
     for (InstrumentInfo instrumentInfo : result) {
-      assertNotNull(instrumentInfo.getInstrumentType());
-      assertNotNull(instrumentInfo.getInstrumentName());
-      assertNotNull(instrumentInfo.getExpiry());
-      assertNotNull(instrumentInfo.getInstrumentId());
-      assertNotNull(instrumentInfo.getPriceMinimalDecimalPosition());
+      checkInstrumentInfo(instrumentInfo);
       // Assert instrumentId uniqueness.
       assertTrue(!instrumentIds.contains(instrumentInfo.getInstrumentId()));
       instrumentIds.add(instrumentInfo.getInstrumentId());
     }
+  }
+
+  @Test
+  public void testGetInstrumentInfo() throws Exception {
+    InstrumentInfo instrumentInfo = instrumentService.getInstrumentInfo(EPIC_EXAMPLE);
+    checkInstrumentInfo(instrumentInfo);
+  }
+
+  private static void checkInstrumentInfo(final InstrumentInfo instrumentInfo) {
+    assertNotNull(instrumentInfo.getInstrumentType());
+    assertTrue(!Strings.isNullOrEmpty(instrumentInfo.getInstrumentName()));
+    assertTrue(!Strings.isNullOrEmpty(instrumentInfo.getExpiry()));
+    assertTrue(!Strings.isNullOrEmpty(instrumentInfo.getInstrumentId()));
+    assertTrue(instrumentInfo.getPriceMinimalDecimalPosition() >= 0);
   }
 }

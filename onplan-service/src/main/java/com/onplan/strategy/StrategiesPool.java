@@ -1,76 +1,107 @@
-package com.onplan.strategy;
+ package com.onplan.strategy;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
+import com.google.common.annotations.VisibleForTesting;
 import com.onplan.domain.PriceTick;
-import org.apache.log4j.Logger;
+import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.Arrays;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
-public class StrategiesPool {
-  private static final Logger LOGGER = Logger.getLogger(StrategiesPool.class);
+ /**
+ * Collects the active strategies and dispatches the price tick to the strategies which are
+ * listening to the specific instrument. Thread safe and optimized for speed.
+ */
+ // TODO(robertom): This class needs to be tested extensively.
+public final class StrategiesPool {
+  /** Contains the ordered list of instrument id. */
+  private String[] poolKeys = {};
 
-  private Map<String, Iterable<Strategy>> strategies = ImmutableMap.of();
+  /** Contains the strategies grouped by instrument id, matching the order of poolKeys. */
+  private Strategy[][] poolStrategies = {};
 
-  public void setStrategies(Map<String, Iterable<Strategy>> strategies) {
-    this.strategies = ImmutableMap.copyOf(checkNotNull(strategies));
-  }
-
-  public Set<String> getInstruments() {
-    return ImmutableSet.copyOf(strategies.keySet());
-  }
-
-  public List<Strategy> getStrategiesList() {
-    ImmutableList.Builder result = ImmutableList.<Strategy>builder();
-    for (Iterable<Strategy> entries : strategies.values()) {
-      result.addAll(entries);
+  /**
+  * Returns the number of registered strategies.
+  */
+  public synchronized long poolSize() {
+    long counter = 0;
+    for (int i = 0; i < poolStrategies.length; i++) {
+      for (int j = 0; j <poolStrategies[i].length; j++) {
+        counter++;
+      }
     }
-    return result.build();
+    return counter;
   }
 
-  public void removeStrategy(String strategyId) {
-    checkNotNullOrEmpty(strategyId);
-    Predicate<Strategy> strategyHasNotId = createStrategyHasNotIdPredicate(strategyId);
-    ImmutableMap.Builder<String, Iterable<Strategy>> result = ImmutableMap.builder();
-    boolean elementRemoved = false;
-    for (Map.Entry<String, Iterable<Strategy>> entry : strategies.entrySet()) {
-      if (Iterables.all(entry.getValue(), strategyHasNotId)) {
-        result.put(entry.getKey(), entry.getValue());
+  // TODO(robertom): Sort strategies by priority / average milliseconds.
+  public synchronized void addStrategy(Strategy strategy) {
+    checkNotNull(strategy);
+    for (String instrumentId : strategy.getRegisteredInstruments()) {
+      int index = Arrays.binarySearch(poolKeys, instrumentId);
+      if (index >= 0) {
+        poolStrategies[index] = ArrayUtils.add(poolStrategies[index], strategy);
       } else {
-        Iterable<Strategy> newList = Iterables.filter(entry.getValue(), strategyHasNotId);
-        if (!Iterables.isEmpty(newList)) {
-          result.put(entry.getKey(), newList);
+        poolStrategies = ArrayUtils.add(poolStrategies, new Strategy[]{strategy});
+        poolKeys = ArrayUtils.add(poolKeys, instrumentId);
+        sortArrays();
+      }
+    }
+  }
+
+  public synchronized void removeStrategy(String strategyId) {
+    checkNotNullOrEmpty(strategyId);
+    for (int i = 0; i < poolStrategies.length; i++) {
+      for (int j = 0; j < poolStrategies[i].length; j++) {
+        if (strategyId.equals(poolStrategies[i][j].getId())) {
+          if (poolStrategies[i].length == 1) {
+            poolKeys = ArrayUtils.remove(poolKeys, i);
+            poolStrategies = ArrayUtils.remove(poolStrategies, i);
+          } else {
+            poolStrategies[i] = ArrayUtils.remove(poolStrategies[i], j);
+          }
         }
-        elementRemoved = true;
       }
-    }
-    if (elementRemoved) {
-      strategies = result.build();
-    } else {
-      LOGGER.warn(String.format("Tried to remove strategy id [%s] but was not found.", strategyId));
     }
   }
 
-  public void processPriceTick(PriceTick priceTick) {
-    for (Strategy strategy : strategies.get(priceTick.getInstrumentId())) {
-      strategy.processPriceTick(priceTick);
+  // TODO(robertom): Run high priority strategies in a separated thread.
+  public synchronized void processPriceTick(final PriceTick priceTick) {
+    int index = Arrays.binarySearch(poolKeys, priceTick.getInstrumentId());
+    System.out.println(
+        "Arr: " + Arrays.toString(poolKeys)
+        + "idx: " + index
+        + "tick: " + priceTick.getInstrumentId());
+    if (index >= 0) {
+      // TODO(robertom): Some strategies can take long time, avoid to keep poolKeys blocked.
+      Strategy[] strategies = poolStrategies[index];
+      for (int i = 0; i < strategies.length; i++) {
+        strategies[i].processPriceTick(priceTick);
+      }
     }
   }
 
-  private Predicate<Strategy> createStrategyHasNotIdPredicate(final String id) {
-    return new Predicate<Strategy>() {
-      @Override
-      public boolean apply(Strategy strategy) {
-        return !id.equals(strategy.getId());
+  @VisibleForTesting
+  private synchronized String[] getPoolKeys() {
+    return poolKeys;
+  }
+
+  @VisibleForTesting
+  private synchronized Strategy[][] getPoolStrategies() {
+    return poolStrategies;
+  }
+
+  private void sortArrays() {
+    String[] unsortedPoolKeys = Arrays.copyOf(poolKeys, poolKeys.length);
+    Arrays.sort(poolKeys);
+    for (int i = 0; i < poolKeys.length; i++) {
+      int oldIndex = ArrayUtils.indexOf(unsortedPoolKeys, poolKeys[i]);
+      if (oldIndex != i) {
+        Strategy[] temp = poolStrategies[i];
+        poolStrategies[i] = poolStrategies[oldIndex];
+        poolStrategies[oldIndex] = temp;
+        break;
       }
-    };
+    }
   }
 }

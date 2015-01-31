@@ -46,12 +46,12 @@ public class AdapterServicesActivator implements Runnable {
     DateTime dateTime = DateTime.now(DateTimeZone.UTC);
     if(isMarketOpen(dateTime)) {
       if(!serviceConnection.isConnected()) {
-        LOGGER.warn("PriceService disconnected, reestablishing connection.");
+        LOGGER.warn("PriceService not connected, establishing connection.");
         serviceConnection.connect();
       }
     } else {
       if(serviceConnection.isConnected()) {
-        LOGGER.warn("Out of market hours, disconnecting price service.");
+        LOGGER.warn("Out of market hours, closing price service connection.");
         serviceConnection.disconnect();
       }
     }
@@ -91,7 +91,14 @@ public class AdapterServicesActivator implements Runnable {
   private class InternalServiceConnectionListener implements ServiceConnectionListener {
     @Override
     public void onConnectionEstablished() {
-      LOGGER.info("Connection established, subscribing instruments.");
+      LOGGER.info("Service connection established, subscribing all strategies.");
+      try {
+        strategyService.loadAllStrategies();
+      } catch (Exception e) {
+        LOGGER.error(String.format(
+            "Error while loading all registered strategies [%s].", e.getMessage()));
+      }
+      LOGGER.info("Subscribing price service instruments.");
       Set<String> instruments = strategyService.getSubscribedInstruments();
       for (String instrumentId : instruments) {
         try {
@@ -99,6 +106,7 @@ public class AdapterServicesActivator implements Runnable {
         } catch (Exception e) {
           LOGGER.error(String.format(
               "Error while subscribing instrument [%s]: [%s].", instrumentId, e.getMessage()));
+          return;
         }
       }
       LOGGER.info(String.format(
@@ -109,6 +117,13 @@ public class AdapterServicesActivator implements Runnable {
 
     @Override
     public void onDisconnected() {
+      LOGGER.info("Service connection lost, un-subscribing all strategies.");
+      try {
+        strategyService.unLoadAllStrategies();
+      } catch (Exception e) {
+        LOGGER.error(String.format(
+            "Error while un-loading all registered strategies [%s].", e.getMessage()));
+      }
       run();
     }
   }

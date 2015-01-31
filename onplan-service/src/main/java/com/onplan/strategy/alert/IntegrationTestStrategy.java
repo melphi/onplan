@@ -19,6 +19,7 @@ public class IntegrationTestStrategy extends AbstractStrategy {
       dispatchEvent(createStrategyEvent(priceTick));
       lastFiredOn = dayOfMonth;
     }
+    updateStatistics(priceTick);
   }
 
   @Override

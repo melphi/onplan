@@ -14,7 +14,9 @@ import java.util.List;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.onplan.adapter.igindex.client.IgIndexConstant.API_VERSION_2;
 import static com.onplan.adapter.igindex.client.IgIndexResponseParser.createConnectionCredentials;
+import static com.onplan.adapter.igindex.client.IgIndexResponseParser.createInstrumentInfo;
 import static com.onplan.adapter.igindex.client.IgIndexResponseParser.createInstrumentInfoList;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
@@ -60,6 +62,18 @@ public class IgIndexClient {
     return createInstrumentInfoList(checkResponseCode(response).getBody());
   }
 
+  public InstrumentInfo getInstrumentInfo(String epic) throws IOException {
+    checkNotNullOrEmpty(epic);
+    IgIndexClientRequest request = IgIndexClientRequest.newBuilder()
+        .setConnectionCredentials(connectionCredentials)
+        .setHttpMethod(HttpMethod.GET)
+        .setUrl(getRequestUrl(IgIndexConstant.TAG_MARKETS, epic))
+        .setApiVersion(API_VERSION_2)
+        .build();
+    HttpClientResponse response = request.executeRequest();
+    return createInstrumentInfo(checkResponseCode(response).getBody());
+  }
+
   private String createCredentialsRequestBody(String username, String password) throws IOException {
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
@@ -70,7 +84,21 @@ public class IgIndexClient {
   }
 
   private String getRequestUrl(String urlSuffix) {
-    return serverUrl + "/" + urlSuffix;
+    return new StringBuilder()
+        .append(serverUrl)
+        .append("/")
+        .append(urlSuffix)
+        .toString();
+  }
+
+  private String getRequestUrl(String urlSuffix, String elementId) {
+    return new StringBuilder()
+        .append(serverUrl)
+        .append("/")
+        .append(urlSuffix)
+        .append("/")
+        .append(elementId)
+        .toString();
   }
 
   private HttpClientResponse checkResponseCode(HttpClientResponse httpClientResponse) {

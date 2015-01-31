@@ -42,6 +42,7 @@ public class CandlestickHammerStrategy extends AbstractStrategy {
       prepareNewBar(priceTick);
     }
     updateBarValues(priceTick);
+    updateStatistics(priceTick);
   }
 
   private StrategyEvent createStrategyEvent(PriceTick priceTick) {

@@ -35,6 +35,10 @@ public class EventNotificationService {
   private class ServiceConnectionListenerImpl implements ServiceConnectionListener {
     @Override
     public void onConnectionEstablished() {
+      if (!serviceConnection.isConnected()) {
+        LOGGER.error("onConnectionEstablished event dispatched but service is not connected.");
+        return;
+      }
       if(notifyServiceConnection) {
         LOGGER.info("Notifying ServiceConnection connection.");
         try {
@@ -48,6 +52,10 @@ public class EventNotificationService {
 
     @Override
     public void onDisconnected() {
+      if (!serviceConnection.isConnected()) {
+        LOGGER.error("onDisconnected event dispatched but service is connected.");
+        return;
+      }
       if(notifyServiceDisconnection) {
         LOGGER.info("Notifying service disconnection.");
         try {

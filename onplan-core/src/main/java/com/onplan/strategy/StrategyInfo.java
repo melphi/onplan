@@ -10,6 +10,7 @@ public class StrategyInfo extends StrategyTemplateInfo {
   private String id;
   private Map<String, String> executionParameters;
   private Collection<String> registeredInstruments;
+  private StrategyStatistics strategyStatistics;
 
   public String getId() {
     return id;
@@ -35,6 +36,14 @@ public class StrategyInfo extends StrategyTemplateInfo {
     this.registeredInstruments = registeredInstruments;
   }
 
+  public StrategyStatistics getStrategyStatistics() {
+    return strategyStatistics;
+  }
+
+  public void setStrategyStatistics(StrategyStatistics strategyStatistics) {
+    this.strategyStatistics = strategyStatistics;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -49,13 +58,14 @@ public class StrategyInfo extends StrategyTemplateInfo {
         Objects.equal(this.className, strategyInfo.className) &&
         Objects.equal(this.availableParameters, strategyInfo.availableParameters) &&
         Objects.equal(this.executionParameters, strategyInfo.executionParameters) &&
-        Objects.equal(this.registeredInstruments, strategyInfo.registeredInstruments);
+        Objects.equal(this.registeredInstruments, strategyInfo.registeredInstruments) &&
+        Objects.equal(this.strategyStatistics, strategyInfo.strategyStatistics);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(
-        id, name, className, availableParameters, executionParameters, registeredInstruments);
+    return Objects.hashCode(id, name, className, availableParameters, executionParameters,
+        registeredInstruments, strategyStatistics);
   }
 
   @Override
@@ -67,6 +77,7 @@ public class StrategyInfo extends StrategyTemplateInfo {
         .add("availableParameters", availableParameters)
         .add("executionParameters", executionParameters)
         .add("registeredInstruments", registeredInstruments)
+        .add("strategyStatistics", strategyStatistics)
         .toString();
   }
 }

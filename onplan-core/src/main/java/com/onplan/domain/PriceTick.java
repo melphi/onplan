@@ -11,6 +11,8 @@ public class PriceTick implements Price {
   private final double closePriceAsk;
   private final double closePriceBid;
 
+  private transient final long receivedNanoTime;
+
   public String getInstrumentId() {
     return instrumentId;
   }
@@ -27,11 +29,16 @@ public class PriceTick implements Price {
     return closePriceBid;
   }
 
+  public long getReceivedNanoTime() {
+    return receivedNanoTime;
+  }
+
   public PriceTick(String instrumentID, long timestamp, double closePriceAsk, double closePriceBid) {;
     this.instrumentId = checkNotNullOrEmpty(instrumentID);
     this.timestamp = timestamp;
     this.closePriceAsk = closePriceAsk;
     this.closePriceBid = closePriceBid;
+    this.receivedNanoTime = System.nanoTime();
   }
 
   @Override

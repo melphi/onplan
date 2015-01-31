@@ -11,10 +11,8 @@
     <task:executor id="executor" pool-size="3"/>
     <task:scheduler id="scheduler" pool-size="6"/>
 
-    <!-- Instantiates bean and run it once -->
-    <bean id="adapterServicesActivatorJob"
-          class="com.onplan.scheduler.AdapterServicesActivator"
-          init-method="run"/>
+    <!-- Instantiate the bean and run it once -->
+    <bean id="adapterServicesActivatorJob" class="com.onplan.scheduler.AdapterServicesActivator"/>
 
     <task:scheduled-tasks scheduler="scheduler">
       <task:scheduled ref="adapterServicesActivatorJob" method="run" fixed-delay="60000"/>

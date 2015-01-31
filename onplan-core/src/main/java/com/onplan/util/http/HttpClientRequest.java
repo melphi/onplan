@@ -1,6 +1,7 @@
 package com.onplan.util.http;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import org.apache.http.Header;
@@ -35,6 +36,17 @@ public class HttpClientRequest {
   public HttpClientResponse executeRequest() throws IOException {
     HttpResponse httpResponse = httpClient.execute(httpRequest);
     return createHttpClientResponse(httpResponse);
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+        .add("url", url)
+        .add("body", body)
+        .add("headers", headers)
+        .add("requestMethod", requestMethod)
+        .add("body", body)
+        .toString();
   }
 
   private HttpClientResponse createHttpClientResponse(HttpResponse httpResponse)

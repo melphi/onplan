@@ -1,18 +1,19 @@
 package com.onplan.adapter.igindex;
 
-import com.google.common.base.Preconditions;
 import com.lightstreamer.ls_client.*;
 import com.onplan.adapter.AbstractServiceConnection;
-import com.onplan.service.ServiceConnectionInfo;
 import com.onplan.adapter.igindex.client.IgIndexClient;
 import com.onplan.adapter.igindex.client.IgIndexConnectionCredentials;
 import com.onplan.adapter.igindex.client.IgIndexConstant;
+import com.onplan.service.ServiceConnectionInfo;
 import com.onplan.util.MorePreconditions;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.util.Optional;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class IgIndexConnection extends AbstractServiceConnection {
   private static final Logger LOGGER = Logger.getLogger(IgIndexPriceService.class);
@@ -72,25 +73,32 @@ public class IgIndexConnection extends AbstractServiceConnection {
     lightStreamerClient.closeConnection();
   }
 
-  private void updateConnectionStatus(boolean isConnected) {
-   if(this.isConnected && !isConnected) {
+  private void updateConnectionStatus(final boolean isConnected) {
+    if (isConnected == this.isConnected) {
+      LOGGER.warn(String.format("Attempt to update connected flag to [%s] but it was already [%s]",
+          isConnected, this.isConnected));
+      return;
+    }
+    this.connectionUpdateDate = Optional.of(DateTime.now());
+    if(this.isConnected && (!isConnected)) {
+      this.isConnected = false;
       dispatchServiceDisconnectedEvent();
-    } else if(!this.isConnected && isConnected) {
+    } else if((!this.isConnected) && isConnected) {
+      this.isConnected = true;
       dispatchServiceConnectionEstablishedEvent();
     }
-    this.isConnected = isConnected;
-    this.connectionUpdateDate = Optional.of(DateTime.now());
   }
 
-  private void validateConnection() {
+  private boolean validateConnection() {
     try {
       LOGGER.warn("Trying to send a ping to the service..");
       lightStreamerClient.sendMessage("Ping");
       // If it reaches this point it means that the connection is broken.
       LOGGER.error("..service ping failed");
-      updateConnectionStatus(false);
+      return false;
     } catch (PushServerException | PushUserException | PushConnException e1) {
-      LOGGER.warn("..service ping replied.", e1);
+      LOGGER.warn("..service ping replied.");
+      return true;
     }
   }
 
@@ -98,7 +106,9 @@ public class IgIndexConnection extends AbstractServiceConnection {
     @Override
     public void onConnectionEstablished() {
       LOGGER.info("Broker connection established.");
-      updateConnectionStatus(true);
+      if (validateConnection()) {
+        updateConnectionStatus(true);
+      }
     }
 
     @Override
@@ -148,7 +158,7 @@ public class IgIndexConnection extends AbstractServiceConnection {
   private class ConnectionThread extends Thread {
     @Override
     public void run() {
-      Preconditions.checkNotNull(lightStreamerClient);
+      checkNotNull(lightStreamerClient);
       try {
         LOGGER.info("Retrieving IgIndex connection info.");
         IgIndexConnectionCredentials connectionCredentials =
