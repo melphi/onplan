@@ -32,6 +32,39 @@ public class EventNotificationService {
     serviceConnection.addServiceConnectionListener(serviceConnectionListener);
   }
 
+  /**
+   * Dispatches the message in a separated thread.
+   * @param title The message title.
+   * @param message The message content.
+   */
+  public void notifyAlertAsync(final String title, final String message) {
+    (new ChannelNotificationThread(title, message)).run();
+  }
+
+  private class ChannelNotificationThread extends Thread {
+    private final String title;
+    private final String message;
+
+    private ChannelNotificationThread(String title, String message) {
+      this.title = title;
+      this.message = message;
+    }
+
+    @Override
+    public void run() {
+      try {
+        LOGGER.info(String.format("Notifying message [%s] [%s].", title, message));
+        twitterNotificationChannel.notifyMessage(title, message);
+      } catch (Exception e) {
+        LOGGER.equals(String.format(
+            "Error [%s] while sending notification message [%s] [%s].",
+            e.getMessage(),
+            title,
+            message));
+      }
+    }
+  }
+
   private class ServiceConnectionListenerImpl implements ServiceConnectionListener {
     @Override
     public void onConnectionEstablished() {

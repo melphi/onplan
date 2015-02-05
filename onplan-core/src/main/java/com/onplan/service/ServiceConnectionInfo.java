@@ -16,7 +16,7 @@ public class ServiceConnectionInfo implements Serializable {
   }
 
   /**
-   * Returns the provider name.
+   * Returns the provider displayName.
    */
   public String getProviderName() {
     return providerName;

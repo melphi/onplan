@@ -132,7 +132,7 @@ public class IgIndexPriceService extends AbstractPriceService {
     @Override
     public void onRawUpdatesLost(int itemPos, String itemName, int lostUpdates) {
       LOGGER.warn(
-          String.format("Raw update lost: Item name [%s], item position [%d].", itemName, itemPos));
+          String.format("Raw update lost: Item displayName [%s], item position [%d].", itemName, itemPos));
     }
 
     @Override

@@ -11,10 +11,13 @@
     <task:executor id="executor" pool-size="3"/>
     <task:scheduler id="scheduler" pool-size="6"/>
 
-    <!-- Instantiate the bean and run it once -->
-    <bean id="adapterServicesActivatorJob" class="com.onplan.scheduler.AdapterServicesActivator"/>
+    <bean id="adapterServicesActivationJob"
+          class="com.onplan.scheduler.AdapterServicesActivationJob"/>
+    <bean id="garbageCollectionJob"
+          class="com.onplan.scheduler.GarbageCollectionJob"/>
 
     <task:scheduled-tasks scheduler="scheduler">
-      <task:scheduled ref="adapterServicesActivatorJob" method="run" fixed-delay="60000"/>
+      <task:scheduled ref="adapterServicesActivationJob" method="run" fixed-delay="60000"/>
+      <task:scheduled ref="garbageCollectionJob" method="run" cron="0 58 6 * * *"/>
     </task:scheduled-tasks>
 </beans>

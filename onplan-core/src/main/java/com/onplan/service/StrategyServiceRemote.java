@@ -1,8 +1,8 @@
 package com.onplan.service;
 
 import com.onplan.domain.configuration.StrategyConfiguration;
-import com.onplan.strategy.StrategyInfo;
-import com.onplan.strategy.StrategyTemplateInfo;
+import com.onplan.adviser.StrategyInfo;
+import com.onplan.adviser.StrategyTemplateInfo;
 
 import java.io.Serializable;
 import java.util.List;
@@ -39,8 +39,8 @@ public interface StrategyServiceRemote extends Serializable {
   public List<StrategyTemplateInfo> getStrategiesTemplateInfo();
 
   /**
-   * Returns the strategy template info by the its class name or null if the template was not found.
-   * @param className The class name.
+   * Returns the strategy template info by the its class displayName or null if the template was not found.
+   * @param className The class displayName.
    */
   public StrategyTemplateInfo getStrategyTemplateInfo(String className);
 }

@@ -5,19 +5,21 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.onplan.adapter.HistoricalPriceService;
 import com.onplan.adapter.InstrumentService;
-import com.onplan.adapter.PriceListener;
 import com.onplan.adapter.PriceService;
-import com.onplan.domain.PriceBar;
+import com.onplan.adviser.StrategyInfo;
+import com.onplan.adviser.StrategyTemplateInfo;
+import com.onplan.adviser.TemplateMetaData;
+import com.onplan.adviser.strategy.Strategy;
+import com.onplan.adviser.strategy.StrategyExecutionContext;
+import com.onplan.adviser.strategy.StrategyListener;
+import com.onplan.adviser.strategy.system.IntegrationTestStrategy;
 import com.onplan.domain.PriceTick;
 import com.onplan.domain.configuration.StrategyConfiguration;
 import com.onplan.persistence.StrategyConfigurationDao;
-import com.onplan.processor.StrategyEventProcessor;
+import com.onplan.service.EventNotificationService;
 import com.onplan.service.StrategyService;
-import com.onplan.strategy.*;
-import com.onplan.strategy.alert.IntegrationTestStrategy;
-import com.onplan.strategy.alert.PriceSpikeStrategy;
-import com.onplan.strategy.alert.candlestickpattern.CandlestickHammerStrategy;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,12 +35,15 @@ import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 @Service(value = "strategyService")
 public final class StrategyServiceImpl implements StrategyService {
   private static final Logger LOGGER = Logger.getLogger(StrategyServiceImpl.class);
+  private static final String ALERT_MESSAGE_TITLE = "Strategy alert.";
 
-  private final PriceListener priceListener = new InternalPriceListener();
   private final StrategyListener strategyListener = new InternalStrategyListener();
-  private final StrategiesPool strategiesPool = new StrategiesPool();
+  private final StrategyPool strategiesPool = new StrategyPool();
   private final List<Strategy> registeredStrategies = Lists.newArrayList();
   private final Set<String> registeredInstruments = Sets.newHashSet();
+  // TODO(robertom): Register available strategies at runtime.
+  private final Iterable<Class<? extends Strategy>> availableStrategies =
+      ImmutableList.of(IntegrationTestStrategy.class);
 
   @Autowired
   private StrategyConfigurationDao strategyConfigurationDao;
@@ -46,16 +51,24 @@ public final class StrategyServiceImpl implements StrategyService {
   @Autowired
   private InstrumentService instrumentService;
 
-  @Autowired
-  private StrategyEventProcessor eventProcessor;
-
+  // TODO(robertom): Decouple priceService and register instruments via listener.
   private PriceService priceService;
+
+  @Autowired
+  private HistoricalPriceService historicalPriceService;
+
+  @Autowired
+  private EventNotificationService eventNotificationService;
 
   @Autowired
   public void setPriceService(PriceService priceService) {
     checkArgument(this.priceService == null, "PriceService is already set.");
     this.priceService = checkNotNull(priceService);
-    priceService.setPriceListener(priceListener);
+  }
+
+  @Override
+  public void onPriceTick(final PriceTick priceTick) {
+    strategiesPool.processPriceTick(priceTick);
   }
 
   @Override
@@ -79,16 +92,17 @@ public final class StrategyServiceImpl implements StrategyService {
 
   @Override
   public List<StrategyTemplateInfo> getStrategiesTemplateInfo() {
+    ImmutableList.Builder<StrategyTemplateInfo> result = ImmutableList.builder();
     try {
-      return ImmutableList.of(
-          getStrategyTemplateInfo(CandlestickHammerStrategy.class),
-          getStrategyTemplateInfo(PriceSpikeStrategy.class),
-          getStrategyTemplateInfo(IntegrationTestStrategy.class));
+      for (Class clazz : availableStrategies) {
+        result.add(getStrategyTemplateInfo(clazz));
+      }
     } catch (Exception e) {
       LOGGER.error(
           String.format("Error while loading available strategies [%s].", e.getMessage()));
       throw e;
     }
+    return result.build();
   }
 
   @Override
@@ -269,7 +283,7 @@ public final class StrategyServiceImpl implements StrategyService {
   private StrategyInfo getStrategyInfo(final Strategy strategy) {
     StrategyTemplateInfo strategyTemplateInfo = getStrategyTemplateInfo(strategy.getClass());
     StrategyInfo strategyInfo = new StrategyInfo();
-    strategyInfo.setName(strategyTemplateInfo.getName());
+    strategyInfo.setDisplayName(strategyTemplateInfo.getDisplayName());
     strategyInfo.setClassName(strategyTemplateInfo.getClassName());
     strategyInfo.setAvailableParameters(strategyTemplateInfo.getAvailableParameters());
     strategyInfo.setId(strategy.getId());
@@ -280,16 +294,16 @@ public final class StrategyServiceImpl implements StrategyService {
   }
 
   private StrategyTemplateInfo getStrategyTemplateInfo(Class<? extends Strategy> clazz) {
-    StrategyTemplate strategyMetaData = clazz.getAnnotation(StrategyTemplate.class);
-    checkNotNull(strategyMetaData, String.format(
+    TemplateMetaData templateMetaData = clazz.getAnnotation(TemplateMetaData.class);
+    checkNotNull(templateMetaData, String.format(
         "Strategy [%s] does not implement the annotation [%s].",
         clazz.getName(),
-        StrategyTemplate.class.getName()));
+        TemplateMetaData.class.getName()));
     StrategyTemplateInfo strategyTemplateInfo = new StrategyInfo();
-    strategyTemplateInfo.setName(strategyMetaData.name());
+    strategyTemplateInfo.setDisplayName(templateMetaData.displayName());
     strategyTemplateInfo.setClassName(clazz.getName());
     strategyTemplateInfo.setAvailableParameters(
-        ImmutableList.copyOf(strategyMetaData.availableParameters()));
+        ImmutableList.copyOf(templateMetaData.availableParameters()));
     return strategyTemplateInfo;
   }
 
@@ -300,7 +314,8 @@ public final class StrategyServiceImpl implements StrategyService {
         .setExecutionParameters(strategyConfiguration.getExecutionParameters())
         .setStrategyListener(checkNotNull(strategyListener, "strategyListener is null."))
         .setInstrumentService(checkNotNull(instrumentService, "instrumentService is null."))
-        .setPriceService(checkNotNull(priceService, "priceService is null."))
+        .setHistoricalPriceService(
+            checkNotNull(historicalPriceService, "historicalPriceService is null."))
         .setRegisteredInstruments(strategyConfiguration.getInstruments())
         .build();
     Class clazz = null;
@@ -308,8 +323,8 @@ public final class StrategyServiceImpl implements StrategyService {
     try {
       clazz = getClass().getClassLoader().loadClass(strategyConfiguration.getClassName());
       strategy = (Strategy) clazz.newInstance();
-      strategy.setExecutionContext(strategyExecutionContext);
-      strategy.initStrategy();
+      strategy.setStrategyExecutionContext(strategyExecutionContext);
+      strategy.init();
     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
       LOGGER.error(e);
       throw new Exception(String.format(
@@ -327,30 +342,15 @@ public final class StrategyServiceImpl implements StrategyService {
     return strategy;
   }
 
-  private class InternalPriceListener implements PriceListener {
-    @Override
-    public void onPriceTick(PriceTick priceTick) {
-      strategiesPool.processPriceTick(priceTick);
-    }
-
-    @Override
-    public void onPriceBar(PriceBar priceBar) {
-      // Intentionally empty.
-    }
-  }
-
   private class InternalStrategyListener implements StrategyListener {
     @Override
-    public void onEvent(StrategyEvent strategyEvent) {
-      try {
-        LOGGER.info(String.format("StrategyEvent [%s].", strategyEvent));
-        eventProcessor.processStrategyEvent(strategyEvent);
-      } catch (Exception e) {
-        LOGGER.error(String.format(
-            "Error while processor event. Message: [%s] Event: [%s]",
-            e.getMessage(),
-            strategyEvent));
-      }
+    public void onNewOrder(final PriceTick priceTick) {
+      throw new IllegalArgumentException("Not yet implemented.");
+    }
+
+    @Override
+    public void onAlert(final String message) {
+      eventNotificationService.notifyAlertAsync(ALERT_MESSAGE_TITLE, message);
     }
   }
 }

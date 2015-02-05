@@ -27,7 +27,7 @@
   <modules>
     <module>../onplan-core</module>
     <module>../onplan-core-adapter</module>
-    <module>../onplan-core-strategy</module>
+    <module>../onplan-core-adviser</module>
     <module>../onplan-service-trader</module>
     <module>../onplan-service</module>
     <module>../onplan-service-esb</module>
