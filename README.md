@@ -8,4 +8,4 @@ OnPlan is a OpenSource low latency algorithmic trading application. It is built 
 In addition the following functionalities are under development:
 - TA-Lib support 
 - AngularJS, HTML5 frontend
-- Camel ESB crawler
+- ESB crawler
