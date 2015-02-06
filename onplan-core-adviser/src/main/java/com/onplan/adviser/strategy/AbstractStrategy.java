@@ -3,26 +3,29 @@ package com.onplan.adviser.strategy;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.onplan.adviser.StrategyStatistics;
+import com.onplan.adviser.alert.AlertEvent;
+import com.onplan.adviser.alert.SeverityLevel;
 import com.onplan.domain.PriceTick;
+import org.joda.time.DateTime;
 
 import java.util.Collection;
 import java.util.Map;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class AbstractStrategy implements Strategy {
   protected StrategyExecutionContext strategyExecutionContext;
 
   private final StrategyStatistics strategyStatistics = new StrategyStatistics();
+  private final StrategyListener strategyListener;
 
   private long receivedTicks = 0;
   private long eventsDispatchedCounter = 0;
   private long maxCompletionNanoTime = 0;
 
-  public void setStrategyExecutionContext(StrategyExecutionContext strategyExecutionContext) {
-    checkArgument(this.strategyExecutionContext == null, "Execution context already set.");
+  public AbstractStrategy(StrategyExecutionContext strategyExecutionContext) {
     this.strategyExecutionContext = checkNotNull(strategyExecutionContext);
+    this.strategyListener = checkNotNull(strategyExecutionContext.getStrategyListener());
   }
 
   public Map<String, String> getExecutionParameters() {
@@ -50,7 +53,18 @@ public abstract class AbstractStrategy implements Strategy {
     }
   }
 
-  public void updateStatistics(final PriceTick priceTick, final boolean eventFired) {
+  protected void dispatchAlertEvent(
+      final SeverityLevel severityLevel, final String message, final PriceTick priceTick) {
+    long createdOn = DateTime.now().getMillis();
+    AlertEvent alertEvent = new AlertEvent(severityLevel, priceTick, createdOn, message);
+    strategyListener.onAlert(alertEvent);
+  }
+
+  protected void dispatchNewOrderEvent() {
+    throw new IllegalArgumentException("Not yet implemented.");
+  }
+
+  protected void updateStatistics(final PriceTick priceTick, final boolean eventFired) {
     final long lastCompletionNanoTime = System.nanoTime() - priceTick.getReceivedNanoTime();
     synchronized (strategyStatistics) {
       strategyStatistics.setLastCompletionNanoTime(lastCompletionNanoTime);

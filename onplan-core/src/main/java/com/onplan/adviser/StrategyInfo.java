@@ -6,7 +6,7 @@ import com.google.common.base.Objects;
 import java.util.Collection;
 import java.util.Map;
 
-public class StrategyInfo extends StrategyTemplateInfo {
+public class StrategyInfo extends TemplateInfo {
   private String id;
   private Map<String, String> executionParameters;
   private Collection<String> registeredInstruments;
@@ -41,6 +41,20 @@ public class StrategyInfo extends StrategyTemplateInfo {
   }
 
   public void setStrategyStatistics(StrategyStatistics strategyStatistics) {
+    this.strategyStatistics = strategyStatistics;
+  }
+
+  public StrategyInfo() {
+    // Intentionally empty.
+  }
+
+  public StrategyInfo(String displayName, String className, Iterable<String> availableParameters,
+      String id, Map<String, String> executionParameters, Collection<String> registeredInstruments,
+      StrategyStatistics strategyStatistics) {
+    super(displayName, className, availableParameters);
+    this.id = id;
+    this.executionParameters = executionParameters;
+    this.registeredInstruments = registeredInstruments;
     this.strategyStatistics = strategyStatistics;
   }
 

@@ -9,14 +9,16 @@ import com.onplan.adapter.HistoricalPriceService;
 import com.onplan.adapter.InstrumentService;
 import com.onplan.adapter.PriceService;
 import com.onplan.adviser.StrategyInfo;
-import com.onplan.adviser.StrategyTemplateInfo;
-import com.onplan.adviser.TemplateMetaData;
+import com.onplan.adviser.TemplateInfo;
+import com.onplan.adviser.alert.AlertEvent;
+import com.onplan.adviser.automatedorder.AutomatedOrderEvent;
 import com.onplan.adviser.strategy.Strategy;
 import com.onplan.adviser.strategy.StrategyExecutionContext;
 import com.onplan.adviser.strategy.StrategyListener;
+import com.onplan.adviser.strategy.StrategyUtil;
 import com.onplan.adviser.strategy.system.IntegrationTestStrategy;
 import com.onplan.domain.PriceTick;
-import com.onplan.domain.configuration.StrategyConfiguration;
+import com.onplan.domain.configuration.adviser.StrategyConfiguration;
 import com.onplan.persistence.StrategyConfigurationDao;
 import com.onplan.service.EventNotificationService;
 import com.onplan.service.StrategyService;
@@ -85,17 +87,17 @@ public final class StrategyServiceImpl implements StrategyService {
   public List<StrategyInfo> getStrategiesInfo() {
     ImmutableList.Builder<StrategyInfo> result = ImmutableList.builder();
     for (Strategy strategy : registeredStrategies) {
-      result.add(getStrategyInfo(strategy));
+      result.add(StrategyUtil.getStrategyInfo(strategy));
     }
     return result.build();
   }
 
   @Override
-  public List<StrategyTemplateInfo> getStrategiesTemplateInfo() {
-    ImmutableList.Builder<StrategyTemplateInfo> result = ImmutableList.builder();
+  public List<TemplateInfo> getStrategiesTemplateInfo() {
+    ImmutableList.Builder<TemplateInfo> result = ImmutableList.builder();
     try {
       for (Class clazz : availableStrategies) {
-        result.add(getStrategyTemplateInfo(clazz));
+        result.add(StrategyUtil.getStrategyTemplateInfo(clazz));
       }
     } catch (Exception e) {
       LOGGER.error(
@@ -106,7 +108,7 @@ public final class StrategyServiceImpl implements StrategyService {
   }
 
   @Override
-  public StrategyTemplateInfo getStrategyTemplateInfo(String className) {
+  public TemplateInfo getStrategyTemplateInfo(String className) {
     checkNotNullOrEmpty(className);
     Class clazz = null;
     try {
@@ -115,7 +117,7 @@ public final class StrategyServiceImpl implements StrategyService {
       return null;
     }
     try {
-      return getStrategyTemplateInfo(clazz);
+      return StrategyUtil.getStrategyTemplateInfo(clazz);
     } catch (Exception e) {
       LOGGER.warn(String.format(
           "Error while getting the strategy template info for [%s]: [%s]",
@@ -125,6 +127,7 @@ public final class StrategyServiceImpl implements StrategyService {
     }
   }
 
+  // TODO(robertom): Call the garbage collector, test the performance improvement.
   @Override
   public void addStrategy(StrategyConfiguration strategyConfiguration) throws Exception {
     checkStrategyConfiguration(strategyConfiguration);
@@ -144,6 +147,7 @@ public final class StrategyServiceImpl implements StrategyService {
     }
   }
 
+  // TODO(robertom): Call the garbage collector, test the performance improvement.
   @Override
   public void removeStrategy(String strategyId) throws Exception {
     checkNotNullOrEmpty(strategyId);
@@ -280,33 +284,6 @@ public final class StrategyServiceImpl implements StrategyService {
     }
   }
 
-  private StrategyInfo getStrategyInfo(final Strategy strategy) {
-    StrategyTemplateInfo strategyTemplateInfo = getStrategyTemplateInfo(strategy.getClass());
-    StrategyInfo strategyInfo = new StrategyInfo();
-    strategyInfo.setDisplayName(strategyTemplateInfo.getDisplayName());
-    strategyInfo.setClassName(strategyTemplateInfo.getClassName());
-    strategyInfo.setAvailableParameters(strategyTemplateInfo.getAvailableParameters());
-    strategyInfo.setId(strategy.getId());
-    strategyInfo.setExecutionParameters(strategy.getExecutionParameters());
-    strategyInfo.setRegisteredInstruments(strategy.getRegisteredInstruments());
-    strategyInfo.setStrategyStatistics(strategy.getStrategyStatistics());
-    return strategyInfo;
-  }
-
-  private StrategyTemplateInfo getStrategyTemplateInfo(Class<? extends Strategy> clazz) {
-    TemplateMetaData templateMetaData = clazz.getAnnotation(TemplateMetaData.class);
-    checkNotNull(templateMetaData, String.format(
-        "Strategy [%s] does not implement the annotation [%s].",
-        clazz.getName(),
-        TemplateMetaData.class.getName()));
-    StrategyTemplateInfo strategyTemplateInfo = new StrategyInfo();
-    strategyTemplateInfo.setDisplayName(templateMetaData.displayName());
-    strategyTemplateInfo.setClassName(clazz.getName());
-    strategyTemplateInfo.setAvailableParameters(
-        ImmutableList.copyOf(templateMetaData.availableParameters()));
-    return strategyTemplateInfo;
-  }
-
   private Strategy createAndInitStrategy(StrategyConfiguration strategyConfiguration,
       StrategyListener strategyListener) throws Exception {
     StrategyExecutionContext strategyExecutionContext = StrategyExecutionContext.newBuilder()
@@ -322,8 +299,8 @@ public final class StrategyServiceImpl implements StrategyService {
     Strategy strategy = null;
     try {
       clazz = getClass().getClassLoader().loadClass(strategyConfiguration.getClassName());
-      strategy = (Strategy) clazz.newInstance();
-      strategy.setStrategyExecutionContext(strategyExecutionContext);
+      strategy = (Strategy) clazz.getConstructor(StrategyExecutionContext.class)
+          .newInstance(strategyExecutionContext);
       strategy.init();
     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
       LOGGER.error(e);
@@ -344,13 +321,13 @@ public final class StrategyServiceImpl implements StrategyService {
 
   private class InternalStrategyListener implements StrategyListener {
     @Override
-    public void onNewOrder(final PriceTick priceTick) {
+    public void onNewOrder(final AutomatedOrderEvent automatedOrderEvent) {
       throw new IllegalArgumentException("Not yet implemented.");
     }
 
     @Override
-    public void onAlert(final String message) {
-      eventNotificationService.notifyAlertAsync(ALERT_MESSAGE_TITLE, message);
+    public void onAlert(final AlertEvent alertEvent) {
+      eventNotificationService.notifyAlertAsync(alertEvent);
     }
   }
 }

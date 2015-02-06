@@ -1,7 +1,9 @@
 package com.onplan.adviser.strategy.system;
 
 import com.onplan.adviser.TemplateMetaData;
+import com.onplan.adviser.alert.SeverityLevel;
 import com.onplan.adviser.strategy.AbstractStrategy;
+import com.onplan.adviser.strategy.StrategyExecutionContext;
 import com.onplan.domain.PriceTick;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -10,12 +12,16 @@ import org.joda.time.DateTimeZone;
 public class IntegrationTestStrategy extends AbstractStrategy {
   private int lastFiredOn = 0;
 
+  public IntegrationTestStrategy(StrategyExecutionContext strategyExecutionContext) {
+    super(strategyExecutionContext);
+  }
+
   @Override
   public void onPriceTick(PriceTick priceTick) {
     int dayOfMonth = DateTime.now(DateTimeZone.UTC).getDayOfMonth();
     if (lastFiredOn != dayOfMonth) {
       String message = String.format("Ping from integration test! Price [%s].", priceTick);
-      strategyExecutionContext.getStrategyListener().onAlert(message);
+      dispatchAlertEvent(SeverityLevel.MEDIUM, message, priceTick);
       lastFiredOn = dayOfMonth;
       updateStatistics(priceTick, true);
     } else {

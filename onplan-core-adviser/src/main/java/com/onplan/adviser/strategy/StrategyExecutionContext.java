@@ -2,8 +2,8 @@ package com.onplan.adviser.strategy;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.onplan.adapter.HistoricalPriceService;
-import com.onplan.adapter.InstrumentService;
+import com.onplan.service.HistoricalPriceServiceRemote;
+import com.onplan.service.InstrumentServiceRemote;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -14,8 +14,8 @@ import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 public class StrategyExecutionContext implements Serializable {
   private final String strategyId;
-  private final HistoricalPriceService historicalPriceService;
-  private final InstrumentService instrumentService;
+  private final HistoricalPriceServiceRemote historicalPriceService;
+  private final InstrumentServiceRemote instrumentService;
   private final StrategyListener strategyListener;
   private final Map<String, String> executionParameters;
   private final Set<String> registeredInstruments;
@@ -28,11 +28,11 @@ public class StrategyExecutionContext implements Serializable {
     return this.strategyId;
   }
 
-  public HistoricalPriceService getHistoricalPriceService() {
+  public HistoricalPriceServiceRemote getHistoricalPriceService() {
     return historicalPriceService;
   }
 
-  public InstrumentService getInstrumentService() {
+  public InstrumentServiceRemote getInstrumentService() {
     return instrumentService;
   }
 
@@ -48,8 +48,9 @@ public class StrategyExecutionContext implements Serializable {
     return registeredInstruments;
   }
 
-  private StrategyExecutionContext(String strategyId, HistoricalPriceService historicalPriceService,
-      InstrumentService instrumentService, StrategyListener strategyListener,
+  private StrategyExecutionContext(String strategyId,
+      HistoricalPriceServiceRemote historicalPriceService,
+      InstrumentServiceRemote instrumentService, StrategyListener strategyListener,
       Map<String, String> executionParameters, Set<String> registeredInstruments) {
     this.strategyId = checkNotNullOrEmpty(strategyId);
     this.historicalPriceService = checkNotNull(historicalPriceService);
@@ -61,8 +62,8 @@ public class StrategyExecutionContext implements Serializable {
 
   public static class Builder {
     private String strategyId;
-    private HistoricalPriceService historicalPriceService;
-    private InstrumentService instrumentService;
+    private HistoricalPriceServiceRemote historicalPriceService;
+    private InstrumentServiceRemote instrumentService;
     private StrategyListener strategyListener;
     private Map<String, String> executionParameters;
     private Set<String> registeredInstruments;
@@ -72,12 +73,12 @@ public class StrategyExecutionContext implements Serializable {
       return this;
     }
 
-    public Builder setHistoricalPriceService(HistoricalPriceService historicalPriceService) {
+    public Builder setHistoricalPriceService(HistoricalPriceServiceRemote historicalPriceService) {
       this.historicalPriceService = checkNotNull(historicalPriceService);
       return this;
     }
 
-    public Builder setInstrumentService(InstrumentService instrumentService) {
+    public Builder setInstrumentService(InstrumentServiceRemote instrumentService) {
       this.instrumentService = checkNotNull(instrumentService);
       return this;
     }

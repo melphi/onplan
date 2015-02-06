@@ -13,12 +13,6 @@ public interface Strategy extends Adviser {
   public String getId();
 
   /**
-   * Sets the execution context.
-   * @param strategyExecutionContext The strategy execution context.
-   */
-  public void setStrategyExecutionContext(final StrategyExecutionContext strategyExecutionContext);
-
-  /**
    * Initializes the strategy.
    */
   public void init() throws Exception;

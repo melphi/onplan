@@ -4,12 +4,21 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 import java.io.Serializable;
-import java.util.Collection;
 
-public class StrategyTemplateInfo implements Serializable {
+public class TemplateInfo implements Serializable {
   protected String displayName;
   protected String className;
-  protected Collection<String> availableParameters;
+  protected Iterable<String> availableParameters;
+
+  public TemplateInfo() {
+    // Intentionally empty.
+  }
+
+  public TemplateInfo(String displayName, String className, Iterable<String> availableParameters) {
+    this.displayName = displayName;
+    this.className = className;
+    this.availableParameters = availableParameters;
+  }
 
   public String getDisplayName() {
     return displayName;
@@ -19,20 +28,8 @@ public class StrategyTemplateInfo implements Serializable {
     return className;
   }
 
-  public Collection<String> getAvailableParameters() {
+  public Iterable<String> getAvailableParameters() {
     return availableParameters;
-  }
-
-  public void setDisplayName(String displayName) {
-    this.displayName = displayName;
-  }
-
-  public void setClassName(String className) {
-    this.className = className;
-  }
-
-  public void setAvailableParameters(Collection<String> availableParameters) {
-    this.availableParameters = availableParameters;
   }
 
   @Override
@@ -43,10 +40,10 @@ public class StrategyTemplateInfo implements Serializable {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    StrategyInfo strategyInfo = (StrategyInfo) o;
-    return Objects.equal(this.displayName, strategyInfo.displayName) &&
-        Objects.equal(this.className, strategyInfo.className) &&
-        Objects.equal(this.availableParameters, strategyInfo.availableParameters);
+    TemplateInfo adviserPredicateInfo = (TemplateInfo) o;
+    return Objects.equal(this.displayName, adviserPredicateInfo.displayName) &&
+        Objects.equal(this.className, adviserPredicateInfo.className) &&
+        Objects.equal(this.availableParameters, adviserPredicateInfo.availableParameters);
   }
 
   @Override

@@ -1,11 +1,11 @@
 package com.onplan.integration.adapter;
 
-import com.onplan.domain.configuration.StrategyConfiguration;
+import com.onplan.adviser.StrategyInfo;
+import com.onplan.adviser.TemplateInfo;
+import com.onplan.adviser.strategy.Strategy;
+import com.onplan.domain.configuration.adviser.StrategyConfiguration;
 import com.onplan.persistence.StrategyConfigurationDao;
 import com.onplan.service.StrategyService;
-import com.onplan.adviser.strategy.Strategy;
-import com.onplan.adviser.StrategyInfo;
-import com.onplan.adviser.StrategyTemplateInfo;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,12 +22,12 @@ public class StrategyServiceIT extends AbstractIntegrationTest {
 
   @Test
   public void testGetStrategiesTemplateInfo() {
-    List<StrategyTemplateInfo> result = strategyService.getStrategiesTemplateInfo();
+    List<TemplateInfo> result = strategyService.getStrategiesTemplateInfo();
     assertTrue(!result.isEmpty());
-    for (StrategyTemplateInfo strategyTemplateInfo : result) {
-      assertNotNull(strategyTemplateInfo.getDisplayName());
-      assertNotNull(strategyTemplateInfo.getClassName());
-      assertNotNull(strategyTemplateInfo.getAvailableParameters());
+    for (TemplateInfo templateInfo : result) {
+      assertNotNull(templateInfo.getDisplayName());
+      assertNotNull(templateInfo.getClassName());
+      assertNotNull(templateInfo.getAvailableParameters());
     }
   }
 

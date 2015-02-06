@@ -16,6 +16,7 @@ import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 public final class Alert extends AbstractChainedAdviser<AlertEvent> {
   private final String message;
   private final boolean repeat;
+  private final SeverityLevel severityLevel;
 
   private volatile long lastFiredOn = 0;
 
@@ -33,10 +34,11 @@ public final class Alert extends AbstractChainedAdviser<AlertEvent> {
 
   protected Alert(String id, Iterable<AdviserPredicate> predicatesChain,
       AdviserListener<AlertEvent> adviserListener, String instrumentId, String message,
-      boolean repeat) {
+      boolean repeat, SeverityLevel severityLevel) {
     super(id, predicatesChain, adviserListener, instrumentId);
     this.message = checkNotNullOrEmpty(message);
     this.repeat = repeat;
+    this.severityLevel = checkNotNull(severityLevel);
   }
 
   @Override
@@ -46,7 +48,7 @@ public final class Alert extends AbstractChainedAdviser<AlertEvent> {
       return Optional.empty();
     } else {
       this.lastFiredOn = DateTime.now().getMillis();
-      AlertEvent alertEvent = new AlertEvent(instrumentId, priceTick, lastFiredOn, message);
+      AlertEvent alertEvent = new AlertEvent(severityLevel, priceTick, lastFiredOn, message);
      return Optional.of(alertEvent);
     }
   }
@@ -58,6 +60,7 @@ public final class Alert extends AbstractChainedAdviser<AlertEvent> {
     private AdviserListener<AlertEvent> alertListener;
     private String instrumentId;
     private boolean repeat = false;
+    private SeverityLevel severityLevel = SeverityLevel.MEDIUM;
 
     public Builder setId(String id) {
       this.id = checkNotNullOrEmpty(id);
@@ -90,8 +93,14 @@ public final class Alert extends AbstractChainedAdviser<AlertEvent> {
       return this;
     }
 
+    public Builder setSeverityLevel(SeverityLevel severityLevel) {
+      this.severityLevel = checkNotNull(severityLevel);
+      return this;
+    }
+
     public Alert build() {
-      return new Alert(id, predicatesChain, alertListener, instrumentId, alertMessage, repeat);
+      return new Alert(
+          id, predicatesChain, alertListener, instrumentId, alertMessage, repeat, severityLevel);
     }
   }
 }

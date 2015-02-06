@@ -2,6 +2,7 @@ package com.onplan.service;
 
 import com.onplan.adapter.ServiceConnection;
 import com.onplan.adapter.ServiceConnectionListener;
+import com.onplan.adviser.alert.AlertEvent;
 import com.onplan.notification.TwitterNotificationChannel;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +35,14 @@ public class EventNotificationService {
 
   /**
    * Dispatches the message in a separated thread.
-   * @param title The message title.
-   * @param message The message content.
+   * @param alertEvent The alert event.
    */
-  public void notifyAlertAsync(final String title, final String message) {
+  public void notifyAlertAsync(final AlertEvent alertEvent) {
+    String title = String.format(
+        "[%s] alert, severity: [%s]",
+        alertEvent.getPriceTick().getInstrumentId(),
+        alertEvent.getSeverityLevel());
+    String message = alertEvent.getMessage();
     (new ChannelNotificationThread(title, message)).run();
   }
 

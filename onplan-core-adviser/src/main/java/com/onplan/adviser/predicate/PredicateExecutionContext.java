@@ -1,8 +1,8 @@
 package com.onplan.adviser.predicate;
 
 import com.google.common.collect.ImmutableMap;
-import com.onplan.adapter.HistoricalPriceService;
-import com.onplan.adapter.InstrumentService;
+import com.onplan.service.HistoricalPriceServiceRemote;
+import com.onplan.service.InstrumentServiceRemote;
 
 import java.util.Map;
 
@@ -10,8 +10,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 public final class PredicateExecutionContext {
-  private final HistoricalPriceService historicalPriceService;
-  private final InstrumentService instrumentService;
+  private final HistoricalPriceServiceRemote historicalPriceService;
+  private final InstrumentServiceRemote instrumentService;
   private final Map<String, String> executionParameters;
   private final String instrumentId;
 
@@ -19,8 +19,8 @@ public final class PredicateExecutionContext {
     return new Builder();
   }
 
-  private PredicateExecutionContext(HistoricalPriceService historicalPriceService,
-      InstrumentService instrumentService, Map<String, String> executionParameters,
+  private PredicateExecutionContext(HistoricalPriceServiceRemote historicalPriceService,
+      InstrumentServiceRemote instrumentService, Map<String, String> executionParameters,
       String instrumentId) {
     this.historicalPriceService = checkNotNull(historicalPriceService);
     this.instrumentService = checkNotNull(instrumentService);
@@ -28,11 +28,11 @@ public final class PredicateExecutionContext {
     this.instrumentId = checkNotNullOrEmpty(instrumentId);
   }
 
-  public HistoricalPriceService getHistoricalPriceService() {
+  public HistoricalPriceServiceRemote getHistoricalPriceService() {
     return historicalPriceService;
   }
 
-  public InstrumentService getInstrumentService() {
+  public InstrumentServiceRemote getInstrumentService() {
     return instrumentService;
   }
 
@@ -45,17 +45,17 @@ public final class PredicateExecutionContext {
   }
 
   public static class Builder {
-    private HistoricalPriceService historicalPriceService;
-    private InstrumentService instrumentService;
+    private HistoricalPriceServiceRemote historicalPriceService;
+    private InstrumentServiceRemote instrumentService;
     private Map<String, String> executionParameters;
     private String instrumentId;
 
-    public Builder setHistoricalPriceService(HistoricalPriceService historicalPriceService) {
+    public Builder setHistoricalPriceService(HistoricalPriceServiceRemote historicalPriceService) {
       this.historicalPriceService = checkNotNull(historicalPriceService);
       return this;
     }
 
-    public Builder setInstrumentService(InstrumentService instrumentService) {
+    public Builder setInstrumentService(InstrumentServiceRemote instrumentService) {
       this.instrumentService = checkNotNull(instrumentService);
       return this;
     }
