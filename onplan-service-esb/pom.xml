@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>onplan</artifactId>
+    <groupId>com.melphi</groupId>
+    <version>1.0-SNAPSHOT</version>
+    <relativePath>../onplan/pom.xml</relativePath>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>onplan-service-esb</artifactId>
+  <packaging>war</packaging>
+
+  <properties>
+    <camel.version>2.14.1</camel.version>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-maven-plugin</artifactId>
+        <version>${camel.version}</version>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <!-- Common -->
+    <dependency>
+      <groupId>com.melphi</groupId>
+      <artifactId>onplan-core</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+
+    <!-- ESB -->
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-core</artifactId>
+      <version>${camel.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-rss</artifactId>
+      <version>${camel.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-spring</artifactId>
+      <version>${camel.version}</version>
+    </dependency>
+
+    <!-- Spring -->
+
+    <!-- Util -->
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.17</version>
+    </dependency>
+
+    <!-- Testing -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+      <version>4.11</version>
+    </dependency>
+  </dependencies>
+</project>
