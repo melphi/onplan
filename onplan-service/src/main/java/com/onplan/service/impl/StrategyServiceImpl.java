@@ -23,9 +23,9 @@ import com.onplan.persistence.StrategyConfigurationDao;
 import com.onplan.service.EventNotificationService;
 import com.onplan.service.StrategyService;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -34,10 +34,9 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
-@Service(value = "strategyService")
+@Singleton
 public final class StrategyServiceImpl implements StrategyService {
   private static final Logger LOGGER = Logger.getLogger(StrategyServiceImpl.class);
-  private static final String ALERT_MESSAGE_TITLE = "Strategy alert.";
 
   private final StrategyListener strategyListener = new InternalStrategyListener();
   private final StrategyPool strategiesPool = new StrategyPool();
@@ -47,22 +46,22 @@ public final class StrategyServiceImpl implements StrategyService {
   private final Iterable<Class<? extends Strategy>> availableStrategies =
       ImmutableList.of(IntegrationTestStrategy.class);
 
-  @Autowired
+  @Inject
   private StrategyConfigurationDao strategyConfigurationDao;
 
-  @Autowired
+  @Inject
   private InstrumentService instrumentService;
 
   // TODO(robertom): Decouple priceService and register instruments via listener.
   private PriceService priceService;
 
-  @Autowired
+  @Inject
   private HistoricalPriceService historicalPriceService;
 
-  @Autowired
+  @Inject
   private EventNotificationService eventNotificationService;
 
-  @Autowired
+  @Inject
   public void setPriceService(PriceService priceService) {
     checkArgument(this.priceService == null, "PriceService is already set.");
     this.priceService = checkNotNull(priceService);

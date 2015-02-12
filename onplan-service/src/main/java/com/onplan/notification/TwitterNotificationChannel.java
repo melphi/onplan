@@ -3,15 +3,16 @@ package com.onplan.notification;
 import com.google.common.base.Strings;
 import com.onplan.util.StringUtil;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 
+import javax.inject.Named;
+import javax.inject.Singleton;
+
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
-@Component
+@Singleton
 public class TwitterNotificationChannel implements NotificationChannel {
   private static final Logger LOGGER = Logger.getLogger(TwitterNotificationChannel.class);
   private static final int MESSAGE_MAX_LENGTH = 140;
@@ -19,7 +20,8 @@ public class TwitterNotificationChannel implements NotificationChannel {
 
   private final Twitter twitterClient = TwitterFactory.getSingleton();
 
-  @Value(value = "${twitter.destination.recipientScreenName}")
+//  @Value(value = "${twitter.destination.recipientScreenName}")
+  @Named("twitter.destination.recipientScreenName")
   private String destinationRecipentScreenName;
 
   @Override

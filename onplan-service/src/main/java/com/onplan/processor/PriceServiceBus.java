@@ -7,13 +7,12 @@ import com.onplan.domain.PriceTick;
 import com.onplan.service.AlertService;
 import com.onplan.service.StrategyService;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-@Component
 public final class PriceServiceBus {
   private static final Logger LOGGER = Logger.getLogger(PriceServiceBus.class);
 
@@ -21,13 +20,13 @@ public final class PriceServiceBus {
 
   private PriceService priceService;
 
-  @Autowired
+//  @Inject
   private StrategyService strategyService;
 
-  @Autowired
+  @Inject
   private AlertService alertService;
 
-  @Autowired
+  @Inject
   private void setPriceService(PriceService priceService) {
     checkArgument(null == this.priceService, "Price service already set.");
     this.priceService = checkNotNull(priceService);

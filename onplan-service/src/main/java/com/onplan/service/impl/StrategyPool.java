@@ -74,7 +74,7 @@ public final class StrategyPool {
         + "idx: " + index
         + "tick: " + priceTick.getInstrumentId());
     if (index >= 0) {
-      // TODO(robertom): Some strategies can take long time, avoid to keep poolKeys blocked.
+      // TODO(robertom): Some strategies can take long time, avoid to keep poolKeys locked.
       Strategy[] strategies = poolStrategies[index];
       for (int i = 0; i < strategies.length; i++) {
         strategies[i].onPriceTick(priceTick);

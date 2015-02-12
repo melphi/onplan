@@ -68,8 +68,8 @@ public abstract class AbstractChainedAdviser<T extends AdviserEvent> implements 
   }
 
   /**
-   * Called when the predicates chain is satisfied. Returns the event to be dispatched or an empty
-   * optional when further custom conditions are not satisfied.
+   * Called once the predicates chain has been satisfied. Returns the event to be dispatched
+   * or an empty optional if other conditions are not satisfied.
    * @param priceTick The price tick.
    */
   protected abstract Optional<T> prepareAdviserEvent(final PriceTick priceTick);

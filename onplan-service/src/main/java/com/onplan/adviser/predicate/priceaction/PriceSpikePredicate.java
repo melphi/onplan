@@ -6,7 +6,7 @@ import com.onplan.adviser.predicate.PredicateExecutionContext;
 import com.onplan.domain.PriceBarTimeFrame;
 import com.onplan.domain.PriceTick;
 
-import static com.onplan.adviser.ParametersUtil.getRequiredLongValue;
+import static com.onplan.util.PropertiesUtil.getRequiredLongValue;
 import static com.onplan.util.PriceBarUtil.*;
 
 @TemplateMetaData(

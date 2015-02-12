@@ -7,8 +7,8 @@ import com.onplan.domain.PriceBarTimeFrame;
 import com.onplan.domain.PriceTick;
 import com.onplan.util.PriceBarUtil;
 
-import static com.onplan.adviser.ParametersUtil.getRequiredDoubleValue;
-import static com.onplan.adviser.ParametersUtil.getRequiredStringValue;
+import static com.onplan.util.PropertiesUtil.getRequiredDoubleValue;
+import static com.onplan.util.PropertiesUtil.getRequiredStringValue;
 
 @TemplateMetaData(
     displayName = "Candlestick hammer",

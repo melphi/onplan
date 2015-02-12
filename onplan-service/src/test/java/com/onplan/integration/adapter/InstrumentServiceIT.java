@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import com.onplan.adapter.InstrumentService;
 import com.onplan.domain.InstrumentInfo;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -16,7 +15,7 @@ public class InstrumentServiceIT extends AbstractIntegrationTest {
   private static final String SEARCH_EXAMPLE = "EUR";
   private static final String EPIC_EXAMPLE = "CF.EURAUD.MAR";
 
-  @Autowired
+//  @Autowired
   private InstrumentService instrumentService;
 
   @Test

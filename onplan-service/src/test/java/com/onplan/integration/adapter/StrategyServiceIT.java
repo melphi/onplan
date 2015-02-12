@@ -7,17 +7,16 @@ import com.onplan.domain.configuration.adviser.StrategyConfiguration;
 import com.onplan.persistence.StrategyConfigurationDao;
 import com.onplan.service.StrategyService;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 import static org.junit.Assert.*;
 
 public class StrategyServiceIT extends AbstractIntegrationTest {
-  @Autowired
+//  @Autowired
   private StrategyService strategyService;
 
-  @Autowired
+//  @Autowired
   private StrategyConfigurationDao strategyConfigurationDao;
 
   @Test

@@ -2,22 +2,18 @@ package com.onplan.scheduler;
 
 import com.google.common.base.MoreObjects;
 import org.apache.log4j.Logger;
+import org.quartz.DisallowConcurrentExecution;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
 
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 import java.util.Collection;
 
-public class GarbageCollectionJob implements Runnable {
+@DisallowConcurrentExecution
+public class GarbageCollectionJob implements Job {
   private static final Logger LOGGER = Logger.getLogger(GarbageCollectionJob.class);
-
-  @Override
-  public void run() {
-    // TODO(robertom): Manage virtual machine statistics in a more meaningful way.
-    LOGGER.info(String.format(
-        "Virtual machine statistics: [%s].", getVirtualMachineStatistics()));
-    LOGGER.warn("Calling System.gc()");
-    System.gc();
-  }
 
   private VirtualMachineStatistics getVirtualMachineStatistics() {
     long collectionsCount = 0;
@@ -30,6 +26,15 @@ public class GarbageCollectionJob implements Runnable {
     }
     return new VirtualMachineStatistics(
         collectionsCount, Math.floorDiv(accumulatedTime, collectionsCount));
+  }
+
+  @Override
+  public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+    // TODO(robertom): Manage virtual machine statistics in a more meaningful way.
+    LOGGER.info(String.format(
+        "Virtual machine statistics: [%s].", getVirtualMachineStatistics()));
+    LOGGER.warn("Calling System.gc()");
+    System.gc();
   }
 
   private class VirtualMachineStatistics {

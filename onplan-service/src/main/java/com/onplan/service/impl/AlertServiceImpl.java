@@ -9,19 +9,16 @@ import com.onplan.adviser.predicate.AdviserPredicate;
 import com.onplan.domain.PriceTick;
 import com.onplan.domain.configuration.adviser.AlertConfiguration;
 import com.onplan.service.AlertService;
-import org.apache.log4j.Logger;
-import org.springframework.stereotype.Service;
 
+import javax.inject.Singleton;
 import java.util.List;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.adviser.predicate.AdviserPredicateUtil.createAdviserPredicateInfo;
 
-@Service
+@Singleton
 public class AlertServiceImpl implements AlertService {
-  private static final Logger LOGGER = Logger.getLogger(AlertServiceImpl.class);
-
   private final List<Alert> alerts = Lists.newArrayList();
   private final Map<String, Iterable<Alert>> alertsMapping = Maps.newHashMap();
 

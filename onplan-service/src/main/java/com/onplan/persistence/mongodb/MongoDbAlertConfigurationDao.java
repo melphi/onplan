@@ -10,14 +10,16 @@ import com.onplan.domain.configuration.adviser.AlertConfiguration;
 import com.onplan.persistence.AlertConfigurationDao;
 import org.joda.time.DateTime;
 
+import javax.inject.Singleton;
 import java.util.List;
 import java.util.Map;
 
-public class MongoDbAlertConfiguration extends AbstractMongoDbDao<AlertConfiguration>
+@Singleton
+public class MongoDbAlertConfigurationDao extends AbstractMongoDbDao<AlertConfiguration>
     implements AlertConfigurationDao {
   private static final String ALERT_CONFIGURATION_COLLECTION = "alertConfiguration";
 
-  public MongoDbAlertConfiguration() {
+  public MongoDbAlertConfigurationDao() {
     super(ALERT_CONFIGURATION_COLLECTION, AlertConfiguration.class);
   }
 
