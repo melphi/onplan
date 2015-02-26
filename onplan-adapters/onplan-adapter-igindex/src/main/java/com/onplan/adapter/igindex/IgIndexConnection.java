@@ -6,7 +6,6 @@ import com.onplan.adapter.igindex.client.IgIndexClient;
 import com.onplan.adapter.igindex.client.IgIndexConnectionCredentials;
 import com.onplan.adapter.igindex.client.IgIndexConstant;
 import com.onplan.service.ServiceConnectionInfo;
-import com.onplan.util.MorePreconditions;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
@@ -14,6 +13,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 public class IgIndexConnection extends AbstractServiceConnection {
   private static final Logger LOGGER = Logger.getLogger(IgIndexPriceService.class);
@@ -30,10 +30,10 @@ public class IgIndexConnection extends AbstractServiceConnection {
   private volatile Optional<DateTime> connectionUpdateDate = Optional.empty();
 
   public IgIndexConnection(String apiKey, String username, String password, String severUrl) {
-    this.apiKey = MorePreconditions.checkNotNullOrEmpty(apiKey);
-    this.username = MorePreconditions.checkNotNullOrEmpty(username);
-    this.password = MorePreconditions.checkNotNullOrEmpty(password);
-    this.igIndexClient = new IgIndexClient(MorePreconditions.checkNotNullOrEmpty(severUrl));
+    this.apiKey = checkNotNullOrEmpty(apiKey);
+    this.username = checkNotNullOrEmpty(username);
+    this.password = checkNotNullOrEmpty(password);
+    this.igIndexClient = new IgIndexClient(checkNotNullOrEmpty(severUrl));
   }
 
   @Override

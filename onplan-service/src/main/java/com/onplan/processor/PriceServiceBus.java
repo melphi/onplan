@@ -20,7 +20,7 @@ public final class PriceServiceBus {
 
   private PriceService priceService;
 
-//  @Inject
+  @Inject
   private StrategyService strategyService;
 
   @Inject
