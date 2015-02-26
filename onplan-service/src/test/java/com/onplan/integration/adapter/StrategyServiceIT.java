@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class StrategyServiceI extends AbstractIT {
+public class StrategyServiceIT extends AbstractIT {
   private StrategyService strategyService = injector.getInstance(StrategyService.class);
   private StrategyConfigurationDao strategyConfigurationDao =
       injector.getInstance(StrategyConfigurationDao.class);

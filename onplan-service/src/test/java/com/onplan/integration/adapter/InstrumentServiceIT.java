@@ -12,7 +12,7 @@ import java.util.List;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class InstrumentServiceI extends AbstractIT {
+public class InstrumentServiceIT extends AbstractIT {
   private static final String SEARCH_EXAMPLE = "EUR";
   private static final String EPIC_EXAMPLE = "CF.EURAUD.MAR";
 

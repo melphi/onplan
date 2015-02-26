@@ -2,12 +2,11 @@ package com.onplan.domain.configuration.adviser;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
-import com.onplan.domain.PersistentObject;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class AdviserPredicateConfiguration implements PersistentObject {
-  private String id;
+public class AdviserPredicateConfiguration implements Serializable {
   private String className;
   private Map<String, String> parameters;
 
@@ -27,14 +26,13 @@ public class AdviserPredicateConfiguration implements PersistentObject {
     this.parameters = parameters;
   }
 
-  @Override
-  public String getId() {
-    return id;
+  public AdviserPredicateConfiguration() {
+    // Intentionally empty.
   }
 
-  @Override
-  public void setId(String id) {
-    this.id = id;
+  public AdviserPredicateConfiguration(String className, Map<String, String> parameters) {
+    this.className = className;
+    this.parameters = parameters;
   }
 
   @Override
@@ -46,20 +44,18 @@ public class AdviserPredicateConfiguration implements PersistentObject {
       return false;
     }
     AdviserPredicateConfiguration predicateConfiguration = (AdviserPredicateConfiguration) o;
-    return Objects.equal(this.id, predicateConfiguration.id) &&
-        Objects.equal(this.className, predicateConfiguration.className) &&
+    return Objects.equal(this.className, predicateConfiguration.className) &&
         Objects.equal(this.parameters, predicateConfiguration.parameters);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(id, className, parameters);
+    return Objects.hashCode(className, parameters);
   }
 
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
-        .add("id", id)
         .add("className", className)
         .add("parameters", parameters)
         .toString();

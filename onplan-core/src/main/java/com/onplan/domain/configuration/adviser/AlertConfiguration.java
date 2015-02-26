@@ -53,6 +53,19 @@ public class AlertConfiguration implements PersistentObject {
     this.id = id;
   }
 
+  public AlertConfiguration() {
+    // Intentionally empty.
+  }
+
+  public AlertConfiguration(String id, String alertMessage, String instrumentId,
+      Iterable<AdviserPredicateConfiguration> predicatesChain, long createOn) {
+    this.id = id;
+    this.alertMessage = alertMessage;
+    this.instrumentId = instrumentId;
+    this.predicatesChain = predicatesChain;
+    this.createOn = createOn;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {

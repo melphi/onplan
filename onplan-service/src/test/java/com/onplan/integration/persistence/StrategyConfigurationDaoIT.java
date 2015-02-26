@@ -24,7 +24,7 @@ public class StrategyConfigurationDaoIT extends AbstractDaoIT<StrategyConfigurat
 
   @Override
   protected Collection<StrategyConfiguration> createSampleObjectsWithNullId() {
-    ImmutableList.Builder result = ImmutableList.builder();
+    ImmutableList.Builder<StrategyConfiguration> result = ImmutableList.builder();
     for (int i = 0; i < INITIAL_COLLECTION_SIZE; i++) {
       result.add(new StrategyConfiguration(
           null,
