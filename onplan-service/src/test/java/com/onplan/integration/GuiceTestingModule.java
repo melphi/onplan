@@ -1,7 +1,9 @@
-package com.onplan.startup;
+package com.onplan.integration;
 
+import com.google.common.collect.ImmutableList;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.name.Names;
 import com.onplan.adapter.HistoricalPriceService;
 import com.onplan.adapter.InstrumentService;
 import com.onplan.adapter.PriceService;
@@ -10,23 +12,47 @@ import com.onplan.adapter.igindex.IgIndexConnection;
 import com.onplan.adapter.igindex.IgIndexHistoricalPriceService;
 import com.onplan.adapter.igindex.IgIndexInstrumentService;
 import com.onplan.adapter.igindex.IgIndexPriceService;
+import com.onplan.persistence.AlertConfigurationDao;
+import com.onplan.persistence.StrategyConfigurationDao;
+import com.onplan.persistence.mongodb.MongoDbAlertConfigurationDao;
+import com.onplan.persistence.mongodb.MongoDbStrategyConfigurationDao;
+import com.onplan.service.AlertService;
+import com.onplan.service.EventNotificationService;
+import com.onplan.service.StrategyService;
+import com.onplan.service.impl.AlertServiceImpl;
+import com.onplan.service.impl.EventNotificationServiceImpl;
+import com.onplan.service.impl.StrategyServiceImpl;
 import com.onplan.util.PropertiesUtil;
 
 import javax.inject.Singleton;
+import java.util.List;
 import java.util.Properties;
 
-/**
- * Guice module specific for IgIndex services.
- */
-// TODO(robertom): Use configuration files instead of hard coded classes.
-public class IgIndexGuiceModule extends AbstractModule {
-  private static final String BROKER_PROPERTIES_FILE = "broker.properties";
+import static com.onplan.util.PropertiesUtil.loadPropertiesFromFile;
+
+public class GuiceTestingModule extends AbstractModule {
+  private static final String BROKER_PROPERTIES_FILE = "broker-testing.properties";
+  private static final List<String> PROPERTIES_FILES = ImmutableList.of(
+      "marketinfo-testing.properties",
+      "mongodb-testing.properties",
+      "notification-testing.properties");
 
   private static IgIndexConnection IG_INDEX_SERVICE_CONNECTION;
 
   @Override
   protected void configure() {
-    // Intentionally empty.
+    try {
+      loadPropertyFiles();
+    } catch (Exception e) {
+      throw new IllegalArgumentException(e);
+    }
+
+    bind(StrategyConfigurationDao.class).to(MongoDbStrategyConfigurationDao.class);
+    bind(AlertConfigurationDao.class).to(MongoDbAlertConfigurationDao.class);
+
+    bind(AlertService.class).to(AlertServiceImpl.class);
+    bind(StrategyService.class).to(StrategyServiceImpl.class);
+    bind(EventNotificationService.class).to(EventNotificationServiceImpl.class);
   }
 
   private static IgIndexConnection getIgIndexConnectionInstance() throws Exception {
@@ -63,5 +89,11 @@ public class IgIndexGuiceModule extends AbstractModule {
   @Singleton
   private InstrumentService provideInstrumentService() throws Exception {
     return new IgIndexInstrumentService(getIgIndexConnectionInstance());
+  }
+
+  private void loadPropertyFiles() throws Exception {
+    for (String propertyFile : PROPERTIES_FILES) {
+      Names.bindProperties(binder(), loadPropertiesFromFile(propertyFile));
+    }
   }
 }

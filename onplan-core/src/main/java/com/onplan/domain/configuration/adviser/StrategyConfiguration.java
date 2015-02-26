@@ -45,6 +45,18 @@ public class StrategyConfiguration implements PersistentObject {
     this.instruments = instruments;
   }
 
+  public StrategyConfiguration() {
+    // Intentionally empty.
+  }
+
+  public StrategyConfiguration(String id, String className, Map<String, String> executionParameters,
+      Set<String> instruments) {
+    this.id = id;
+    this.className = className;
+    this.executionParameters = executionParameters;
+    this.instruments = instruments;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {

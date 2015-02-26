@@ -64,7 +64,7 @@ public final class PropertiesUtil {
    * @param propertiesFile The property file.
    * @throws IOException Error while loading the properties file.
    */
-  public static Properties loadPropertiesFromClassPath(String propertiesFile)
+  public static Properties loadPropertiesFromFile(String propertiesFile)
       throws Exception {
     checkNotNullOrEmpty(propertiesFile);
     URL fileUrl = PropertiesUtil.class.getClassLoader().getResource(propertiesFile);

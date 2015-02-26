@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.onplan.adapter.InstrumentService;
 import com.onplan.domain.InstrumentInfo;
+import com.onplan.integration.AbstractIT;
 import org.junit.Test;
 
 import java.util.List;
@@ -11,12 +12,11 @@ import java.util.List;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class InstrumentServiceIT extends AbstractIntegrationTest {
+public class InstrumentServiceI extends AbstractIT {
   private static final String SEARCH_EXAMPLE = "EUR";
   private static final String EPIC_EXAMPLE = "CF.EURAUD.MAR";
 
-//  @Autowired
-  private InstrumentService instrumentService;
+  private InstrumentService instrumentService = injector.getInstance(InstrumentService.class);
 
   @Test
   public void testFindInstrumentsBySearchTerm() throws Exception {

@@ -14,7 +14,7 @@ import javax.inject.Inject;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Provides Guice support to scheduled Quartz jobs.
+ * Provides Guice support for Quartz jobs.
  */
 public class GuiceJobFactory implements JobFactory {
   private static final Logger LOGGER = Logger.getLogger(GuiceJobFactory.class);

@@ -4,6 +4,7 @@ import com.onplan.adviser.StrategyInfo;
 import com.onplan.adviser.TemplateInfo;
 import com.onplan.adviser.strategy.Strategy;
 import com.onplan.domain.configuration.adviser.StrategyConfiguration;
+import com.onplan.integration.AbstractIT;
 import com.onplan.persistence.StrategyConfigurationDao;
 import com.onplan.service.StrategyService;
 import org.junit.Test;
@@ -12,12 +13,10 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class StrategyServiceIT extends AbstractIntegrationTest {
-//  @Autowired
-  private StrategyService strategyService;
-
-//  @Autowired
-  private StrategyConfigurationDao strategyConfigurationDao;
+public class StrategyServiceI extends AbstractIT {
+  private StrategyService strategyService = injector.getInstance(StrategyService.class);
+  private StrategyConfigurationDao strategyConfigurationDao =
+      injector.getInstance(StrategyConfigurationDao.class);
 
   @Test
   public void testGetStrategiesTemplateInfo() {

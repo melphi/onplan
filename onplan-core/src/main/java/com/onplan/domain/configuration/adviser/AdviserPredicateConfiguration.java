@@ -2,11 +2,12 @@ package com.onplan.domain.configuration.adviser;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import com.onplan.domain.PersistentObject;
 
-import java.io.Serializable;
 import java.util.Map;
 
-public class AdviserPredicateConfiguration implements Serializable {
+public class AdviserPredicateConfiguration implements PersistentObject {
+  private String id;
   private String className;
   private Map<String, String> parameters;
 
@@ -27,6 +28,16 @@ public class AdviserPredicateConfiguration implements Serializable {
   }
 
   @Override
+  public String getId() {
+    return id;
+  }
+
+  @Override
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;
@@ -35,18 +46,20 @@ public class AdviserPredicateConfiguration implements Serializable {
       return false;
     }
     AdviserPredicateConfiguration predicateConfiguration = (AdviserPredicateConfiguration) o;
-    return Objects.equal(this.className, predicateConfiguration.className) &&
+    return Objects.equal(this.id, predicateConfiguration.id) &&
+        Objects.equal(this.className, predicateConfiguration.className) &&
         Objects.equal(this.parameters, predicateConfiguration.parameters);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(className, parameters);
+    return Objects.hashCode(id, className, parameters);
   }
 
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
+        .add("id", id)
         .add("className", className)
         .add("parameters", parameters)
         .toString();

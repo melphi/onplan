@@ -14,6 +14,7 @@ import javax.inject.Singleton;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkBoolean;
 
+// TODO(robertom): Implement notification.enable.* from notification.properties.
 @Singleton
 public class EventNotificationServiceImpl implements EventNotificationService {
   private static final Logger LOGGER = Logger.getLogger(EventNotificationServiceImpl.class);
