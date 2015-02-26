@@ -9,10 +9,12 @@ import com.onplan.service.StrategyService;
 import org.apache.log4j.Logger;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+@Singleton
 public final class PriceServiceBus {
   private static final Logger LOGGER = Logger.getLogger(PriceServiceBus.class);
 

@@ -20,7 +20,6 @@ public class TwitterNotificationChannel implements NotificationChannel {
 
   private final Twitter twitterClient = TwitterFactory.getSingleton();
 
-//  @Value(value = "${twitter.destination.recipientScreenName}")
   @Named("twitter.destination.recipientScreenName")
   private String destinationRecipentScreenName;
 
