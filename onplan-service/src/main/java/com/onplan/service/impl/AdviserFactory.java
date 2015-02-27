@@ -21,14 +21,18 @@ public final class AdviserFactory {
   public static Strategy createStrategy(StrategyConfiguration strategyConfiguration,
       StrategyListener strategyListener, InstrumentService instrumentService,
       HistoricalPriceService historicalPriceService) throws Exception {
+    checkNotNull(strategyConfiguration, "strategyConfiguration is null");
+    checkNotNull(strategyListener, "strategyListener is null.");
+    checkNotNull(instrumentService, "instrumentService is null.");
+    checkNotNull(historicalPriceService, "historicalPriceService is null.");
+
     try {
       StrategyExecutionContext strategyExecutionContext = StrategyExecutionContext.newBuilder()
           .setStrategyId(strategyConfiguration.getId())
           .setExecutionParameters(strategyConfiguration.getExecutionParameters())
-          .setStrategyListener(checkNotNull(strategyListener, "strategyListener is null."))
-          .setInstrumentService(checkNotNull(instrumentService, "instrumentService is null."))
-          .setHistoricalPriceService(
-              checkNotNull(historicalPriceService, "historicalPriceService is null."))
+          .setStrategyListener(strategyListener)
+          .setInstrumentService(instrumentService)
+          .setHistoricalPriceService(historicalPriceService)
           .setRegisteredInstruments(strategyConfiguration.getInstruments())
           .build();
       Class clazz = ClassLoader.getSystemClassLoader().loadClass(strategyConfiguration.getClassName());
@@ -47,6 +51,11 @@ public final class AdviserFactory {
   public static Alert createAlert(AlertConfiguration alertConfiguration,
       AdviserListener<AlertEvent> alertEventListener, InstrumentService instrumentService,
       HistoricalPriceService historicalPriceService) throws Exception {
+    checkNotNull(alertConfiguration, "alertConfiguration is null");
+    checkNotNull(alertEventListener, "alertEventListener is null.");
+    checkNotNull(instrumentService, "instrumentService is null.");
+    checkNotNull(historicalPriceService, "historicalPriceService is null.");
+
     ImmutableList.Builder<AdviserPredicate> predicatesChain = ImmutableList.builder();
     for (AdviserPredicateConfiguration adviserPredicateConfiguration
         : alertConfiguration.getPredicatesChain()) {
@@ -56,6 +65,7 @@ public final class AdviserFactory {
           instrumentService,
           historicalPriceService));
     }
+
     return Alert.newBuilder()
         .setId(alertConfiguration.getId())
         .setAlertMessage(alertConfiguration.getAlertMessage())
@@ -71,6 +81,11 @@ public final class AdviserFactory {
       AdviserPredicateConfiguration adviserPredicateConfiguration, String instrumentId,
       InstrumentService instrumentService, HistoricalPriceService historicalPriceService)
       throws Exception {
+    checkNotNull(adviserPredicateConfiguration, "adviserPredicateConfiguration is null");
+    checkNotNull(instrumentId, "instrumentId is null.");
+    checkNotNull(instrumentService, "instrumentService is null.");
+    checkNotNull(historicalPriceService, "historicalPriceService is null.");
+
     try {
       PredicateExecutionContext predicateExecutionContext = PredicateExecutionContext.newBuilder()
           .setExecutionParameters(adviserPredicateConfiguration.getParameters())
