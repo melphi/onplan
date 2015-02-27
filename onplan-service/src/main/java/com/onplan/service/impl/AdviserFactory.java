@@ -25,7 +25,6 @@ public final class AdviserFactory {
     checkNotNull(strategyListener, "strategyListener is null.");
     checkNotNull(instrumentService, "instrumentService is null.");
     checkNotNull(historicalPriceService, "historicalPriceService is null.");
-
     try {
       StrategyExecutionContext strategyExecutionContext = StrategyExecutionContext.newBuilder()
           .setStrategyId(strategyConfiguration.getId())
@@ -55,7 +54,6 @@ public final class AdviserFactory {
     checkNotNull(alertEventListener, "alertEventListener is null.");
     checkNotNull(instrumentService, "instrumentService is null.");
     checkNotNull(historicalPriceService, "historicalPriceService is null.");
-
     ImmutableList.Builder<AdviserPredicate> predicatesChain = ImmutableList.builder();
     for (AdviserPredicateConfiguration adviserPredicateConfiguration
         : alertConfiguration.getPredicatesChain()) {
@@ -85,7 +83,6 @@ public final class AdviserFactory {
     checkNotNull(instrumentId, "instrumentId is null.");
     checkNotNull(instrumentService, "instrumentService is null.");
     checkNotNull(historicalPriceService, "historicalPriceService is null.");
-
     try {
       PredicateExecutionContext predicateExecutionContext = PredicateExecutionContext.newBuilder()
           .setExecutionParameters(adviserPredicateConfiguration.getParameters())
