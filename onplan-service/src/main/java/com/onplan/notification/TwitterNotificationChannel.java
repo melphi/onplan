@@ -7,6 +7,7 @@ import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
@@ -20,6 +21,7 @@ public class TwitterNotificationChannel implements NotificationChannel {
 
   private final Twitter twitterClient = TwitterFactory.getSingleton();
 
+  @Inject
   @Named("twitter.destination.recipientScreenName")
   private String destinationRecipentScreenName;
 
@@ -34,16 +36,16 @@ public class TwitterNotificationChannel implements NotificationChannel {
     sendDirectMessage(destinationRecipentScreenName, message);
   }
 
-  private void sendDirectMessage(String destinationRecipentScreenName, String message)
+  private void sendDirectMessage(String destinationRecipientScreenName, String message)
       throws Exception {
     try {
       twitterClient.sendDirectMessage(
-          destinationRecipentScreenName,
+          destinationRecipientScreenName,
           StringUtil.trimText(message, MESSAGE_MAX_LENGTH, MESSAGE_TRIMMED_SUFFIX));
     } catch (TwitterException e) {
       LOGGER.error(String.format(
           "Error while sending Twitter notification to recipient [%s]: [%s].",
-          destinationRecipentScreenName,
+          destinationRecipientScreenName,
           e.getMessage()));
       throw new Exception(e);
     }
@@ -52,7 +54,7 @@ public class TwitterNotificationChannel implements NotificationChannel {
   @Override
   public boolean isActive() {
     try {
-      return ! Strings.isNullOrEmpty(twitterClient.getAccountSettings().getScreenName());
+      return !Strings.isNullOrEmpty(twitterClient.getAccountSettings().getScreenName());
     } catch (TwitterException e) {
       return false;
     }

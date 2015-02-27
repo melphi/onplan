@@ -32,13 +32,17 @@ public final class Alert extends AbstractChainedAdviser<AlertEvent> {
     return message;
   }
 
-  protected Alert(String id, Iterable<AdviserPredicate> predicatesChain,
+  private Alert(String id, Iterable<AdviserPredicate> predicatesChain,
       AdviserListener<AlertEvent> adviserListener, String instrumentId, String message,
       boolean repeat, SeverityLevel severityLevel) {
     super(id, predicatesChain, adviserListener, instrumentId);
     this.message = checkNotNullOrEmpty(message);
     this.repeat = repeat;
     this.severityLevel = checkNotNull(severityLevel);
+  }
+
+  public static Builder newBuilder() {
+    return new Builder();
   }
 
   @Override
@@ -61,10 +65,11 @@ public final class Alert extends AbstractChainedAdviser<AlertEvent> {
     private String instrumentId;
     private boolean repeat = false;
     private SeverityLevel severityLevel = SeverityLevel.MEDIUM;
+    private long createdOn;
 
     public Builder setId(String id) {
       this.id = checkNotNullOrEmpty(id);
-      return  this;
+      return this;
     }
 
     public Builder setPredicatesChain(Iterable<AdviserPredicate> predicatesChain) {
@@ -95,6 +100,12 @@ public final class Alert extends AbstractChainedAdviser<AlertEvent> {
 
     public Builder setSeverityLevel(SeverityLevel severityLevel) {
       this.severityLevel = checkNotNull(severityLevel);
+      return this;
+    }
+
+    public Builder setCreatedOn(long createdOn) {
+      checkArgument(createdOn > 0);
+      this.createdOn = createdOn;
       return this;
     }
 

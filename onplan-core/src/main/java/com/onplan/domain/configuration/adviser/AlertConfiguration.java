@@ -10,6 +10,7 @@ public class AlertConfiguration implements PersistentObject {
   private String instrumentId;
   private Iterable<AdviserPredicateConfiguration> predicatesChain;
   private long createOn;
+  private boolean repeat;
 
   public Iterable<AdviserPredicateConfiguration> getPredicatesChain() {
     return predicatesChain;
@@ -43,6 +44,14 @@ public class AlertConfiguration implements PersistentObject {
     this.createOn = createOn;
   }
 
+  public boolean getRepeat() {
+    return repeat;
+  }
+
+  public void setRepeat(boolean repeat) {
+    this.repeat = repeat;
+  }
+
   @Override
   public String getId() {
     return id;
@@ -58,12 +67,13 @@ public class AlertConfiguration implements PersistentObject {
   }
 
   public AlertConfiguration(String id, String alertMessage, String instrumentId,
-      Iterable<AdviserPredicateConfiguration> predicatesChain, long createOn) {
+      Iterable<AdviserPredicateConfiguration> predicatesChain, long createOn, boolean repeat) {
     this.id = id;
     this.alertMessage = alertMessage;
     this.instrumentId = instrumentId;
     this.predicatesChain = predicatesChain;
     this.createOn = createOn;
+    this.repeat = repeat;
   }
 
   @Override
@@ -79,12 +89,13 @@ public class AlertConfiguration implements PersistentObject {
         Objects.equal(this.alertMessage, alertConfiguration.alertMessage) &&
         Objects.equal(this.predicatesChain, alertConfiguration.predicatesChain) &&
         Objects.equal(this.instrumentId, alertConfiguration.instrumentId) &&
-        Objects.equal(this.createOn, alertConfiguration.createOn);
+        Objects.equal(this.createOn, alertConfiguration.createOn) &&
+        Objects.equal(this.repeat, alertConfiguration.repeat);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(id, alertMessage, predicatesChain, instrumentId, createOn);
+    return Objects.hashCode(id, alertMessage, predicatesChain, instrumentId, createOn, repeat);
   }
 
   @Override
@@ -95,6 +106,7 @@ public class AlertConfiguration implements PersistentObject {
         .add("predicatesChain", predicatesChain)
         .add("instrumentId", instrumentId)
         .add("createOn", createOn)
+        .add("repeat", repeat)
         .toString();
   }
 }

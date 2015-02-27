@@ -1,4 +1,4 @@
-package com.onplan.processor;
+package com.onplan.processing;
 
 import com.onplan.adapter.PriceListener;
 import com.onplan.adapter.PriceService;

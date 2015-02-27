@@ -8,6 +8,7 @@ public class StringUtil {
   /**
    * When the text exceeds the maxLength returns the text trimmed with the trimmedSuffix, otherwise
    * returns the full text. The resulting string always contains up to maxLength characters.
+   *
    * @param text The text string.
    * @param maxLength The maximum length of the resulting string.
    * @param trimmedSuffix The trimmed suffix.

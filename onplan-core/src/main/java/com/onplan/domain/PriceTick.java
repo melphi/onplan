@@ -33,7 +33,8 @@ public class PriceTick implements Price {
     return receivedNanoTime;
   }
 
-  public PriceTick(String instrumentID, long timestamp, double closePriceAsk, double closePriceBid) {;
+  public PriceTick(
+      String instrumentID, long timestamp, double closePriceAsk, double closePriceBid) {
     this.instrumentId = checkNotNullOrEmpty(instrumentID);
     this.timestamp = timestamp;
     this.closePriceAsk = closePriceAsk;

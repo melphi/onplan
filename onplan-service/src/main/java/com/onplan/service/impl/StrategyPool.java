@@ -69,10 +69,6 @@ public final class StrategyPool {
   // TODO(robertom): Run high priority strategies in a separated thread.
   public synchronized void processPriceTick(final PriceTick priceTick) {
     int index = Arrays.binarySearch(poolKeys, priceTick.getInstrumentId());
-    System.out.println(
-        "Arr: " + Arrays.toString(poolKeys)
-        + "idx: " + index
-        + "tick: " + priceTick.getInstrumentId());
     if (index >= 0) {
       // TODO(robertom): Some strategies can take long time, avoid to keep poolKeys locked.
       Strategy[] strategies = poolStrategies[index];

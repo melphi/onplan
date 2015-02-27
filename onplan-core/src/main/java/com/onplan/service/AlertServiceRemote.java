@@ -21,6 +21,13 @@ public interface AlertServiceRemote extends Serializable {
   public void addAlert(AlertConfiguration alertConfigurationConfiguration) throws Exception;
 
   /**
+   * Loads a collection of sample alerts, deleting and replacing all the ones which have been
+   * instantiated.
+   * @throws Exception error while loading the collection of sample alerts.
+   */
+  public void loadSampleAlerts() throws Exception;
+
+  /**
    * Returns the collection of alerts info.
    */
   public List<AlertInfo> getAlertsInfo();

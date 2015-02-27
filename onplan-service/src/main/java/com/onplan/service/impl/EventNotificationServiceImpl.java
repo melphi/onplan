@@ -1,8 +1,10 @@
 package com.onplan.service.impl;
 
+import com.google.inject.Injector;
 import com.onplan.adapter.ServiceConnection;
 import com.onplan.adapter.ServiceConnectionListener;
 import com.onplan.adviser.alert.AlertEvent;
+import com.onplan.notification.SmtpNotificationChannel;
 import com.onplan.notification.TwitterNotificationChannel;
 import com.onplan.service.EventNotificationService;
 import org.apache.log4j.Logger;
@@ -14,33 +16,56 @@ import javax.inject.Singleton;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkBoolean;
 
-// TODO(robertom): Implement notification.enable.* from notification.properties.
 @Singleton
 public class EventNotificationServiceImpl implements EventNotificationService {
   private static final Logger LOGGER = Logger.getLogger(EventNotificationServiceImpl.class);
 
-  private boolean notifyServiceConnection;
+  private volatile boolean notifyServiceConnection;
+  private volatile boolean notifyServiceDisconnection;
+  private volatile boolean enableTwitterNotification;
+  private volatile boolean enableSmtpNotification;
 
-  private boolean notifyServiceDisconnection;
-
-  @Inject
-  private TwitterNotificationChannel twitterNotificationChannel;
+  private volatile TwitterNotificationChannel twitterNotificationChannel;
+  private volatile SmtpNotificationChannel smtpNotificationChannel;
 
   private ServiceConnection serviceConnection;
   private ServiceConnectionListener serviceConnectionListener = new ServiceConnectionListenerImpl();
 
   @Inject
+  private Injector injector;
+
+  @Inject
   public void setNotifyServiceConnection(
       @Named("notification.notify.service.connection") String value) {
-    checkBoolean(value);
-    notifyServiceConnection = Boolean.parseBoolean(value);
+    notifyServiceConnection = checkBoolean(value);
   }
 
   @Inject
   public void setNotifyServiceDisconnection(
       @Named("notification.notify.service.disconnection") String value) {
-    checkBoolean(value);
-    notifyServiceDisconnection = Boolean.parseBoolean(value);
+    notifyServiceDisconnection = checkBoolean(value);
+  }
+
+  @Inject
+  public void setEnableTwitterNotification(
+      @Named("notification.enable.twitter") String value) {
+    this.enableTwitterNotification = checkBoolean(value);
+    if (this.enableTwitterNotification) {
+      this.twitterNotificationChannel = injector.getInstance(TwitterNotificationChannel.class);
+    } else {
+      this.twitterNotificationChannel = null;
+    }
+  }
+
+  @Inject
+  public void setEnableSmtpNotification(
+      @Named("notification.enable.smtp") String value) {
+    this.enableSmtpNotification = checkBoolean(value);
+    if (this.enableSmtpNotification) {
+      this.smtpNotificationChannel = injector.getInstance(SmtpNotificationChannel.class);
+    } else {
+      this.smtpNotificationChannel = null;
+    }
   }
 
   @Inject
@@ -57,29 +82,42 @@ public class EventNotificationServiceImpl implements EventNotificationService {
         alertEvent.getPriceTick().getInstrumentId(),
         alertEvent.getSeverityLevel());
     String message = alertEvent.getMessage();
-    (new ChannelNotificationThread(title, message)).run();
+    (new ChannelsNotificationThread(title, message)).run();
   }
 
-  private class ChannelNotificationThread extends Thread {
+  private class ChannelsNotificationThread extends Thread {
     private final String title;
     private final String message;
 
-    private ChannelNotificationThread(String title, String message) {
+    private ChannelsNotificationThread(String title, String message) {
       this.title = title;
       this.message = message;
     }
 
     @Override
     public void run() {
-      try {
-        LOGGER.info(String.format("Notifying message [%s] [%s].", title, message));
-        twitterNotificationChannel.notifyMessage(title, message);
-      } catch (Exception e) {
-        LOGGER.equals(String.format(
-            "Error [%s] while sending notification message [%s] [%s].",
-            e.getMessage(),
-            title,
-            message));
+      LOGGER.info(String.format("Notifying message [%s] [%s].", title, message));
+      if (enableTwitterNotification) {
+        try {
+          twitterNotificationChannel.notifyMessage(title, message);
+        } catch (Exception e) {
+          LOGGER.equals(String.format(
+              "Error [%s] while sending Twitter notification message [%s] [%s].",
+              e.getMessage(),
+              title,
+              message));
+        }
+      }
+      if (enableSmtpNotification) {
+        try {
+          smtpNotificationChannel.notifyMessage(title, message);
+        } catch (Exception e) {
+          LOGGER.equals(String.format(
+              "Error [%s] while sending SMTP notification message [%s] [%s].",
+              e.getMessage(),
+              title,
+              message));
+        }
       }
     }
   }
@@ -94,8 +132,7 @@ public class EventNotificationServiceImpl implements EventNotificationService {
       if(notifyServiceConnection) {
         LOGGER.info("Notifying ServiceConnection connection.");
         try {
-          twitterNotificationChannel.notifyMessage(
-              "ServiceConnection.", "Service connected $_$");
+          new ChannelsNotificationThread("ServiceConnection.", "Service connected $_$").run();
         } catch (Exception e) {
           LOGGER.error(e);
         }
@@ -111,8 +148,8 @@ public class EventNotificationServiceImpl implements EventNotificationService {
       if(notifyServiceDisconnection) {
         LOGGER.info("Notifying service disconnection.");
         try {
-          twitterNotificationChannel.notifyMessage(
-              "ServiceConnection.", "Service disconnected (-_-)zzZ");
+          new ChannelsNotificationThread(
+              "ServiceConnection.", "Service disconnected (-_-)zzZ").run();
         } catch (Exception e) {
           LOGGER.error(e);
         }

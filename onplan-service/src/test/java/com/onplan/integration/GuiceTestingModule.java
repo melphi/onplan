@@ -37,7 +37,7 @@ public class GuiceTestingModule extends AbstractModule {
       "mongodb-testing.properties",
       "notification-testing.properties");
 
-  private static IgIndexConnection IG_INDEX_SERVICE_CONNECTION;
+  private static IgIndexConnection igIndexServiceConnection;
 
   @Override
   protected void configure() {
@@ -56,7 +56,7 @@ public class GuiceTestingModule extends AbstractModule {
   }
 
   private static IgIndexConnection getIgIndexConnectionInstance() throws Exception {
-    if (null == IG_INDEX_SERVICE_CONNECTION) {
+    if (null == igIndexServiceConnection) {
       Properties properties = PropertiesUtil.loadPropertiesFromFile(BROKER_PROPERTIES_FILE);
       String apiKey = properties.getProperty("com.onplan.adapter.igindex.apiKey");
       String username = properties.getProperty("com.onplan.adapter.igindex.username");
@@ -64,7 +64,7 @@ public class GuiceTestingModule extends AbstractModule {
       String serverUrl = properties.getProperty("com.onplan.adapter.igindex.severUrl");
       return new IgIndexConnection(apiKey, username, password, serverUrl);
     }
-    return IG_INDEX_SERVICE_CONNECTION;
+    return igIndexServiceConnection;
   }
 
   @Provides

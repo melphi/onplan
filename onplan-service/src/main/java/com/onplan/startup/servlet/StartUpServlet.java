@@ -1,9 +1,8 @@
 package com.onplan.startup.servlet;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.google.inject.Injector;
-import com.onplan.processor.PriceServiceBus;
+import com.onplan.processing.PriceServiceBus;
 import com.onplan.scheduler.AdapterServicesActivationJob;
 import com.onplan.scheduler.GarbageCollectionJob;
 import com.onplan.startup.GuiceJobFactory;
@@ -21,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
-import java.util.Set;
 
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
@@ -60,7 +58,9 @@ public class StartUpServlet extends HttpServlet {
     try {
       Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
       scheduler.setJobFactory(guiceJobFactory);
-      scheduler.scheduleJobs(createJobDetails(), true);
+      for (Map.Entry<JobDetail, Trigger> entry : createJobDetails().entrySet()) {
+        scheduler.scheduleJob(entry.getKey(), entry.getValue());
+      }
       scheduler.start();
       LOGGER.info("Scheduler started.");
     } catch (SchedulerException e) {
@@ -68,32 +68,24 @@ public class StartUpServlet extends HttpServlet {
     }
   }
 
-  private Map<JobDetail, Set<? extends Trigger>> createJobDetails() {
-    ImmutableMap.Builder<JobDetail, Set<? extends Trigger>> result = ImmutableMap.builder();
-    Set<Trigger> adapterServicesActivationTriggers = ImmutableSet.of(
-        newTrigger()
-            .withIdentity("immediateTrigger")
-            .startNow()
+  private Map<JobDetail, Trigger> createJobDetails() {
+    ImmutableMap.Builder<JobDetail, Trigger> result = ImmutableMap.builder();
+    result.put(
+        newJob(AdapterServicesActivationJob.class)
+            .withIdentity("adapterServicesActivationJob")
             .build(),
         newTrigger()
             .withIdentity("everyMinuteTrigger")
             .withSchedule(simpleSchedule().withIntervalInMinutes(1).repeatForever())
             .build());
     result.put(
-        newJob(AdapterServicesActivationJob.class)
-          .withIdentity("adapterServicesActivationJob")
-          .build(),
-        adapterServicesActivationTriggers);
-    Set<Trigger> garbageCollectionTriggers = ImmutableSet.of(
+        newJob(GarbageCollectionJob.class)
+            .withIdentity("garbageCollectionJob")
+            .build(),
         newTrigger()
             .withIdentity("preMarketTrigger")
             .withSchedule(cronSchedule("0 55 6 * * ?"))
             .build());
-    result.put(
-        newJob(GarbageCollectionJob.class)
-          .withIdentity("garbageCollectionJob")
-          .build(),
-        garbageCollectionTriggers);
     return result.build();
   }
 }

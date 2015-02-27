@@ -13,7 +13,6 @@ import com.onplan.adviser.TemplateInfo;
 import com.onplan.adviser.alert.AlertEvent;
 import com.onplan.adviser.automatedorder.AutomatedOrderEvent;
 import com.onplan.adviser.strategy.Strategy;
-import com.onplan.adviser.strategy.StrategyExecutionContext;
 import com.onplan.adviser.strategy.StrategyListener;
 import com.onplan.adviser.strategy.StrategyUtil;
 import com.onplan.adviser.strategy.system.IntegrationTestStrategy;
@@ -32,6 +31,7 @@ import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.onplan.service.impl.AdviserFactory.createStrategy;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 @Singleton
@@ -41,7 +41,7 @@ public final class StrategyServiceImpl implements StrategyService {
   private final StrategyListener strategyListener = new InternalStrategyListener();
   private final StrategyPool strategiesPool = new StrategyPool();
   private final List<Strategy> registeredStrategies = Lists.newArrayList();
-  private final Set<String> registeredInstruments = Sets.newHashSet();
+  private final Set<String> subscribedInstruments = Sets.newHashSet();
   // TODO(robertom): Register available strategies at runtime.
   private final Iterable<Class<? extends Strategy>> availableStrategies =
       ImmutableList.of(IntegrationTestStrategy.class);
@@ -79,7 +79,7 @@ public final class StrategyServiceImpl implements StrategyService {
 
   @Override
   public Set<String> getSubscribedInstruments() {
-    return ImmutableSet.copyOf(registeredInstruments);
+    return ImmutableSet.copyOf(subscribedInstruments);
   }
 
   @Override
@@ -200,7 +200,7 @@ public final class StrategyServiceImpl implements StrategyService {
     LOGGER.info(String.format(
         "[%d] strategies loaded for instruments [%s].",
         strategyConfigurations.size(),
-        Joiner.on(", ").join(registeredInstruments)));
+        Joiner.on(", ").join(subscribedInstruments)));
   }
 
   @Override
@@ -231,10 +231,17 @@ public final class StrategyServiceImpl implements StrategyService {
 
   private void loadStrategy(StrategyConfiguration strategyConfiguration) throws Exception {
     checkStrategyConfiguration(strategyConfiguration);
-    Strategy strategy = createAndInitStrategy(strategyConfiguration, strategyListener);
+    Strategy strategy = createStrategy(
+        strategyConfiguration, strategyListener, instrumentService, historicalPriceService);
+    strategy.init();
+    LOGGER.info(String.format(
+        "Strategy [%s] [%s] created and initialized for instruments [%s].",
+        strategy.getId(),
+        strategy.getClass().getName(),
+        Joiner.on(", ").join(strategy.getRegisteredInstruments())));
     strategiesPool.addStrategy(strategy);
     registeredStrategies.add(strategy);
-    registeredInstruments.addAll(strategy.getRegisteredInstruments());
+    subscribedInstruments.addAll(strategy.getRegisteredInstruments());
     LOGGER.info(String.format("Strategy [%s] [%s] loaded.",
         strategyConfiguration.getId(),
         strategyConfiguration.getClassName()));
@@ -255,9 +262,9 @@ public final class StrategyServiceImpl implements StrategyService {
     }
     checkNotNull(strategy, String.format("Strategy [%] not found.", strategyId));
     registeredStrategies.remove(strategy);
-    registeredInstruments.clear();
+    subscribedInstruments.clear();
     for (Strategy registeredStrategy : registeredStrategies) {
-      registeredInstruments.addAll(registeredStrategy.getRegisteredInstruments());
+      subscribedInstruments.addAll(registeredStrategy.getRegisteredInstruments());
     }
     LOGGER.info(String.format("Strategy [%s] un-loaded.", strategyId));
     if (priceService.isConnected()) {
@@ -267,7 +274,7 @@ public final class StrategyServiceImpl implements StrategyService {
 
   private void updatePriceServiceSubscribedInstruments() throws Exception {
     Collection<String> priceServiceInstruments = priceService.getSubscribedInstruments();
-    for (String poolInstrumentId : registeredInstruments) {
+    for (String poolInstrumentId : subscribedInstruments) {
       if (!priceServiceInstruments.contains(poolInstrumentId)) {
         priceService.subscribeInstrument(poolInstrumentId);
         LOGGER.info(String.format(
@@ -275,7 +282,7 @@ public final class StrategyServiceImpl implements StrategyService {
       }
     }
     for (String priceServiceInstrumentId : priceServiceInstruments) {
-      if (!registeredInstruments.contains(priceServiceInstrumentId)) {
+      if (!subscribedInstruments.contains(priceServiceInstrumentId)) {
         priceService.unsubscribeInstrument(priceServiceInstrumentId);
         LOGGER.info(String.format(
             "Instrument [%s] un-subscribed from price service.", priceServiceInstrumentId));
@@ -283,42 +290,7 @@ public final class StrategyServiceImpl implements StrategyService {
     }
   }
 
-  private Strategy createAndInitStrategy(StrategyConfiguration strategyConfiguration,
-      StrategyListener strategyListener) throws Exception {
-    StrategyExecutionContext strategyExecutionContext = StrategyExecutionContext.newBuilder()
-        .setStrategyId(strategyConfiguration.getId())
-        .setExecutionParameters(strategyConfiguration.getExecutionParameters())
-        .setStrategyListener(checkNotNull(strategyListener, "strategyListener is null."))
-        .setInstrumentService(checkNotNull(instrumentService, "instrumentService is null."))
-        .setHistoricalPriceService(
-            checkNotNull(historicalPriceService, "historicalPriceService is null."))
-        .setRegisteredInstruments(strategyConfiguration.getInstruments())
-        .build();
-    Class clazz = null;
-    Strategy strategy = null;
-    try {
-      clazz = getClass().getClassLoader().loadClass(strategyConfiguration.getClassName());
-      strategy = (Strategy) clazz.getConstructor(StrategyExecutionContext.class)
-          .newInstance(strategyExecutionContext);
-      strategy.init();
-    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-      LOGGER.error(e);
-      throw new Exception(String.format(
-          "[%] exception while loading strategy id [%s] for class [%s]: [%s].",
-          e,
-          strategyConfiguration.getId(),
-          strategyConfiguration.getClassName(),
-          e.getMessage()));
-    }
-    LOGGER.info(String.format(
-        "Strategy [%s] [%s] created and initialized for instruments [%s].",
-        strategy.getId(),
-        clazz.getName(),
-        Joiner.on(", ").join(strategyConfiguration.getInstruments())));
-    return strategy;
-  }
-
-  private class InternalStrategyListener implements StrategyListener {
+  private final class InternalStrategyListener implements StrategyListener {
     @Override
     public void onNewOrder(final AutomatedOrderEvent automatedOrderEvent) {
       throw new IllegalArgumentException("Not yet implemented.");
