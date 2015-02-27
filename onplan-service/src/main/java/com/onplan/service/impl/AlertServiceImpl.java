@@ -4,7 +4,6 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.onplan.adapter.HistoricalPriceService;
 import com.onplan.adapter.InstrumentService;
 import com.onplan.adviser.AdviserListener;
@@ -25,7 +24,6 @@ import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.adviser.predicate.AdviserPredicateUtil.createAdviserPredicateInfo;
@@ -36,9 +34,7 @@ import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 public class AlertServiceImpl implements AlertService {
   private static final Logger LOGGER = Logger.getLogger(AlertServiceImpl.class);
 
-  private final List<Alert> alerts = Lists.newArrayList();
   private final Map<String, Collection<Alert>> alertsMapping = Maps.newHashMap();
-  private final Set<String> subscribedInstruments = Sets.newHashSet();
   private final AdviserListener<AlertEvent> alertEventListener = new InternalAlertListener();
 
   private volatile boolean hasAlerts = false;
@@ -68,9 +64,13 @@ public class AlertServiceImpl implements AlertService {
 
   @Override
   public List<Alert> getAlerts() {
+    ImmutableList.Builder result = ImmutableList.builder();
     synchronized (this) {
-      return ImmutableList.copyOf(alerts);
+      for (Collection<Alert> alerts : alertsMapping.values()) {
+        result.addAll(alerts);
+      }
     }
+    return result.build();
   }
 
   @Override
@@ -81,7 +81,7 @@ public class AlertServiceImpl implements AlertService {
   @Override
   public void removeAlert(String alertId) throws Exception {
     synchronized (this) {
-      hasAlerts = !alerts.isEmpty();
+      hasAlerts = !alertsMapping.isEmpty();
       throw new IllegalArgumentException("Not yet implemented.");
     }
   }
@@ -89,7 +89,7 @@ public class AlertServiceImpl implements AlertService {
   @Override
   public void addAlert(AlertConfiguration alertConfigurationConfiguration) throws Exception {
     synchronized (this) {
-      hasAlerts = !alerts.isEmpty();
+      hasAlerts = !alertsMapping.isEmpty();
       throw new IllegalArgumentException("Not yet implemented.");
     }
   }
@@ -98,8 +98,10 @@ public class AlertServiceImpl implements AlertService {
   public List<AlertInfo> getAlertsInfo() {
     ImmutableList.Builder result = ImmutableList.builder();
     synchronized (this) {
-      for (Alert alert : alerts) {
-        result.add(createAlertInfo(alert));
+      for (Collection<Alert> alerts : alertsMapping.values()) {
+        for (Alert alert : alerts) {
+          result.add(createAlertInfo(alert));
+        }
       }
     }
     return result.build();
@@ -141,14 +143,12 @@ public class AlertServiceImpl implements AlertService {
     checkAlertConfiguration(alertConfiguration);
     Alert alert = createAlert(
         alertConfiguration, alertEventListener, instrumentService, historicalPriceService);
-    alerts.add(alert);
     Collection<Alert> alertsEntry = alertsMapping.get(alert.getInstrumentId());
     if (null == alertsEntry) {
       alertsEntry = Lists.newArrayList();
       alertsMapping.put(alert.getInstrumentId(), alertsEntry);
     }
     alertsEntry.add(alert);
-    subscribedInstruments.add(alert.getInstrumentId());
     LOGGER.info(String.format("Alert [%s]: [%s] loaded.",
         alert.getId(),
         alert.getMessage()));
@@ -165,7 +165,7 @@ public class AlertServiceImpl implements AlertService {
     LOGGER.info(String.format(
         "[%d] strategies loaded for instruments [%s].",
         alertConfigurations.size(),
-        Joiner.on(", ").join(subscribedInstruments)));
+        Joiner.on(", ").join(alertsMapping.keySet())));
   }
 
   private AlertInfo createAlertInfo(final Alert alert) {
