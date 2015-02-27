@@ -33,10 +33,10 @@ public abstract class AbstractDaoIT<T extends PersistentObject>
   @Test
   public void testInsertValidObject() throws Exception {
     T object = createSampleObjectWithNullId();
-    T returnedObject = dao.insert(object);
-    checkNotNullOrEmpty(returnedObject.getId());
-    T savedObject = dao.findById(returnedObject.getId());
-    assertEquals(returnedObject, savedObject);
+    String id = checkNotNullOrEmpty(dao.insert(object));
+    T savedObject = dao.findById(id);
+    object.setId(id);
+    assertEquals(object, savedObject);
     assertValidObject(savedObject);
   }
 
@@ -62,30 +62,32 @@ public abstract class AbstractDaoIT<T extends PersistentObject>
   @Test
   public void testSaveNew() throws Exception {
     T object = createSampleObjectWithNullId();
-    T returnedObject = dao.save(object);
-    T savedObject = dao.findById(returnedObject.getId());
+    String id = checkNotNullOrEmpty(dao.save(object));
+    T savedObject = dao.findById(id);
+    object.setId(id);
     assertValidObject(savedObject);
-    assertEquals(returnedObject, savedObject);
+    assertEquals(object, savedObject);
   }
 
   @Test
   public void testSaveExisting() throws Exception {
     T object = createSampleObjectWithNullId();
-    T returnedObject = dao.save(object);
-    T savedObject = dao.findById(returnedObject.getId());
-    returnedObject = dao.save(savedObject);
-    savedObject = dao.findById(returnedObject.getId());
-    assertValidObject(savedObject);
-    assertEquals(returnedObject, savedObject);
+    String id = checkNotNullOrEmpty(dao.save(object));
+    T firstCopy = dao.findById(id);
+    id = dao.save(firstCopy);
+    T secondCopy = dao.findById(id);
+    assertValidObject(firstCopy);
+    assertEquals(firstCopy, secondCopy);
   }
 
   @Test
   public void testRemove() throws Exception {
     T object = createSampleObjectWithNullId();
-    T returnedObject = dao.insert(object);
-    assertNotNull(dao.findById(returnedObject.getId()));
-    assertTrue(dao.remove(returnedObject));
-    assertTrue(dao.findById(returnedObject.getId()) == null);
+    String id = dao.insert(object);
+    T savedObject = dao.findById(id);
+    assertNotNull(savedObject);
+    assertTrue(dao.remove(savedObject));
+    assertTrue(dao.findById(id) == null);
     assertTrue(dao.findAll().size() == INITIAL_COLLECTION_SIZE);
   }
 
@@ -103,10 +105,10 @@ public abstract class AbstractDaoIT<T extends PersistentObject>
   @Test
   public void testRemoveById() throws Exception {
     T object = createSampleObjectWithNullId();
-    T returnedObject = dao.insert(object);
-    assertNotNull(dao.findById(returnedObject.getId()));
-    assertTrue(dao.removeById(returnedObject.getId()));
-    assertTrue(dao.findById(returnedObject.getId()) == null);
+    String id = dao.insert(object);
+    assertNotNull(dao.findById(id));
+    assertTrue(dao.removeById(id));
+    assertTrue(dao.findById(id) == null);
     assertTrue(dao.findAll().size() == INITIAL_COLLECTION_SIZE);
   }
 
@@ -120,11 +122,11 @@ public abstract class AbstractDaoIT<T extends PersistentObject>
   @Test
   public void testFindById() throws Exception {
     T object = createSampleObjectWithNullId();
-    T returnedObject = dao.insert(object);
-    T savedObject = dao.findById(returnedObject.getId());
+    String id = dao.insert(object);
+    T savedObject = dao.findById(id);
+    object.setId(id);
     assertValidObject(savedObject);
-    assertEquals(returnedObject.getId(), savedObject.getId());
-    assertEquals(returnedObject, savedObject);
+    assertEquals(object, savedObject);
   }
 
   @Test

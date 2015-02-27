@@ -129,9 +129,8 @@ public final class StrategyServiceImpl implements StrategyService {
   // TODO(robertom): Call the garbage collector, test the performance improvement.
   @Override
   public void addStrategy(StrategyConfiguration strategyConfiguration) throws Exception {
+    checkArgument(null == strategyConfiguration.getId());
     checkStrategyConfiguration(strategyConfiguration);
-    strategyConfiguration = strategyConfigurationDao.save(strategyConfiguration);
-    LOGGER.info(String.format("Strategy [%s] saved in database.", strategyConfiguration.getId()));
     try {
       loadStrategy(strategyConfiguration);
     } catch (Exception e) {
@@ -139,11 +138,10 @@ public final class StrategyServiceImpl implements StrategyService {
           "Error while loading strategy configuration [%s]: [%s].",
           strategyConfiguration,
           e.getMessage()));
-      strategyConfigurationDao.removeById(strategyConfiguration.getId());
-      LOGGER.info(String.format(
-          "Strategy [%s] removed from database.", strategyConfiguration.getId()));
       throw e;
     }
+    String id = strategyConfigurationDao.insert(strategyConfiguration);
+    LOGGER.info(String.format("Strategy [%s] saved in database.", id));
   }
 
   // TODO(robertom): Call the garbage collector, test the performance improvement.

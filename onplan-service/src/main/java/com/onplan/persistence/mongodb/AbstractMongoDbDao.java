@@ -51,12 +51,12 @@ public abstract class AbstractMongoDbDao<T extends PersistentObject> implements 
   }
 
   @Override
-  public T insert(T object) throws Exception{
+  public String insert(T object) throws Exception{
     checkNotNull(object);
     checkIdIsNotSet(object);
     object.setId(createNewObjectId());
     dbCollection.insert(createDbObject(object));
-    return object;
+    return object.getId();
   }
 
   @Override
@@ -72,14 +72,14 @@ public abstract class AbstractMongoDbDao<T extends PersistentObject> implements 
   }
 
   @Override
-  public T save(T object) throws Exception {
+  public String save(T object) throws Exception {
     checkNotNull(object);
     if (Strings.isNullOrEmpty(object.getId())) {
-      object = insert(object);
+      return insert(object);
     } else {
       dbCollection.save(createDbObject(object));
+      return object.getId();
     }
-    return object;
   }
 
   @Override

@@ -8,12 +8,12 @@ import java.util.List;
 public interface GenericDao<T extends PersistentObject> {
   /**
    * Saves an object , making sure that its id is not already set.
-   * Returns the object with its id set.
+   * Returns the object id.
    *
    * @param object The object to be saved.
    * @exception java.lang.Exception Error while inserting object.
    */
-  public T insert(T object) throws Exception;
+  public String insert(T object) throws Exception;
 
   /**
    * Inserts a collection of object, making sure that their id are not already set.
@@ -25,12 +25,12 @@ public interface GenericDao<T extends PersistentObject> {
 
   /**
    * Inserts an object when its id is not already set otherwise updates the object from the
-   * database.
+   * database. Returns the object id.
    *
    * @param object The object to be inserted or updated.
    * @exception java.lang.Exception Error while saving objects.
    */
-  public T save(T object) throws Exception;
+  public String save(T object) throws Exception;
 
   /**
    * Remove an object from the database. Returns true if the object was found, false otherwise.

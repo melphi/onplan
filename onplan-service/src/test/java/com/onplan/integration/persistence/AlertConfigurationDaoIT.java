@@ -21,7 +21,8 @@ public class AlertConfigurationDaoIT extends AbstractDaoIT<AlertConfiguration> {
         "Alert message %d",
         "instrumentId%d",
         createAdviserPredicates(),
-        DateTime.now().getMillis());
+        DateTime.now().getMillis(),
+        true);
   }
 
   @Override
@@ -33,7 +34,8 @@ public class AlertConfigurationDaoIT extends AbstractDaoIT<AlertConfiguration> {
           String.format("Alert message %d", i),
           String.format("instrumentId%d", i),
           createAdviserPredicates(),
-          DateTime.now().getMillis()));
+          DateTime.now().getMillis(),
+          i > 5));
     }
     return result.build();
   }

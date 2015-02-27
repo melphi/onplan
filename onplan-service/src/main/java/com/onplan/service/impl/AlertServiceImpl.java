@@ -2,6 +2,7 @@ package com.onplan.service.impl;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.onplan.adapter.HistoricalPriceService;
@@ -25,6 +26,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.adviser.predicate.AdviserPredicateUtil.createAdviserPredicateInfo;
 import static com.onplan.service.impl.AdviserFactory.createAlert;
@@ -54,7 +56,7 @@ public class AlertServiceImpl implements AlertService {
   @Override
   public void onPriceTick(final PriceTick priceTick) {
     checkNotNull(priceTick);
-    synchronized (this) {
+    synchronized (alertsMapping) {
       Iterable<Alert> alerts = alertsMapping.get(priceTick.getInstrumentId());
       for (Alert alert : alerts) {
         alert.onPriceTick(priceTick);
@@ -65,7 +67,7 @@ public class AlertServiceImpl implements AlertService {
   @Override
   public List<Alert> getAlerts() {
     ImmutableList.Builder result = ImmutableList.builder();
-    synchronized (this) {
+    synchronized (alertsMapping) {
       for (Collection<Alert> alerts : alertsMapping.values()) {
         result.addAll(alerts);
       }
@@ -80,24 +82,34 @@ public class AlertServiceImpl implements AlertService {
 
   @Override
   public void removeAlert(String alertId) throws Exception {
-    synchronized (this) {
+    synchronized (alertsMapping) {
       hasAlerts = !alertsMapping.isEmpty();
       throw new IllegalArgumentException("Not yet implemented.");
     }
   }
 
   @Override
-  public void addAlert(AlertConfiguration alertConfigurationConfiguration) throws Exception {
-    synchronized (this) {
+  public void addAlert(AlertConfiguration alertConfiguration) throws Exception {
+    checkArgument(null == alertConfiguration.getId());
+    checkAlertConfiguration(alertConfiguration);
+    try {
+      loadAlert(alertConfiguration);
       hasAlerts = !alertsMapping.isEmpty();
-      throw new IllegalArgumentException("Not yet implemented.");
+    } catch (Exception e) {
+      LOGGER.error(String.format(
+          "Error while loading alert configuration [%s]: [%s].",
+          alertConfiguration,
+          e.getMessage()));
+      throw e;
     }
+    String id = alertConfigurationDao.insert(alertConfiguration);
+    LOGGER.info(String.format("Alert [%s] saved in database.", id));
   }
 
   @Override
   public List<AlertInfo> getAlertsInfo() {
     ImmutableList.Builder result = ImmutableList.builder();
-    synchronized (this) {
+    synchronized (alertsMapping) {
       for (Collection<Alert> alerts : alertsMapping.values()) {
         for (Alert alert : alerts) {
           result.add(createAlertInfo(alert));
@@ -132,6 +144,7 @@ public class AlertServiceImpl implements AlertService {
     checkNotNullOrEmpty(alertConfiguration.getAlertMessage());
     checkNotNull(alertConfiguration.getInstrumentId());
     checkNotNull(alertConfiguration.getPredicatesChain());
+    checkArgument(!Iterables.isEmpty(alertConfiguration.getPredicatesChain()));
     for (AdviserPredicateConfiguration predicateConfiguration
         : alertConfiguration.getPredicatesChain()) {
       checkNotNullOrEmpty(predicateConfiguration.getClassName());
@@ -149,9 +162,7 @@ public class AlertServiceImpl implements AlertService {
       alertsMapping.put(alert.getInstrumentId(), alertsEntry);
     }
     alertsEntry.add(alert);
-    LOGGER.info(String.format("Alert [%s]: [%s] loaded.",
-        alert.getId(),
-        alert.getMessage()));
+    LOGGER.info(String.format("Alert [%s]: [%s] loaded.", alert.getId(), alert.getMessage()));
     // TODO(robertom): Update PriceService subscribed instruments by using a listener.
   }
 
