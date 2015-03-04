@@ -16,7 +16,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 public class IgIndexConnection extends AbstractServiceConnection {
-  private static final Logger LOGGER = Logger.getLogger(IgIndexPriceService.class);
+  private static final Logger LOGGER = Logger.getLogger(IgIndexConnection.class);
 
   private final String apiKey;
   private final String username;
