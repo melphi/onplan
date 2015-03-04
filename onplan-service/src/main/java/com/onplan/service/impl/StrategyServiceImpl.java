@@ -187,9 +187,19 @@ public final class StrategyServiceImpl implements StrategyService {
   public void loadAllStrategies() throws Exception {
     LOGGER.info("Loading strategies configuration from database.");
     List<StrategyConfiguration> strategyConfigurations = strategyConfigurationDao.findAll();
-    LOGGER.info(String.format("%s strategies found in database.", strategyConfigurations.size()));
+    LOGGER.info(String.format("{%s] strategies found in database.", strategyConfigurations.size()));
     for (StrategyConfiguration strategyConfiguration : strategyConfigurations) {
-      loadStrategy(strategyConfiguration);
+      try {
+        loadStrategy(strategyConfiguration);
+      } catch (Exception e) {
+        LOGGER.error(String.format(
+            "Error while loading strategy [%s] [%s] with parameters [%s]: [%s].",
+            strategyConfiguration.getId(),
+            strategyConfiguration.getClassName(),
+            strategyConfiguration.getExecutionParameters(),
+            e.getMessage()));
+        throw e;
+      }
     }
     checkArgument(strategyConfigurations.size() == strategiesPool.poolSize(), String.format(
         "Expected [%d] strategies registered but [%d] strategies found in the pool",
@@ -240,9 +250,6 @@ public final class StrategyServiceImpl implements StrategyService {
     strategiesPool.addStrategy(strategy);
     registeredStrategies.add(strategy);
     subscribedInstruments.addAll(strategy.getRegisteredInstruments());
-    LOGGER.info(String.format("Strategy [%s] [%s] loaded.",
-        strategyConfiguration.getId(),
-        strategyConfiguration.getClassName()));
     if (priceService.isConnected()) {
       updatePriceServiceSubscribedInstruments();
     }

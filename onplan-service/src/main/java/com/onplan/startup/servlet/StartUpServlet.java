@@ -1,7 +1,7 @@
 package com.onplan.startup.servlet;
 
 import com.google.common.collect.ImmutableMap;
-import com.onplan.scheduler.AdapterServicesActivationJob;
+import com.onplan.scheduler.ServicesActivationJob;
 import com.onplan.scheduler.GarbageCollectionJob;
 import com.onplan.startup.GuiceJobFactory;
 import org.apache.log4j.Logger;
@@ -26,6 +26,11 @@ import static org.quartz.TriggerBuilder.newTrigger;
 
 public class StartUpServlet extends HttpServlet {
   private static final Logger LOGGER = Logger.getLogger(StartUpServlet.class);
+  private static final String HOME_PAGE_CONTENT = "<html><body>" +
+      "<h1>OnPlan Service</h1>" +
+      "<p>Service is running!</p>" +
+      "<p>Click <a href=\"resetConfiguration\">here</a> to reset the configuration.</p>" +
+      "</body></html>";
 
   @Inject
   private GuiceJobFactory guiceJobFactory;
@@ -39,7 +44,7 @@ public class StartUpServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
-    resp.getWriter().print("Service is running!");
+    resp.getWriter().print(HOME_PAGE_CONTENT);
     resp.getWriter().flush();
   }
 
@@ -61,8 +66,8 @@ public class StartUpServlet extends HttpServlet {
   private Map<JobDetail, Trigger> createJobDetails() {
     ImmutableMap.Builder<JobDetail, Trigger> result = ImmutableMap.builder();
     result.put(
-        newJob(AdapterServicesActivationJob.class)
-            .withIdentity("adapterServicesActivationJob")
+        newJob(ServicesActivationJob.class)
+            .withIdentity("servicesActivationJob")
             .build(),
         newTrigger()
             .withIdentity("everyMinuteTrigger")

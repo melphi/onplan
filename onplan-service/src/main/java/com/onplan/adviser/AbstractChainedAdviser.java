@@ -30,7 +30,7 @@ public abstract class AbstractChainedAdviser<T extends AdviserEvent> implements 
     this.predicatesChain = ImmutableList.copyOf(checkNotNull(predicatesChain));
     this.adviserListener = checkNotNull(adviserListener);
     this.createdOn = DateTime.now().getMillis();
-    checkArgument(Iterables.isEmpty(predicatesChain), "Expected a non empty predicates chain.");
+    checkArgument(!Iterables.isEmpty(predicatesChain), "Expected a non empty predicates chain.");
   }
 
   @Override

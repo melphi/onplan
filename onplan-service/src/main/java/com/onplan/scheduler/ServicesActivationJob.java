@@ -1,9 +1,9 @@
 package com.onplan.scheduler;
 
-import com.google.common.base.Joiner;
 import com.onplan.adapter.PriceService;
 import com.onplan.adapter.ServiceConnection;
 import com.onplan.adapter.ServiceConnectionListener;
+import com.onplan.service.AlertService;
 import com.onplan.service.StrategyService;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -18,7 +18,6 @@ import org.quartz.JobExecutionException;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
@@ -28,8 +27,8 @@ import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
  * mechanism after an unexpected disconnection.
  */
 @DisallowConcurrentExecution
-public class AdapterServicesActivationJob implements Job {
-  private static final Logger LOGGER = Logger.getLogger(AdapterServicesActivationJob.class);
+public class ServicesActivationJob implements Job {
+  private static final Logger LOGGER = Logger.getLogger(ServicesActivationJob.class);
   private static final DateTimeFormatter DATE_TIME_FORMATTER =
       DateTimeFormat.forPattern("HH:mm").withZone(DateTimeZone.UTC);
 
@@ -43,6 +42,9 @@ public class AdapterServicesActivationJob implements Job {
 
   @Inject
   private StrategyService strategyService;
+
+  @Inject
+  private AlertService alertService;
 
   @Inject
   private PriceService priceService;
@@ -105,35 +107,22 @@ public class AdapterServicesActivationJob implements Job {
   private class InternalServiceConnectionListener implements ServiceConnectionListener {
     @Override
     public void onConnectionEstablished() {
-      LOGGER.info("Service connection established, subscribing all strategies.");
+      LOGGER.info("Service connection established, loading the advisers.");
       try {
         strategyService.loadAllStrategies();
+        alertService.loadAllAlerts();
       } catch (Exception e) {
         LOGGER.error(String.format(
             "Error while loading all registered strategies [%s].", e.getMessage()));
       }
-      LOGGER.info("Subscribing price service instruments.");
-      Set<String> instruments = strategyService.getSubscribedInstruments();
-      for (String instrumentId : instruments) {
-        try {
-          priceService.subscribeInstrument(instrumentId);
-        } catch (Exception e) {
-          LOGGER.error(String.format(
-              "Error while subscribing instrument [%s]: [%s].", instrumentId, e.getMessage()));
-          return;
-        }
-      }
-      LOGGER.info(String.format(
-          "[%d] Subscribed instruments: [%s].",
-          instruments.size(),
-          Joiner.on(", ").join(instruments)));
     }
 
     @Override
     public void onDisconnected() {
-      LOGGER.info("Service connection lost, un-subscribing all strategies.");
+      LOGGER.info("Service connection lost, un-subscribing the advisers.");
       try {
         strategyService.unLoadAllStrategies();
+        alertService.unLoadAllAlerts();
       } catch (Exception e) {
         LOGGER.error(String.format(
             "Error while un-loading all registered strategies [%s].", e.getMessage()));

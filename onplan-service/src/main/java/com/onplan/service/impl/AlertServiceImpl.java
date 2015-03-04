@@ -36,7 +36,7 @@ import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 public class AlertServiceImpl implements AlertService {
   private static final Logger LOGGER = Logger.getLogger(AlertServiceImpl.class);
 
-  private final Map<String, Collection<Alert>> alertsMapping = Maps.newHashMap();
+  private final Map<String, Collection<Alert>> alertsMapping = Maps.newTreeMap();
   private final AdviserListener<AlertEvent> alertEventListener = new InternalAlertListener();
 
   private volatile boolean hasAlerts = false;
@@ -82,9 +82,18 @@ public class AlertServiceImpl implements AlertService {
 
   @Override
   public void removeAlert(String alertId) throws Exception {
+    checkNotNullOrEmpty(alertId);
+    try {
+      unLoadAlert(alertId);
+    } catch (Exception e) {
+      LOGGER.error(String.format(
+          "Error while un-loading alert [%s]: [%s].",
+          alertId,
+          e.getMessage()));
+      throw e;
+    }
     synchronized (alertsMapping) {
       hasAlerts = !alertsMapping.isEmpty();
-      throw new IllegalArgumentException("Not yet implemented.");
     }
   }
 
@@ -94,7 +103,9 @@ public class AlertServiceImpl implements AlertService {
     checkAlertConfiguration(alertConfiguration);
     try {
       loadAlert(alertConfiguration);
-      hasAlerts = !alertsMapping.isEmpty();
+      synchronized (alertsMapping) {
+        hasAlerts = !alertsMapping.isEmpty();
+      }
     } catch (Exception e) {
       LOGGER.error(String.format(
           "Error while loading alert configuration [%s]: [%s].",
@@ -127,9 +138,10 @@ public class AlertServiceImpl implements AlertService {
         "Replacing [%d] old alerts with [%d] sample alerts.",
         oldAlerts.size(),
         sampleAlerts.size()));
-    alertConfigurationDao.removeAll();
-    alertConfigurationDao.insertAll(sampleAlerts);
     try {
+      unLoadAllAlerts();
+      alertConfigurationDao.removeAll();
+      alertConfigurationDao.insertAll(sampleAlerts);
       loadAllAlerts();
     } catch (Exception e) {
       LOGGER.error(String.format("Error while loading alerts: [%s].", e.getMessage()));
@@ -137,6 +149,37 @@ public class AlertServiceImpl implements AlertService {
       alertConfigurationDao.insertAll(oldAlerts);
       throw e;
     }
+  }
+
+  @Override
+  public void loadAllAlerts() throws Exception {
+    checkArgument(alertsMapping.isEmpty(), "Remove all the previously registered alerts first.");
+    LOGGER.info("Loading alerts configuration from database.");
+    List<AlertConfiguration> alertConfigurations = alertConfigurationDao.findAll();
+    LOGGER.info(String.format("[%s] alerts found in database.", alertConfigurations.size()));
+    for (AlertConfiguration alertConfiguration : alertConfigurations) {
+      try {
+        loadAlert(alertConfiguration);
+      } catch (Exception e) {
+        LOGGER.error(String.format(
+            "Error while loading alert [%s]: [%s].", alertConfiguration.getId(), e.getMessage()));
+        throw e;
+      }
+    }
+    LOGGER.info(String.format(
+        "[%d] alerts loaded for instruments [%s].",
+        alertConfigurations.size(),
+        Joiner.on(", ").join(alertsMapping.keySet())));
+  }
+
+  @Override
+  public void unLoadAllAlerts() {
+    synchronized (alertsMapping) {
+      if (!alertsMapping.isEmpty()) {
+        alertsMapping.clear();
+      }
+    }
+    // TODO(robertom): Update PriceService subscribed instruments by using a listener.
   }
 
   private static void checkAlertConfiguration(final AlertConfiguration alertConfiguration) {
@@ -156,27 +199,21 @@ public class AlertServiceImpl implements AlertService {
     checkAlertConfiguration(alertConfiguration);
     Alert alert = createAlert(
         alertConfiguration, alertEventListener, instrumentService, historicalPriceService);
-    Collection<Alert> alertsEntry = alertsMapping.get(alert.getInstrumentId());
-    if (null == alertsEntry) {
-      alertsEntry = Lists.newArrayList();
-      alertsMapping.put(alert.getInstrumentId(), alertsEntry);
+    synchronized (alertsMapping) {
+      Collection<Alert> alertsEntry = alertsMapping.get(alert.getInstrumentId());
+      if (null == alertsEntry) {
+        alertsEntry = Lists.newArrayList();
+        alertsMapping.put(alert.getInstrumentId(), alertsEntry);
+      }
+      alertsEntry.add(alert);
     }
-    alertsEntry.add(alert);
-    LOGGER.info(String.format("Alert [%s]: [%s] loaded.", alert.getId(), alert.getMessage()));
+    LOGGER.info(String.format("Alert [%s] for [%s] loaded.", alert.getId(), alert.getInstrumentId()));
     // TODO(robertom): Update PriceService subscribed instruments by using a listener.
   }
 
-  private void loadAllAlerts() throws Exception {
-    LOGGER.info("Loading alerts configuration from database.");
-    List<AlertConfiguration> alertConfigurations = alertConfigurationDao.findAll();
-    LOGGER.info(String.format("%s alerts found in database.", alertConfigurations.size()));
-    for (AlertConfiguration alertConfiguration : alertConfigurations) {
-      loadAlert(alertConfiguration);
-    }
-    LOGGER.info(String.format(
-        "[%d] strategies loaded for instruments [%s].",
-        alertConfigurations.size(),
-        Joiner.on(", ").join(alertsMapping.keySet())));
+  private void unLoadAlert(String alertId) throws Exception {
+    throw new IllegalArgumentException("Not yet implemented.");
+    // TODO(robertom): Update PriceService subscribed instruments by using a listener.
   }
 
   private AlertInfo createAlertInfo(final Alert alert) {

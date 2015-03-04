@@ -34,16 +34,17 @@ public final class AdviserFactory {
           .setHistoricalPriceService(historicalPriceService)
           .setRegisteredInstruments(strategyConfiguration.getInstruments())
           .build();
-      Class clazz = ClassLoader.getSystemClassLoader().loadClass(strategyConfiguration.getClassName());
+      Class clazz = getClass(strategyConfiguration.getClassName());
       return (Strategy) clazz.getConstructor(StrategyExecutionContext.class)
           .newInstance(strategyExecutionContext);
     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
       throw new Exception(String.format(
-          "[%] exception while loading strategy id [%s] for class [%s]: [%s].",
-          e,
+          "[%s] exception while loading strategy id [%s] for class [%s]: [%s].",
+          e.getClass(),
           strategyConfiguration.getId(),
           strategyConfiguration.getClassName(),
-          e.getMessage()));
+          e.getMessage()),
+          e);
     }
   }
 
@@ -90,17 +91,21 @@ public final class AdviserFactory {
           .setInstrumentService(instrumentService)
           .setHistoricalPriceService(historicalPriceService)
           .build();
-      Class clazz = ClassLoader.getSystemClassLoader()
-          .loadClass(adviserPredicateConfiguration.getClassName());
+      Class clazz = getClass(adviserPredicateConfiguration.getClassName());
       return (AdviserPredicate) clazz.getConstructor(PredicateExecutionContext.class)
           .newInstance(predicateExecutionContext);
     } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
       throw new Exception(String.format(
-          "[%] exception while loading predicate [%s] with parameters [%s]: [%s].",
-          e,
+          "[%s] exception while loading predicate [%s] with parameters [%s]: [%s].",
+          e.getClass(),
           adviserPredicateConfiguration.getClassName(),
           adviserPredicateConfiguration.getParameters(),
-          e.getMessage()));
+          e.getMessage()),
+          e);
     }
+  }
+
+  private static Class getClass(String className) throws ClassNotFoundException {
+    return AdviserFactory.class.getClassLoader().loadClass(className);
   }
 }
