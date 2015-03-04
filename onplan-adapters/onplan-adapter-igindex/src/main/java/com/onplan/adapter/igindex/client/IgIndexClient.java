@@ -101,7 +101,7 @@ public class IgIndexClient {
         .toString();
   }
 
-  private HttpClientResponse checkResponseCode(HttpClientResponse httpClientResponse) {
+  private static HttpClientResponse checkResponseCode(HttpClientResponse httpClientResponse) {
     checkArgument(HttpStatus.OK.value() == httpClientResponse.getStatusCode(),
         String.format(
             "Expected response code [%d] but was [%d].",

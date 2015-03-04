@@ -33,7 +33,7 @@ import static com.onplan.service.impl.AdviserFactory.createAlert;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 @Singleton
-public class AlertServiceImpl implements AlertService {
+public class AlertServiceImpl extends AbstractAdviserService implements AlertService {
   private static final Logger LOGGER = Logger.getLogger(AlertServiceImpl.class);
 
   private final Map<String, Collection<Alert>> alertsMapping = Maps.newTreeMap();
@@ -176,10 +176,12 @@ public class AlertServiceImpl implements AlertService {
   public void unLoadAllAlerts() {
     synchronized (alertsMapping) {
       if (!alertsMapping.isEmpty()) {
+        for (String instrumentId : alertsMapping.keySet()) {
+          dispatchInstrumentUnSubscriptionRequired(instrumentId);
+        }
         alertsMapping.clear();
       }
     }
-    // TODO(robertom): Update PriceService subscribed instruments by using a listener.
   }
 
   private static void checkAlertConfiguration(final AlertConfiguration alertConfiguration) {
@@ -207,8 +209,9 @@ public class AlertServiceImpl implements AlertService {
       }
       alertsEntry.add(alert);
     }
-    LOGGER.info(String.format("Alert [%s] for [%s] loaded.", alert.getId(), alert.getInstrumentId()));
-    // TODO(robertom): Update PriceService subscribed instruments by using a listener.
+    LOGGER.info(
+        String.format("Alert [%s] for [%s] loaded.", alert.getId(), alert.getInstrumentId()));
+    dispatchInstrumentSubscriptionRequired(alert.getInstrumentId());
   }
 
   private void unLoadAlert(String alertId) throws Exception {

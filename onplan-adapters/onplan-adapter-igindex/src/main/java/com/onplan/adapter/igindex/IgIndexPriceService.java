@@ -1,6 +1,5 @@
 package com.onplan.adapter.igindex;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.lightstreamer.ls_client.ExtendedTableInfo;
 import com.lightstreamer.ls_client.HandyTableListener;
@@ -12,7 +11,6 @@ import com.onplan.domain.PriceTick;
 import com.onplan.service.ServiceConnectionInfo;
 import org.apache.log4j.Logger;
 
-import java.util.Collection;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -44,13 +42,14 @@ public class IgIndexPriceService extends AbstractPriceService {
   }
 
   @Override
-  public boolean isConnected() {
-    return igIndexConnection.isConnected();
+  public boolean isInstrumentSubscribed(String instrumentId) {
+    checkNotNullOrEmpty(instrumentId);
+    return subscribedInstruments.containsKey(instrumentId);
   }
 
   @Override
-  public Collection<String> getSubscribedInstruments() {
-    return ImmutableSet.copyOf(subscribedInstruments.keySet());
+  public boolean isConnected() {
+    return igIndexConnection.isConnected();
   }
 
   @Override
@@ -80,7 +79,7 @@ public class IgIndexPriceService extends AbstractPriceService {
   }
 
   @Override
-  public void unsubscribeInstrument(String instrumentId) throws Exception {
+  public void unSubscribeInstrument(String instrumentId) throws Exception {
     checkNotNullOrEmpty(instrumentId);
     checkArgument(igIndexConnection.isConnected(), "Service not connected.");
     if (!subscribedInstruments.containsKey(instrumentId)) {
@@ -130,8 +129,8 @@ public class IgIndexPriceService extends AbstractPriceService {
 
     @Override
     public void onRawUpdatesLost(int itemPos, String itemName, int lostUpdates) {
-      LOGGER.warn(
-          String.format("Raw update lost: Item displayName [%s], item position [%d].", itemName, itemPos));
+      LOGGER.warn(String.format(
+          "Raw update lost: Item displayName [%s], item position [%d].", itemName, itemPos));
     }
 
     @Override

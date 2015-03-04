@@ -2,12 +2,9 @@ package com.onplan.service.impl;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.onplan.adapter.HistoricalPriceService;
 import com.onplan.adapter.InstrumentService;
-import com.onplan.adapter.PriceService;
 import com.onplan.adviser.StrategyInfo;
 import com.onplan.adviser.TemplateInfo;
 import com.onplan.adviser.alert.AlertEvent;
@@ -25,9 +22,7 @@ import org.apache.log4j.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -35,13 +30,12 @@ import static com.onplan.service.impl.AdviserFactory.createStrategy;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 @Singleton
-public final class StrategyServiceImpl implements StrategyService {
+public final class StrategyServiceImpl extends AbstractAdviserService implements StrategyService {
   private static final Logger LOGGER = Logger.getLogger(StrategyServiceImpl.class);
 
   private final StrategyListener strategyListener = new InternalStrategyListener();
   private final StrategyPool strategiesPool = new StrategyPool();
   private final List<Strategy> registeredStrategies = Lists.newArrayList();
-  private final Set<String> subscribedInstruments = Sets.newHashSet();
   // TODO(robertom): Register available strategies at runtime.
   private final Iterable<Class<? extends Strategy>> availableStrategies =
       ImmutableList.of(IntegrationTestStrategy.class);
@@ -52,20 +46,11 @@ public final class StrategyServiceImpl implements StrategyService {
   @Inject
   private InstrumentService instrumentService;
 
-  // TODO(robertom): Decouple priceService and register instruments via listener.
-  private PriceService priceService;
-
   @Inject
   private HistoricalPriceService historicalPriceService;
 
   @Inject
   private EventNotificationService eventNotificationService;
-
-  @Inject
-  public void setPriceService(PriceService priceService) {
-    checkArgument(this.priceService == null, "PriceService is already set.");
-    this.priceService = checkNotNull(priceService);
-  }
 
   @Override
   public void onPriceTick(final PriceTick priceTick) {
@@ -75,11 +60,6 @@ public final class StrategyServiceImpl implements StrategyService {
   @Override
   public List<Strategy> getStrategies() {
     return ImmutableList.copyOf(registeredStrategies);
-  }
-
-  @Override
-  public Set<String> getSubscribedInstruments() {
-    return ImmutableSet.copyOf(subscribedInstruments);
   }
 
   @Override
@@ -205,10 +185,6 @@ public final class StrategyServiceImpl implements StrategyService {
         "Expected [%d] strategies registered but [%d] strategies found in the pool",
         strategyConfigurations.size(),
         strategiesPool.poolSize()));
-    LOGGER.info(String.format(
-        "[%d] strategies loaded for instruments [%s].",
-        strategyConfigurations.size(),
-        Joiner.on(", ").join(subscribedInstruments)));
   }
 
   @Override
@@ -249,9 +225,8 @@ public final class StrategyServiceImpl implements StrategyService {
         Joiner.on(", ").join(strategy.getRegisteredInstruments())));
     strategiesPool.addStrategy(strategy);
     registeredStrategies.add(strategy);
-    subscribedInstruments.addAll(strategy.getRegisteredInstruments());
-    if (priceService.isConnected()) {
-      updatePriceServiceSubscribedInstruments();
+    for (String instrumentId : strategyConfiguration.getInstruments()) {
+      dispatchInstrumentSubscriptionRequired(instrumentId);
     }
   }
 
@@ -267,31 +242,9 @@ public final class StrategyServiceImpl implements StrategyService {
     }
     checkNotNull(strategy, String.format("Strategy [%] not found.", strategyId));
     registeredStrategies.remove(strategy);
-    subscribedInstruments.clear();
-    for (Strategy registeredStrategy : registeredStrategies) {
-      subscribedInstruments.addAll(registeredStrategy.getRegisteredInstruments());
-    }
     LOGGER.info(String.format("Strategy [%s] un-loaded.", strategyId));
-    if (priceService.isConnected()) {
-      updatePriceServiceSubscribedInstruments();
-    }
-  }
-
-  private void updatePriceServiceSubscribedInstruments() throws Exception {
-    Collection<String> priceServiceInstruments = priceService.getSubscribedInstruments();
-    for (String poolInstrumentId : subscribedInstruments) {
-      if (!priceServiceInstruments.contains(poolInstrumentId)) {
-        priceService.subscribeInstrument(poolInstrumentId);
-        LOGGER.info(String.format(
-            "Instrument [%s] subscribed in price service.", poolInstrumentId));
-      }
-    }
-    for (String priceServiceInstrumentId : priceServiceInstruments) {
-      if (!subscribedInstruments.contains(priceServiceInstrumentId)) {
-        priceService.unsubscribeInstrument(priceServiceInstrumentId);
-        LOGGER.info(String.format(
-            "Instrument [%s] un-subscribed from price service.", priceServiceInstrumentId));
-      }
+    for (String instrumentId : strategy.getRegisteredInstruments()) {
+      dispatchInstrumentUnSubscriptionRequired(instrumentId);
     }
   }
 

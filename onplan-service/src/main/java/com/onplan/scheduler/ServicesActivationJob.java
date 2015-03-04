@@ -19,6 +19,7 @@ import org.quartz.JobExecutionException;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
@@ -51,6 +52,13 @@ public class ServicesActivationJob implements Job {
 
   private ServiceConnection serviceConnection;
 
+  @Inject
+  public void setServiceConnection(ServiceConnection serviceConnection) {
+    checkArgument(null == this.serviceConnection, "Service connection already set.");
+    this.serviceConnection = checkNotNull(serviceConnection);
+    this.serviceConnection.addServiceConnectionListener(new InternalServiceConnectionListener());
+  }
+
   @Override
   public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
     performServiceActivation();
@@ -69,12 +77,6 @@ public class ServicesActivationJob implements Job {
         serviceConnection.disconnect();
       }
     }
-  }
-
-  @Inject
-  private void setServiceConnection(ServiceConnection serviceConnection) {
-    this.serviceConnection = checkNotNull(serviceConnection);
-    serviceConnection.addServiceConnectionListener(new InternalServiceConnectionListener());
   }
 
   private boolean isMarketOpen(DateTime dateTime) {

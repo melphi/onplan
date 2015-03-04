@@ -18,7 +18,7 @@ import java.util.Properties;
 /**
  * Guice module specific for IgIndex services.
  */
-// TODO(robertom): Use configuration files instead of hard coded classes.
+// TODO(robertom): Use configuration files for setting up the broker instead of hard coded classes.
 public class IgIndexGuiceModule extends AbstractModule {
   private static final String BROKER_PROPERTIES_FILE = "broker.properties";
 
@@ -36,31 +36,30 @@ public class IgIndexGuiceModule extends AbstractModule {
       String username = properties.getProperty("com.onplan.adapter.igindex.username");
       String password = properties.getProperty("com.onplan.adapter.igindex.password");
       String serverUrl = properties.getProperty("com.onplan.adapter.igindex.severUrl");
-      return new IgIndexConnection(apiKey, username, password, serverUrl);
+      igIndexServiceConnection = new IgIndexConnection(apiKey, username, password, serverUrl);
     }
     return igIndexServiceConnection;
   }
 
   @Provides
-  @Singleton
-  private ServiceConnection provideServiceConnection() throws Exception {
+  private static ServiceConnection provideServiceConnection() throws Exception {
     return getIgIndexConnectionInstance();
   }
 
-  @Provides
   @Singleton
+  @Provides
   private PriceService providePriceService() throws Exception {
     return new IgIndexPriceService(getIgIndexConnectionInstance());
   }
 
-  @Provides
   @Singleton
+  @Provides
   private HistoricalPriceService provideHistoricalPriceService() throws Exception {
     return new IgIndexHistoricalPriceService(getIgIndexConnectionInstance());
   }
 
-  @Provides
   @Singleton
+  @Provides
   private InstrumentService provideInstrumentService() throws Exception {
     return new IgIndexInstrumentService(getIgIndexConnectionInstance());
   }

@@ -3,8 +3,6 @@ package com.onplan.adapter;
 import com.onplan.domain.PriceTick;
 import com.onplan.service.ServiceConnectionInfo;
 
-import java.util.Collection;
-
 public class DummyPriceService implements PriceService {
   @Override
   public boolean isConnected() {
@@ -17,7 +15,7 @@ public class DummyPriceService implements PriceService {
   }
 
   @Override
-  public Collection<String> getSubscribedInstruments() {
+  public boolean isInstrumentSubscribed(String instrumentId) {
     throw new IllegalArgumentException("Not yet implemented.");
   }
 
@@ -37,7 +35,7 @@ public class DummyPriceService implements PriceService {
   }
 
   @Override
-  public void unsubscribeInstrument(String instrumentId) throws Exception {
+  public void unSubscribeInstrument(String instrumentId) throws Exception {
     throw new IllegalArgumentException("Not yet implemented.");
   }
 }

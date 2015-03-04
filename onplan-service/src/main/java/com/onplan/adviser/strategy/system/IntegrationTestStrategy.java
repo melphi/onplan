@@ -21,7 +21,7 @@ public class IntegrationTestStrategy extends AbstractStrategy {
     int dayOfMonth = DateTime.now(DateTimeZone.UTC).getDayOfMonth();
     if (lastFiredOn != dayOfMonth) {
       String message = String.format("Ping from integration test! Price [%s].", priceTick);
-      dispatchAlertEvent(SeverityLevel.MEDIUM, message, priceTick);
+      dispatchAlertEvent(SeverityLevel.LOW, message, priceTick);
       lastFiredOn = dayOfMonth;
       updateStatistics(priceTick, true);
     } else {

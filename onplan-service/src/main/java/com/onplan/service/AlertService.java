@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface AlertService extends AlertServiceRemote {
   public void onPriceTick(final PriceTick priceTick);
+  public void setInstrumentSubscriptionListener(
+      InstrumentSubscriptionListener instrumentSubscriptionListener);
   public List<Alert> getAlerts();
   public boolean hasAlerts();
   public void loadAllAlerts() throws Exception;

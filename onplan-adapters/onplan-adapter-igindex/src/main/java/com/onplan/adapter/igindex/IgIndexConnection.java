@@ -9,7 +9,6 @@ import com.onplan.service.ServiceConnectionInfo;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
-import java.io.IOException;
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -64,7 +63,7 @@ public class IgIndexConnection extends AbstractServiceConnection {
       LOGGER.warn("Service already connected, no need to reconnect.");
       return;
     }
-    (new ConnectionThread()).start();
+    executeConnection();
   }
 
   @Override
@@ -73,9 +72,28 @@ public class IgIndexConnection extends AbstractServiceConnection {
     lightStreamerClient.closeConnection();
   }
 
+  private void executeConnection() {
+    checkNotNull(lightStreamerClient);
+    try {
+      LOGGER.info("Retrieving IgIndex connection info.");
+      IgIndexConnectionCredentials connectionCredentials =
+          igIndexClient.login(apiKey, username, password);
+      ConnectionInfo connectionInfo = new ConnectionInfo();
+      connectionInfo.user = username;
+      connectionInfo.password = String.format("CST-%s|XST-%s",
+          connectionCredentials.getClientSessionToken(),
+          connectionCredentials.getAccountSessionToken());
+      connectionInfo.pushServerUrl = connectionCredentials.getLightStreamerEndpoint();
+      LOGGER.info("Connecting to IgIndex LightStreamer.");
+      lightStreamerClient.openConnection(connectionInfo, serviceConnectionListener);
+    } catch (Exception e) {
+      LOGGER.error("Error while connecting to the service.", e);
+    }
+  }
+
   private void updateConnectionStatus(final boolean isConnected) {
     if (isConnected == this.isConnected) {
-      LOGGER.warn(String.format("Attempt to update connected flag to [%s] but it was already [%s]",
+      LOGGER.warn(String.format("Attempt to update connected flag to [%s] but it was already [%s].",
           isConnected, this.isConnected));
       return;
     }
@@ -106,18 +124,18 @@ public class IgIndexConnection extends AbstractServiceConnection {
     @Override
     public void onConnectionEstablished() {
       LOGGER.info("Broker connection established.");
+    }
+
+    @Override
+    public void onSessionStarted(boolean isPolling) {
+      LOGGER.info("Broker session started.");
       if (validateConnection()) {
         updateConnectionStatus(true);
       }
     }
 
     @Override
-    public void onSessionStarted(boolean b) {
-      LOGGER.info("Broker session started.");
-    }
-
-    @Override
-    public void onNewBytes(long l) {
+    public void onNewBytes(long bytes) {
       // Intentionally empty.
     }
 
@@ -127,7 +145,7 @@ public class IgIndexConnection extends AbstractServiceConnection {
     }
 
     @Override
-    public void onActivityWarning(boolean b) {
+    public void onActivityWarning(boolean warningOn) {
       // Intentionally empty.
     }
 
@@ -152,28 +170,6 @@ public class IgIndexConnection extends AbstractServiceConnection {
     public void onFailure(PushConnException e) {
       LOGGER.error("onFailure.", e);
       validateConnection();
-    }
-  }
-
-  private class ConnectionThread extends Thread {
-    @Override
-    public void run() {
-      checkNotNull(lightStreamerClient);
-      try {
-        LOGGER.info("Retrieving IgIndex connection info.");
-        IgIndexConnectionCredentials connectionCredentials =
-            igIndexClient.login(apiKey, username, password);
-        ConnectionInfo connectionInfo = new ConnectionInfo();
-        connectionInfo.user = username;
-        connectionInfo.password = String.format("CST-%s|XST-%s",
-            connectionCredentials.getClientSessionToken(),
-            connectionCredentials.getAccountSessionToken());
-        connectionInfo.pushServerUrl = connectionCredentials.getLightStreamerEndpoint();
-        LOGGER.info("Connecting to IgIndex LightStreamer.");
-        lightStreamerClient.openConnection(connectionInfo, serviceConnectionListener);
-      } catch (PushConnException | PushUserException| PushServerException | IOException e) {
-        LOGGER.error("Error while connecting to the service.", e);
-      }
     }
   }
 }

@@ -1,6 +1,8 @@
 package com.onplan.startup.servlet;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.inject.Injector;
+import com.onplan.processing.PriceServiceBus;
 import com.onplan.scheduler.ServicesActivationJob;
 import com.onplan.scheduler.GarbageCollectionJob;
 import com.onplan.startup.GuiceJobFactory;
@@ -35,9 +37,13 @@ public class StartUpServlet extends HttpServlet {
   @Inject
   private GuiceJobFactory guiceJobFactory;
 
+  @Inject
+  private Injector injector;
+
   @Override
   public void init() throws ServletException {
     LOGGER.info("Application startup.");
+    startPriceServiceBus();
     startScheduler();
   }
 
@@ -61,6 +67,11 @@ public class StartUpServlet extends HttpServlet {
     } catch (SchedulerException e) {
       LOGGER.error(String.format("Error while starting scheduler: [%s]", e.getMessage()), e);
     }
+  }
+
+  private void startPriceServiceBus() {
+    LOGGER.info("Starting price service bus.");
+    injector.getInstance(PriceServiceBus.class);
   }
 
   private Map<JobDetail, Trigger> createJobDetails() {
