@@ -1,32 +1,32 @@
 package com.onplan.service.impl;
 
+import com.google.common.collect.ImmutableList;
 import com.google.inject.Injector;
 import com.onplan.adapter.ServiceConnection;
 import com.onplan.adapter.ServiceConnectionListener;
 import com.onplan.adviser.alert.AlertEvent;
-import com.onplan.notification.SmtpNotificationChannel;
-import com.onplan.notification.TwitterNotificationChannel;
+import com.onplan.notification.*;
 import com.onplan.service.EventNotificationService;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.onplan.util.MorePreconditions.checkBoolean;
+import static com.onplan.util.MorePreconditions.checkAndGetBoolean;
+import static com.onplan.util.ThreadUtils.executeAsync;
 
 @Singleton
 public class EventNotificationServiceImpl implements EventNotificationService {
   private static final Logger LOGGER = Logger.getLogger(EventNotificationServiceImpl.class);
+  private static final String TEXT_SERVICE_CONNECTED = "Service connected $_$";
+  private static final String TEXT_SERVICE_DISCONNECTED = "Service disconnected (-_-)zzZ";
 
-  private volatile boolean notifyServiceConnection;
-  private volatile boolean notifyServiceDisconnection;
-  private volatile boolean enableTwitterNotification;
-  private volatile boolean enableSmtpNotification;
-
-  private volatile TwitterNotificationChannel twitterNotificationChannel;
-  private volatile SmtpNotificationChannel smtpNotificationChannel;
+  private final boolean notifyServiceConnection;
+  private final boolean notifyServiceDisconnection;
+  private final Iterable<NotificationChannel> notificationChannels;
 
   private ServiceConnection serviceConnection;
   private ServiceConnectionListener serviceConnectionListener = new ServiceConnectionListenerImpl();
@@ -35,88 +35,88 @@ public class EventNotificationServiceImpl implements EventNotificationService {
   private Injector injector;
 
   @Inject
-  public void setNotifyServiceConnection(
-      @Named("notification.notify.service.connection") String value) {
-    notifyServiceConnection = checkBoolean(value);
-  }
-
-  @Inject
-  public void setNotifyServiceDisconnection(
-      @Named("notification.notify.service.disconnection") String value) {
-    notifyServiceDisconnection = checkBoolean(value);
-  }
-
-  @Inject
-  public void setEnableTwitterNotification(
-      @Named("notification.enable.twitter") String value) {
-    this.enableTwitterNotification = checkBoolean(value);
-    if (this.enableTwitterNotification) {
-      this.twitterNotificationChannel = injector.getInstance(TwitterNotificationChannel.class);
-    } else {
-      this.twitterNotificationChannel = null;
-    }
-  }
-
-  @Inject
-  public void setEnableSmtpNotification(
-      @Named("notification.enable.smtp") String value) {
-    this.enableSmtpNotification = checkBoolean(value);
-    if (this.enableSmtpNotification) {
-      this.smtpNotificationChannel = injector.getInstance(SmtpNotificationChannel.class);
-    } else {
-      this.smtpNotificationChannel = null;
-    }
-  }
-
-  @Inject
   public void setServiceConnection(ServiceConnection serviceConnection) {
     this.serviceConnection = checkNotNull(serviceConnection);
     serviceConnection.addServiceConnectionListener(serviceConnectionListener);
   }
 
-  // TODO(robertom): Just send the message to the JMS and that is it.
-  @Override
-  public void notifyAlertAsync(final AlertEvent alertEvent) {
-    String title = String.format(
-        "[%s] alert, severity: [%s]",
-        alertEvent.getPriceTick().getInstrumentId(),
-        alertEvent.getSeverityLevel());
-    String message = alertEvent.getMessage();
-    (new ChannelsNotificationThread(title, message)).run();
+  @Inject
+  public EventNotificationServiceImpl(
+      @Named("notification.notify.service.connection") String notifyServiceConnection,
+      @Named("notification.notify.service.disconnection") String notifyServiceDisconnection,
+      @Named("notification.twitter.enabled") String enableTwitterNotification,
+      @Named("notification.smtp.enabled") String enableSmtpNotification,
+      @Named("notification.amazonsqs.enabled") String enableAmazonSqsNotification) {
+    this.notifyServiceConnection = checkAndGetBoolean(notifyServiceConnection);
+    this.notifyServiceDisconnection = checkAndGetBoolean(notifyServiceDisconnection);
+    ImmutableList.Builder<NotificationChannel> notificationChannels = ImmutableList.builder();
+    if (checkAndGetBoolean(enableAmazonSqsNotification)) {
+      notificationChannels.add(injector.getInstance(AmazonSQSNotificationChannel.class));
+    }
+    if (checkAndGetBoolean(enableTwitterNotification)) {
+      notificationChannels.add(injector.getInstance(TwitterNotificationChannel.class));
+    }
+    if (checkAndGetBoolean(enableSmtpNotification)) {
+      notificationChannels.add(injector.getInstance(SmtpNotificationChannel.class));
+    }
+    this.notificationChannels = notificationChannels.build();
   }
 
-  private class ChannelsNotificationThread extends Thread {
-    private final String title;
-    private final String message;
+  @Override
+  public void notifyAlertEventAsync(final AlertEvent alertEvent) {
+    executeAsync(new AlertEventNotification(alertEvent));
+  }
 
-    private ChannelsNotificationThread(String title, String message) {
-      this.title = title;
-      this.message = message;
+  @Override
+  public void notifySystemEventAsync(final SystemEvent systemEvent) {
+    executeAsync(new SystemEventNotification(systemEvent));
+  }
+
+  private class AlertEventNotification implements Runnable {
+    private final AlertEvent alertEvent;
+
+    public AlertEventNotification(AlertEvent alertEvent) {
+      this.alertEvent = alertEvent;
     }
 
     @Override
     public void run() {
-      LOGGER.info(String.format("Notifying message [%s] [%s].", title, message));
-      if (enableTwitterNotification) {
+      LOGGER.info(String.format("Notifying alert event [%s].", alertEvent.getMessage()));
+      for (NotificationChannel notificationChannel : notificationChannels) {
         try {
-          twitterNotificationChannel.notifyMessage(title, message);
+          notificationChannel.notifyAlertEvent(alertEvent);
         } catch (Exception e) {
           LOGGER.equals(String.format(
-              "Error [%s] while sending Twitter notification message [%s] [%s].",
+              "Error [%s] while sending alert notification [%s] to [%s].",
               e.getMessage(),
-              title,
-              message));
+              alertEvent.getMessage(),
+              notificationChannel.getClass().getName()));
         }
       }
-      if (enableSmtpNotification) {
+    }
+  }
+
+  private class SystemEventNotification implements Runnable {
+    private final SystemEvent systemEvent;
+
+    private SystemEventNotification(SystemEvent systemEvent) {
+      this.systemEvent = systemEvent;
+    }
+
+    @Override
+    public void run() {
+      LOGGER.info(String.format("Notifying system event [%s] [%s].",
+          systemEvent.getClassName(), systemEvent.getMessage()));
+      for (NotificationChannel notificationChannel : notificationChannels) {
         try {
-          smtpNotificationChannel.notifyMessage(title, message);
+          notificationChannel.notifySystemEvent(systemEvent);
         } catch (Exception e) {
           LOGGER.equals(String.format(
-              "Error [%s] while sending SMTP notification message [%s] [%s].",
+              "Error [%s] while sending system event notification [%s] [%s] to [%s].",
               e.getMessage(),
-              title,
-              message));
+              systemEvent.getClassName(),
+              systemEvent.getMessage(),
+              notificationChannel.getClass().getName()));
         }
       }
     }
@@ -131,11 +131,11 @@ public class EventNotificationServiceImpl implements EventNotificationService {
       }
       if(notifyServiceConnection) {
         LOGGER.info("Notifying ServiceConnection connection.");
-        try {
-          new ChannelsNotificationThread("ServiceConnection.", "Service connected $_$").run();
-        } catch (Exception e) {
-          LOGGER.error(e);
-        }
+        SystemEvent systemEvent = new SystemEvent(
+            EventNotificationService.class,
+            TEXT_SERVICE_CONNECTED,
+            DateTime.now().getMillis());
+        notifySystemEventAsync(systemEvent);
       }
     }
 
@@ -147,12 +147,11 @@ public class EventNotificationServiceImpl implements EventNotificationService {
       }
       if(notifyServiceDisconnection) {
         LOGGER.info("Notifying service disconnection.");
-        try {
-          new ChannelsNotificationThread(
-              "ServiceConnection.", "Service disconnected (-_-)zzZ").run();
-        } catch (Exception e) {
-          LOGGER.error(e);
-        }
+        SystemEvent systemEvent = new SystemEvent(
+            EventNotificationService.class,
+            TEXT_SERVICE_DISCONNECTED,
+            DateTime.now().getMillis());
+        notifySystemEventAsync(systemEvent);
       }
     }
   }

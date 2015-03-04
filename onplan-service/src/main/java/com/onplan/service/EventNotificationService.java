@@ -1,11 +1,23 @@
 package com.onplan.service;
 
 import com.onplan.adviser.alert.AlertEvent;
+import com.onplan.notification.SystemEvent;
 
+/**
+ * Notifies alerts and system events to the registered channels (eg. SMTP, JMS, Twitter, etc).
+ */
 public interface EventNotificationService {
   /**
-   * Dispatches the message in a separated thread.
+   * Dispatches the alert event to via the active channels in a separated thread.
+   *
    * @param alertEvent The alert event.
    */
-  public void notifyAlertAsync(AlertEvent alertEvent);
+  public void notifyAlertEventAsync(AlertEvent alertEvent);
+
+  /**
+   * Dispatches the system event to via the active channels in a separated thread.
+   *
+   * @param systemEvent The system event.
+   */
+  public void notifySystemEventAsync(final SystemEvent systemEvent);
 }

@@ -1,8 +1,6 @@
 package com.onplan.startup.servlet;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.inject.Injector;
-import com.onplan.processing.PriceServiceBus;
 import com.onplan.scheduler.AdapterServicesActivationJob;
 import com.onplan.scheduler.GarbageCollectionJob;
 import com.onplan.startup.GuiceJobFactory;
@@ -30,15 +28,11 @@ public class StartUpServlet extends HttpServlet {
   private static final Logger LOGGER = Logger.getLogger(StartUpServlet.class);
 
   @Inject
-  private Injector injector;
-
-  @Inject
   private GuiceJobFactory guiceJobFactory;
 
   @Override
   public void init() throws ServletException {
     LOGGER.info("Application startup.");
-    startPriceServiceBus();
     startScheduler();
   }
 
@@ -47,10 +41,6 @@ public class StartUpServlet extends HttpServlet {
       throws ServletException, IOException {
     resp.getWriter().print("Service is running!");
     resp.getWriter().flush();
-  }
-
-  private void startPriceServiceBus() {
-    injector.getInstance(PriceServiceBus.class);
   }
 
   private void startScheduler() {

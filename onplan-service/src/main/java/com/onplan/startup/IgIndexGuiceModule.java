@@ -10,7 +10,7 @@ import com.onplan.adapter.igindex.IgIndexConnection;
 import com.onplan.adapter.igindex.IgIndexHistoricalPriceService;
 import com.onplan.adapter.igindex.IgIndexInstrumentService;
 import com.onplan.adapter.igindex.IgIndexPriceService;
-import com.onplan.util.PropertiesUtil;
+import com.onplan.util.PropertiesUtils;
 
 import javax.inject.Singleton;
 import java.util.Properties;
@@ -31,7 +31,7 @@ public class IgIndexGuiceModule extends AbstractModule {
 
   private static IgIndexConnection getIgIndexConnectionInstance() throws Exception {
     if (null == igIndexServiceConnection) {
-      Properties properties = PropertiesUtil.loadPropertiesFromFile(BROKER_PROPERTIES_FILE);
+      Properties properties = PropertiesUtils.loadPropertiesFromFile(BROKER_PROPERTIES_FILE);
       String apiKey = properties.getProperty("com.onplan.adapter.igindex.apiKey");
       String username = properties.getProperty("com.onplan.adapter.igindex.username");
       String password = properties.getProperty("com.onplan.adapter.igindex.password");

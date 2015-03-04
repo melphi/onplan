@@ -5,7 +5,7 @@ import com.onplan.adviser.predicate.AbstractAdviserPredicate;
 import com.onplan.adviser.predicate.PredicateExecutionContext;
 import com.onplan.domain.PriceTick;
 
-import static com.onplan.util.PropertiesUtil.getRequiredDoubleValue;
+import static com.onplan.util.PropertiesUtils.getRequiredDoubleValue;
 
 @TemplateMetaData(
     displayName = "Price less than",

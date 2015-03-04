@@ -1,7 +1,8 @@
 package com.onplan.notification;
 
 import com.google.common.base.Strings;
-import com.onplan.util.StringUtil;
+import com.onplan.adviser.alert.AlertEvent;
+import com.onplan.util.StringUtils;
 import org.apache.log4j.Logger;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -20,20 +21,12 @@ public class TwitterNotificationChannel implements NotificationChannel {
   private static final String MESSAGE_TRIMMED_SUFFIX = "..";
 
   private final Twitter twitterClient = TwitterFactory.getSingleton();
+  private final String recipientScreenName;
 
   @Inject
-  @Named("twitter.destination.recipientScreenName")
-  private String destinationRecipentScreenName;
-
-  @Override
-  public void notifyMessage(String title, String body) throws Exception {
-    checkNotNullOrEmpty(destinationRecipentScreenName);
-    String message = String.format("[%s] %s", title, body);
-    LOGGER.info(String.format(
-        "Sending Twitter notification to recipient [%s]: [%s]",
-        destinationRecipentScreenName,
-        message));
-    sendDirectMessage(destinationRecipentScreenName, message);
+  public TwitterNotificationChannel(
+      @Named("notification.twitter.recipientScreeName") String recipientScreenName) {
+    this.recipientScreenName = checkNotNullOrEmpty(recipientScreenName);
   }
 
   private void sendDirectMessage(String destinationRecipientScreenName, String message)
@@ -41,7 +34,7 @@ public class TwitterNotificationChannel implements NotificationChannel {
     try {
       twitterClient.sendDirectMessage(
           destinationRecipientScreenName,
-          StringUtil.trimText(message, MESSAGE_MAX_LENGTH, MESSAGE_TRIMMED_SUFFIX));
+          StringUtils.trimText(message, MESSAGE_MAX_LENGTH, MESSAGE_TRIMMED_SUFFIX));
     } catch (TwitterException e) {
       LOGGER.error(String.format(
           "Error while sending Twitter notification to recipient [%s]: [%s].",
@@ -49,6 +42,33 @@ public class TwitterNotificationChannel implements NotificationChannel {
           e.getMessage()));
       throw new Exception(e);
     }
+  }
+
+  @Override
+  public void notifySystemEvent(SystemEvent systemEvent) throws Exception {
+    String message = String.format(
+        "[%s]: [%s] severity: [%s]",
+        systemEvent.getClassName(),
+        systemEvent.getMessage());
+    LOGGER.info(String.format(
+        "Sending system event Twitter notification to recipient [%s]: [%s]",
+        recipientScreenName,
+        message));
+    sendDirectMessage(recipientScreenName, message);
+  }
+
+  @Override
+  public void notifyAlertEvent(AlertEvent alertEvent) throws Exception {
+    String message = String.format(
+        "[%s]: [%s] severity: [%s]",
+        alertEvent.getPriceTick().getInstrumentId(),
+        alertEvent.getMessage(),
+        alertEvent.getSeverityLevel());
+    LOGGER.info(String.format(
+        "Sending alert event Twitter notification to recipient [%s]: [%s]",
+        recipientScreenName,
+        message));
+    sendDirectMessage(recipientScreenName, message);
   }
 
   @Override

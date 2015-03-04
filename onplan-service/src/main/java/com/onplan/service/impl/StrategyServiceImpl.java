@@ -296,7 +296,7 @@ public final class StrategyServiceImpl implements StrategyService {
 
     @Override
     public void onAlert(final AlertEvent alertEvent) {
-      eventNotificationService.notifyAlertAsync(alertEvent);
+      eventNotificationService.notifyAlertEventAsync(alertEvent);
     }
   }
 }

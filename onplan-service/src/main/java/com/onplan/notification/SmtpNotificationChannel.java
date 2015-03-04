@@ -1,5 +1,6 @@
 package com.onplan.notification;
 
+import com.onplan.adviser.alert.AlertEvent;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
@@ -20,14 +21,8 @@ public class SmtpNotificationChannel implements NotificationChannel {
   private final String password;
   private final int port;
   private final boolean useSsl;
-
-  @Inject
-  @Named("email.from")
-  private String from;
-
-  @Inject
-  @Named("email.to")
-  private String to;
+  private final String from;
+  private final String to;
 
   @Inject
   public SmtpNotificationChannel(
@@ -35,19 +30,37 @@ public class SmtpNotificationChannel implements NotificationChannel {
       @Named("smtp.username") String username,
       @Named("smtp.password") String password,
       @Named("smtp.port") String port,
-      @Named("smtp.useSsl") String useSsl) {
+      @Named("smtp.useSsl") String useSsl,
+      @Named("notification.smtp.from") String from,
+      @Named("notification.smtp.to") String to) {
     this.host = checkNotNullOrEmpty(host);
     this.username = checkNotNullOrEmpty(username);
     this.password = checkNotNullOrEmpty(password);
     this.port = Integer.valueOf(port);
     this.useSsl = Boolean.valueOf(useSsl);
+    this.from = checkNotNullOrEmpty(from);
+    this.to = checkNotNullOrEmpty(to);
   }
 
   @Override
-  public void notifyMessage(String title, String body) throws Exception {
+  public void notifySystemEvent(SystemEvent systemEvent) throws Exception {
+    LOGGER.info(String.format(
+        "Sending system event email (SMTP) notification to [%s]. Subject: [%s]",
+        to,
+        systemEvent.getClassName()));
+    createEmail(systemEvent.getClassName(), systemEvent.getMessage()).send();
+  }
+
+  @Override
+  public void notifyAlertEvent(AlertEvent alertEvent) throws Exception {
+    String title = String.format(
+        "[%s] alert, severity: [%s]",
+        alertEvent.getPriceTick().getInstrumentId(),
+        alertEvent.getSeverityLevel());
+    String message = alertEvent.getMessage();
     LOGGER.info(
-        String.format("Sending email (SMTP) notification to [%s]. Subject: [%s]", to, title));
-    createEmail(title, body).send();
+        String.format("Sending alert event email (SMTP) to [%s]. Subject: [%s]", to, title));
+    createEmail(title, message).send();
   }
 
   @Override

@@ -6,6 +6,7 @@ import com.onplan.persistence.AlertConfigurationDao;
 import com.onplan.persistence.StrategyConfigurationDao;
 import com.onplan.persistence.mongodb.MongoDbAlertConfigurationDao;
 import com.onplan.persistence.mongodb.MongoDbStrategyConfigurationDao;
+import com.onplan.processing.PriceServiceBus;
 import com.onplan.service.AlertService;
 import com.onplan.service.EventNotificationService;
 import com.onplan.service.StrategyService;
@@ -14,10 +15,11 @@ import com.onplan.service.impl.EventNotificationServiceImpl;
 import com.onplan.service.impl.StrategyServiceImpl;
 import org.apache.log4j.Logger;
 
+import javax.inject.Singleton;
 import java.util.Collection;
 import java.util.Properties;
 
-import static com.onplan.util.PropertiesUtil.loadAllPropertiesFromClassPath;
+import static com.onplan.util.PropertiesUtils.loadAllPropertiesFromClassPath;
 
 public class GuiceModule extends AbstractModule {
   private static final Logger LOGGER = Logger.getLogger(GuiceModule.class);
@@ -37,6 +39,8 @@ public class GuiceModule extends AbstractModule {
     bind(AlertService.class).to(AlertServiceImpl.class);
     bind(StrategyService.class).to(StrategyServiceImpl.class);
     bind(EventNotificationService.class).to(EventNotificationServiceImpl.class);
+
+    bind(PriceServiceBus.class).in(Singleton.class);
   }
 
   private void loadPropertyFiles() throws Exception {

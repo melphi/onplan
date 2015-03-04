@@ -22,13 +22,13 @@ import com.onplan.service.StrategyService;
 import com.onplan.service.impl.AlertServiceImpl;
 import com.onplan.service.impl.EventNotificationServiceImpl;
 import com.onplan.service.impl.StrategyServiceImpl;
-import com.onplan.util.PropertiesUtil;
+import com.onplan.util.PropertiesUtils;
 
 import javax.inject.Singleton;
 import java.util.List;
 import java.util.Properties;
 
-import static com.onplan.util.PropertiesUtil.loadPropertiesFromFile;
+import static com.onplan.util.PropertiesUtils.loadPropertiesFromFile;
 
 public class GuiceTestingModule extends AbstractModule {
   private static final String BROKER_PROPERTIES_FILE = "broker-testing.properties";
@@ -57,7 +57,7 @@ public class GuiceTestingModule extends AbstractModule {
 
   private static IgIndexConnection getIgIndexConnectionInstance() throws Exception {
     if (null == igIndexServiceConnection) {
-      Properties properties = PropertiesUtil.loadPropertiesFromFile(BROKER_PROPERTIES_FILE);
+      Properties properties = PropertiesUtils.loadPropertiesFromFile(BROKER_PROPERTIES_FILE);
       String apiKey = properties.getProperty("com.onplan.adapter.igindex.apiKey");
       String username = properties.getProperty("com.onplan.adapter.igindex.username");
       String password = properties.getProperty("com.onplan.adapter.igindex.password");

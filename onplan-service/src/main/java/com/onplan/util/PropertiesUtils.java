@@ -15,7 +15,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
-public final class PropertiesUtil {
+public final class PropertiesUtils {
   private static final String PROPERTIES_FILE_EXTENSION = "properties";
 
   public static Optional<String> getStringValue(Map<String, String> parameters, String key) {
@@ -67,7 +67,7 @@ public final class PropertiesUtil {
   public static Properties loadPropertiesFromFile(String propertiesFile)
       throws Exception {
     checkNotNullOrEmpty(propertiesFile);
-    URL fileUrl = PropertiesUtil.class.getClassLoader().getResource(propertiesFile);
+    URL fileUrl = PropertiesUtils.class.getClassLoader().getResource(propertiesFile);
     checkNotNull(fileUrl, String.format("File [%s] not found.", propertiesFile));
     return loadPropertiesFromFile(new File(fileUrl.getFile()));
   }
@@ -81,7 +81,7 @@ public final class PropertiesUtil {
   public static Collection<Properties> loadAllPropertiesFromClassPath()
       throws Exception {
     ImmutableList.Builder<Properties> result = ImmutableList.builder();
-    URL baseUrl = PropertiesUtil.class.getClassLoader().getResource(".");
+    URL baseUrl = PropertiesUtils.class.getClassLoader().getResource(".");
     checkNotNull(baseUrl);
     Collection<File> files = FileUtils.listFiles(
         new File(baseUrl.getFile()), new String[]{PROPERTIES_FILE_EXTENSION}, false);

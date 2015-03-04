@@ -197,7 +197,7 @@ public class AlertServiceImpl implements AlertService {
   private final class InternalAlertListener implements AdviserListener<AlertEvent> {
     @Override
     public void onEvent(AlertEvent event) {
-      eventNotificationService.notifyAlertAsync(event);
+      eventNotificationService.notifyAlertEventAsync(event);
     }
   }
 }
