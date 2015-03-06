@@ -13,7 +13,7 @@ import javax.inject.Singleton;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 @Singleton
-public class SmtpNotificationChannel implements NotificationChannel {
+public final class SmtpNotificationChannel implements NotificationChannel {
   private static final Logger LOGGER = Logger.getLogger(SmtpNotificationChannel.class);
 
   private final String host;

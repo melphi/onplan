@@ -17,7 +17,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @param <V> Return value of type enum.
  * @param <K> Key value.
  */
-public class CompleteEnumMapper<K, V extends Enum> implements Mapper<K, V> {
+public final class CompleteEnumMapper<K, V extends Enum> implements Mapper<K, V> {
   private final ImmutableMap<K, V> map;
 
   public static <K, V extends Enum>Builder newBuilder(Class<V> enumClass) {

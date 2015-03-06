@@ -13,7 +13,7 @@ import static com.onplan.util.PropertiesUtils.getRequiredDoubleValue;
         PriceLessThanPredicate.PARAMETER_PRICE_VALUE}
 )
 // TODO(robertom): Implement the ask/bid choice.
-public class PriceLessThanPredicate extends AbstractAdviserPredicate {
+public final class PriceLessThanPredicate extends AbstractAdviserPredicate {
   public static final String PARAMETER_PRICE_VALUE = "priceValue";
 
   private double priceValue;

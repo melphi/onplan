@@ -15,7 +15,7 @@ import javax.inject.Singleton;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 @Singleton
-public class TwitterNotificationChannel implements NotificationChannel {
+public final  class TwitterNotificationChannel implements NotificationChannel {
   private static final Logger LOGGER = Logger.getLogger(TwitterNotificationChannel.class);
   private static final int MESSAGE_MAX_LENGTH = 140;
   private static final String MESSAGE_TRIMMED_SUFFIX = "..";

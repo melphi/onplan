@@ -8,7 +8,7 @@ import java.io.Serializable;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
-public class InstrumentInfo implements Serializable {
+public final class InstrumentInfo implements Serializable {
   private final String instrumentId;
   private final String instrumentName;
   private final int priceMinimalDecimalPosition;

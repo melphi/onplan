@@ -33,7 +33,7 @@ import static com.onplan.service.impl.AdviserFactory.createAlert;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 @Singleton
-public class AlertServiceImpl extends AbstractAdviserService implements AlertService {
+public final class AlertServiceImpl extends AbstractAdviserService implements AlertService {
   private static final Logger LOGGER = Logger.getLogger(AlertServiceImpl.class);
 
   private final Map<String, Collection<Alert>> alertsMapping = Maps.newTreeMap();
@@ -234,7 +234,7 @@ public class AlertServiceImpl extends AbstractAdviserService implements AlertSer
         alert.getRepeat());
   }
 
-  private final class InternalAlertListener implements AdviserListener<AlertEvent> {
+  private class InternalAlertListener implements AdviserListener<AlertEvent> {
     @Override
     public void onEvent(AlertEvent event) {
       eventNotificationService.notifyAlertEventAsync(event);

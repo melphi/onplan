@@ -5,7 +5,7 @@ import com.google.common.base.Objects;
 
 import java.io.Serializable;
 
-public class AlertInfo implements Serializable {
+public final class AlertInfo implements Serializable {
   private String id;
   private Iterable<AdviserPredicateInfo> predicatesInfo;
   private String message;

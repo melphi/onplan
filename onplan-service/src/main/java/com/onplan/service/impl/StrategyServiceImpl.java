@@ -248,7 +248,7 @@ public final class StrategyServiceImpl extends AbstractAdviserService implements
     }
   }
 
-  private final class InternalStrategyListener implements StrategyListener {
+  private class InternalStrategyListener implements StrategyListener {
     @Override
     public void onNewOrder(final AutomatedOrderEvent automatedOrderEvent) {
       throw new IllegalArgumentException("Not yet implemented.");

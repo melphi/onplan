@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @Singleton
-public class MongoDbStrategyConfigurationDao extends AbstractMongoDbDao<StrategyConfiguration>
+public final class MongoDbStrategyConfigurationDao extends AbstractMongoDbDao<StrategyConfiguration>
     implements StrategyConfigurationDao {
   private static final String STRATEGY_CONFIGURATION_COLLECTION = "strategyConfiguration";
 

@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 /**
  * Renames the object id field to make it MongoDb compatible during the JSON transformation.
  */
-public class MongoDbPropertyNamingStrategy extends PropertyNamingStrategy {
+public final class MongoDbPropertyNamingStrategy extends PropertyNamingStrategy {
   private static final String OBJECT_ID_FIELD_NAME = "id";
   private static final String MONGO_ID_FIELD_NAME = "_id";
 

@@ -4,7 +4,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
-public class SystemEvent {
+public final class SystemEvent {
   private final String className;
   private final String message;
   private final long createdOn;

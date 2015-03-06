@@ -21,7 +21,7 @@ import java.util.Map;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
-public class HttpClientRequest {
+public final class HttpClientRequest {
   private final String url;
   private final String body;
   private final Map<String, String> headers;

@@ -13,7 +13,7 @@ import static com.onplan.util.PriceBarUtil.*;
     displayName = "Price spike",
     availableParameters = {PriceSpikePredicate.PROPERTY_MINIMUM_PIPS}
 )
-public class PriceSpikePredicate extends AbstractAdviserPredicate {
+public final class PriceSpikePredicate extends AbstractAdviserPredicate {
   public static final String PROPERTY_MINIMUM_PIPS = "minimumPips";
 
   private int priceMinimalDecimalPosition;

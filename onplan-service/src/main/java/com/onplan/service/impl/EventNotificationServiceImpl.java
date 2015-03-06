@@ -19,7 +19,7 @@ import static com.onplan.util.MorePreconditions.checkAndGetBoolean;
 import static com.onplan.util.ThreadUtils.executeAsync;
 
 @Singleton
-public class EventNotificationServiceImpl implements EventNotificationService {
+public final class EventNotificationServiceImpl implements EventNotificationService {
   private static final Logger LOGGER = Logger.getLogger(EventNotificationServiceImpl.class);
   private static final String TEXT_SERVICE_CONNECTED = "Service connected $_$";
   private static final String TEXT_SERVICE_DISCONNECTED = "Service disconnected (-_-)zzZ";

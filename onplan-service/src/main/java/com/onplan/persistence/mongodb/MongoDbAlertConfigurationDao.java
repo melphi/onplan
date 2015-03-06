@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @Singleton
-public class MongoDbAlertConfigurationDao extends AbstractMongoDbDao<AlertConfiguration>
+public final class MongoDbAlertConfigurationDao extends AbstractMongoDbDao<AlertConfiguration>
     implements AlertConfigurationDao {
   private static final String ALERT_CONFIGURATION_COLLECTION = "alertConfiguration";
 

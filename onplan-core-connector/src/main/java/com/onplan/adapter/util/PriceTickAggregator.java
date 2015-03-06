@@ -10,7 +10,7 @@ import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 import static com.onplan.util.PriceBarUtil.getCurrentBarCloseTimestamp;
 import static com.onplan.util.PriceBarUtil.getCurrentBarOpenTimestamp;
 
-public class PriceTickAggregator {
+public final class PriceTickAggregator {
   private final PriceListener priceListener;
   private final PriceBarTimeFrame priceBarTimeFrame;
   private final String instrumentId;

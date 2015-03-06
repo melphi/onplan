@@ -55,7 +55,7 @@ public final class PriceServiceBus {
         priceService.getServiceConnectionInfo().getProviderName()));
   }
 
-  private class InternalPriceListener implements PriceListener {
+  private final class InternalPriceListener implements PriceListener {
     @Override
     public void onPriceTick(final PriceTick priceTick) {
       strategyService.onPriceTick(priceTick);
@@ -70,7 +70,7 @@ public final class PriceServiceBus {
     }
   }
 
-  private class AlertServiceNotification implements Runnable {
+  private final class AlertServiceNotification implements Runnable {
     private final PriceTick priceTick;
 
     public AlertServiceNotification(final PriceTick priceTick) {
@@ -83,7 +83,8 @@ public final class PriceServiceBus {
     }
   }
 
-  private class InternalInstrumentSubscriptionListener implements InstrumentSubscriptionListener {
+  private final class InternalInstrumentSubscriptionListener
+      implements InstrumentSubscriptionListener {
     @Override
     public void onInstrumentSubscriptionRequest(final String instrumentId) {
       if (!priceService.isInstrumentSubscribed(instrumentId)) {

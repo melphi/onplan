@@ -5,7 +5,7 @@ import com.google.common.base.Objects;
 
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
-public class PriceBar implements Price {
+public final class PriceBar implements Price {
   private final String instrumentId;
   private final long timestamp;
   private final int intervalMilliseconds;

@@ -5,7 +5,7 @@ import com.google.common.base.Objects;
 
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
-public class PriceTick implements Price {
+public final class PriceTick implements Price {
   private final String instrumentId;
   private final long timestamp;
   private final double closePriceAsk;

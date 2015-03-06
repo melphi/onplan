@@ -16,7 +16,7 @@ import static com.onplan.util.JsonUtils.createJson;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 @Singleton
-public class AmazonSQSNotificationChannel implements NotificationChannel {
+public final class AmazonSQSNotificationChannel implements NotificationChannel {
   private static final Logger LOGGER = Logger.getLogger(AmazonSQSNotificationChannel.class);
 
   private final AmazonSQS sqsClient;

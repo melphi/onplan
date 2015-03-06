@@ -7,7 +7,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 /**
  * Additional preconditions.
  */
-public class MorePreconditions {
+public final class MorePreconditions {
   public static final String TRUE = "true";
   public static final String FALSE = "false";
 

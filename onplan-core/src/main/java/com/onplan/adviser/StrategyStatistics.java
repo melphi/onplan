@@ -5,7 +5,7 @@ import com.google.common.base.Objects;
 
 import java.io.Serializable;
 
-public class StrategyStatistics implements Serializable {
+public final class StrategyStatistics implements Serializable {
   private long lastReceivedTickTimestamp;
   private long receivedTicks;
   private long eventsDispatchedCounter;

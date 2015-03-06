@@ -6,7 +6,7 @@ import com.onplan.domain.PriceTick;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
-public class AlertEvent extends AbstractAdviserEvent {
+public final class AlertEvent extends AbstractAdviserEvent {
   private final String message;
   private final SeverityLevel severityLevel;
 

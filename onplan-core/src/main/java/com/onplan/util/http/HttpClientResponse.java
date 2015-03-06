@@ -6,7 +6,7 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class HttpClientResponse {
+public final class HttpClientResponse {
   private final String body;
   private final Map<String, String> headers;
   private final int statusCode;

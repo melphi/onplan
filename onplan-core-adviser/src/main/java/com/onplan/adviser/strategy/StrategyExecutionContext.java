@@ -12,7 +12,7 @@ import java.util.Set;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
-public class StrategyExecutionContext implements Serializable {
+public final class StrategyExecutionContext implements Serializable {
   private final String strategyId;
   private final HistoricalPriceServiceRemote historicalPriceService;
   private final InstrumentServiceRemote instrumentService;

@@ -5,7 +5,7 @@ import com.google.common.base.Objects;
 
 import java.util.Map;
 
-public class AdviserPredicateInfo extends TemplateInfo {
+public final class AdviserPredicateInfo extends TemplateInfo {
   private Map<String, String> executionParameters;
 
   public Map<String, String> getExecutionParameters() {

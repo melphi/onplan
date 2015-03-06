@@ -4,7 +4,7 @@ import com.google.common.base.Strings;
 
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
-public class StringUtils {
+public final class StringUtils {
   /**
    * When the text exceeds the maxLength returns the text trimmed with the trimmedSuffix, otherwise
    * returns the full text. The resulting string always contains up to maxLength characters.

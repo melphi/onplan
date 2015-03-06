@@ -9,7 +9,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 @TemplateMetaData(displayName = "Integration test")
-public class IntegrationTestStrategy extends AbstractStrategy {
+public final class IntegrationTestStrategy extends AbstractStrategy {
   private int lastFiredOn = 0;
 
   public IntegrationTestStrategy(StrategyExecutionContext strategyExecutionContext) {

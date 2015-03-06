@@ -17,7 +17,7 @@ import static com.onplan.util.PropertiesUtils.getRequiredStringValue;
         CandlestickHammerPredicate.PROPERTY_MINIMUM_CANDLE_SIZE
     }
 )
-public class CandlestickHammerPredicate extends AbstractAdviserPredicate {
+public final class CandlestickHammerPredicate extends AbstractAdviserPredicate {
   public static final String PROPERTY_TIME_FRAME = "timeFrame";
   public static final String PROPERTY_MINIMUM_CANDLE_SIZE = "minimumCandleSize";
 

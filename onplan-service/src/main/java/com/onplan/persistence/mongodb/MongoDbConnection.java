@@ -13,7 +13,7 @@ import java.net.UnknownHostException;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 @Singleton
-public class MongoDbConnection {
+public final class MongoDbConnection {
   private static final Logger LOGGER = Logger.getLogger(MongoDbConnection.class);
 
   @Inject

@@ -2,7 +2,7 @@ package com.onplan.util;
 
 import com.onplan.domain.PriceBarTimeFrame;
 
-public class PriceBarUtil {
+public final class PriceBarUtil {
   public static double getPricePips(final double price, final int minimalDecimalPosition) {
     return price * Math.pow(10, minimalDecimalPosition);
   }
