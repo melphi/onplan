@@ -65,6 +65,14 @@ public class StrategyStatistics implements Serializable {
     this.maxCompletionNanoTime = maxCompletionNanoTime;
   }
 
+  public void incrementReceivedTicks() {
+    this.receivedTicks++;
+  }
+
+  public void incrementEventsDispatchedCounter() {
+    this.eventsDispatchedCounter++;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {

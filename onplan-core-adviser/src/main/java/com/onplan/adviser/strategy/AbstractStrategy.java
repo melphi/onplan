@@ -14,14 +14,10 @@ import java.util.Map;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class AbstractStrategy implements Strategy {
-  protected StrategyExecutionContext strategyExecutionContext;
+  protected final StrategyExecutionContext strategyExecutionContext;
 
   private final StrategyStatistics strategyStatistics = new StrategyStatistics();
   private final StrategyListener strategyListener;
-
-  private long receivedTicks = 0;
-  private long eventsDispatchedCounter = 0;
-  private long maxCompletionNanoTime = 0;
 
   public AbstractStrategy(StrategyExecutionContext strategyExecutionContext) {
     this.strategyExecutionContext = checkNotNull(strategyExecutionContext);
@@ -68,11 +64,14 @@ public abstract class AbstractStrategy implements Strategy {
     final long lastCompletionNanoTime = System.nanoTime() - priceTick.getReceivedNanoTime();
     synchronized (strategyStatistics) {
       strategyStatistics.setLastCompletionNanoTime(lastCompletionNanoTime);
-      strategyStatistics.setReceivedTicks(++receivedTicks);
+      strategyStatistics.incrementReceivedTicks();
       strategyStatistics.setLastReceivedTickTimestamp(priceTick.getTimestamp());
-      strategyStatistics.setMaxCompletionNanoTime(
-          Math.max(maxCompletionNanoTime, lastCompletionNanoTime));
-      strategyStatistics.setEventsDispatchedCounter(++eventsDispatchedCounter);
+      if (lastCompletionNanoTime > strategyStatistics.getMaxCompletionNanoTime()) {
+        strategyStatistics.setMaxCompletionNanoTime(lastCompletionNanoTime);
+      }
+      if(eventFired) {
+        strategyStatistics.incrementEventsDispatchedCounter();
+      }
     }
   }
 }

@@ -31,7 +31,7 @@
     <dependencies>
         <dependency>
             <groupId>com.melphi</groupId>
-            <artifactId>onplan-common</artifactId>
+            <artifactId>onplan-core</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
