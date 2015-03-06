@@ -5,7 +5,7 @@ It is built using Java with the following technologies:
 - Java core
 - Guice
 - Spring, Spring MVC, Spring remoting
-- Multi-threaded, low latency
+- Multi-threading, low latency, memory optimization
 - Maven
 - MongoDB
 - AngularJS, HTML5 frontend
