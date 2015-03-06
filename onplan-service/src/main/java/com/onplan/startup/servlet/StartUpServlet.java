@@ -14,6 +14,7 @@ import org.quartz.Trigger;
 import org.quartz.impl.StdSchedulerFactory;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +27,7 @@ import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
 import static org.quartz.TriggerBuilder.newTrigger;
 
+@Singleton
 public class StartUpServlet extends HttpServlet {
   private static final Logger LOGGER = Logger.getLogger(StartUpServlet.class);
   private static final String HOME_PAGE_CONTENT = "<html><body>" +

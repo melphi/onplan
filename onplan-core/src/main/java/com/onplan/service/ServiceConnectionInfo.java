@@ -25,7 +25,7 @@ public class ServiceConnectionInfo implements Serializable {
   /**
    * Returns true if the service is connected.
    */
-  public boolean isConnected() {
+  public boolean getIsConnected() {
     return isConnected;
   }
 

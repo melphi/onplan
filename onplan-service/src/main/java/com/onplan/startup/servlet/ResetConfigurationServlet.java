@@ -4,12 +4,14 @@ import com.onplan.service.AlertService;
 import com.onplan.service.StrategyService;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@Singleton
 public class ResetConfigurationServlet extends HttpServlet {
   private static final String SUCCESS_PAGE_CONTENT = "<html><body>" +
       "<h1>OnPlan Service</h1>" +

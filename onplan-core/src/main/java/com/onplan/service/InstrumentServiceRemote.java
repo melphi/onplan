@@ -9,5 +9,5 @@ import java.util.List;
 public interface InstrumentServiceRemote extends Serializable {
   public ServiceConnectionInfo getServiceConnectionInfo();
   public InstrumentInfo getInstrumentInfo(String instrumentId) throws IOException;
-  public List<InstrumentInfo> findInstrumentsBySearchTerm(String name) throws Exception;
+  public List<InstrumentInfo> findInstrumentsBySearchTerm(String searchTerm) throws Exception;
 }

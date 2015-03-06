@@ -30,7 +30,7 @@ public class DummyInstrumentService implements InstrumentService {
   }
 
   @Override
-  public List<InstrumentInfo> findInstrumentsBySearchTerm(String name) throws Exception {
+  public List<InstrumentInfo> findInstrumentsBySearchTerm(String searchTerm) throws Exception {
     throw new IllegalArgumentException("Not yet implemented.");
   }
 }

@@ -129,6 +129,13 @@
       <version>${org.springframework.version}</version>
     </dependency>
 
+    <!-- Remoting -->
+    <dependency>
+      <groupId>com.caucho</groupId>
+      <artifactId>hessian</artifactId>
+      <version>4.0.38</version>
+    </dependency>
+
     <!-- Json -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
@@ -149,8 +156,8 @@
     <!-- Web -->
     <dependency>
       <groupId>org.apache.tiles</groupId>
-      <artifactId>tiles-jsp</artifactId>
-      <version>2.2.2</version>
+      <artifactId>tiles-extras</artifactId>
+      <version>3.0.5</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
