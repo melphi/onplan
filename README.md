@@ -1,5 +1,6 @@
 # onplan
-OnPlan is a OpenSource low latency algorithmic trading application released under the BSD license.
+OnPlan is a OpenSource low latency algorithmic trading application released under the (very permissive) BSD license.
+
 It is built using Java with the following technologies:
 - Java core
 - Guice
