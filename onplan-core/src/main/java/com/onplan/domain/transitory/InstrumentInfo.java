@@ -1,7 +1,8 @@
-package com.onplan.domain;
+package com.onplan.domain.transitory;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import com.onplan.domain.InstrumentType;
 
 import java.io.Serializable;
 

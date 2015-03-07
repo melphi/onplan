@@ -1,12 +1,12 @@
 package com.onplan.adviser.predicate;
 
-import com.onplan.domain.PriceTick;
+import com.onplan.domain.persistent.PriceTick;
 
 import java.util.Map;
 
 public interface AdviserPredicate {
   /**
-   * Processes a {@link com.onplan.domain.PriceTick}, if the predicate is satisfied returns true,
+   * Processes a {@link com.onplan.domain.persistent.PriceTick}, if the predicate is satisfied returns true,
    * otherwise returns false.
    * @param priceTick The price tick.
    */

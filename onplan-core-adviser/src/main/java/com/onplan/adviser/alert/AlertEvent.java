@@ -1,7 +1,7 @@
 package com.onplan.adviser.alert;
 
 import com.onplan.adviser.AbstractAdviserEvent;
-import com.onplan.domain.PriceTick;
+import com.onplan.domain.persistent.PriceTick;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;

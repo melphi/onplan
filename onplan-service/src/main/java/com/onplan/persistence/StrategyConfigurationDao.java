@@ -1,6 +1,6 @@
 package com.onplan.persistence;
 
-import com.onplan.domain.configuration.adviser.StrategyConfiguration;
+import com.onplan.domain.configuration.StrategyConfiguration;
 
 import java.util.List;
 

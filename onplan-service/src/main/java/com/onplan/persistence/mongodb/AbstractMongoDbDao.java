@@ -8,7 +8,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.mongodb.*;
 import com.mongodb.util.JSON;
-import com.onplan.domain.PersistentObject;
+import com.onplan.domain.persistent.PersistentObject;
 import com.onplan.persistence.GenericDao;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;

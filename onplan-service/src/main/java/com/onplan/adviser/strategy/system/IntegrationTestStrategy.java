@@ -4,7 +4,7 @@ import com.onplan.adviser.TemplateMetaData;
 import com.onplan.adviser.alert.SeverityLevel;
 import com.onplan.adviser.strategy.AbstractStrategy;
 import com.onplan.adviser.strategy.StrategyExecutionContext;
-import com.onplan.domain.PriceTick;
+import com.onplan.domain.persistent.PriceTick;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 

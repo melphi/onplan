@@ -3,7 +3,7 @@ package com.onplan.integration.adapter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.onplan.adapter.InstrumentService;
-import com.onplan.domain.InstrumentInfo;
+import com.onplan.domain.transitory.InstrumentInfo;
 import com.onplan.integration.AbstractIT;
 import org.junit.Test;
 

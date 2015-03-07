@@ -1,8 +1,8 @@
-package com.onplan.domain.configuration.adviser;
+package com.onplan.domain.configuration;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
-import com.onplan.domain.PersistentObject;
+import com.onplan.domain.persistent.PersistentObject;
 
 import java.util.Map;
 import java.util.Set;

@@ -1,6 +1,6 @@
 package com.onplan.integration.persistence;
 
-import com.onplan.domain.PersistentObject;
+import com.onplan.domain.persistent.PersistentObject;
 import com.onplan.integration.AbstractIT;
 import com.onplan.persistence.GenericDao;
 import org.junit.Before;

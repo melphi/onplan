@@ -13,7 +13,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 import static org.apache.commons.lang3.StringEscapeUtils.escapeHtml4;
 
-public class IgIndexClientRequest {
+public final class IgIndexClientRequest {
   private final HttpClientRequest httpClientRequest;
   private final Map<String, String> httpRequestHeader;
   private final Map<String, String> customHeader;

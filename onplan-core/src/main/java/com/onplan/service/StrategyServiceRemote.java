@@ -2,7 +2,7 @@ package com.onplan.service;
 
 import com.onplan.adviser.StrategyInfo;
 import com.onplan.adviser.TemplateInfo;
-import com.onplan.domain.configuration.adviser.StrategyConfiguration;
+import com.onplan.domain.configuration.StrategyConfiguration;
 
 import java.io.Serializable;
 import java.util.List;

@@ -3,7 +3,7 @@ package com.onplan.integration.adapter;
 import com.onplan.adviser.StrategyInfo;
 import com.onplan.adviser.TemplateInfo;
 import com.onplan.adviser.strategy.Strategy;
-import com.onplan.domain.configuration.adviser.StrategyConfiguration;
+import com.onplan.domain.configuration.StrategyConfiguration;
 import com.onplan.integration.AbstractIT;
 import com.onplan.persistence.StrategyConfigurationDao;
 import com.onplan.service.StrategyService;

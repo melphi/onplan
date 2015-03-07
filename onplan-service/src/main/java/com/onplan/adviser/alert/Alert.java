@@ -4,7 +4,7 @@ import com.google.common.collect.Iterables;
 import com.onplan.adviser.AbstractChainedAdviser;
 import com.onplan.adviser.AdviserListener;
 import com.onplan.adviser.predicate.AdviserPredicate;
-import com.onplan.domain.PriceTick;
+import com.onplan.domain.persistent.PriceTick;
 import org.joda.time.DateTime;
 
 import java.util.Optional;

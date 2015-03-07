@@ -1,9 +1,9 @@
 package com.onplan.adapter.util;
 
 import com.onplan.adapter.PriceListener;
-import com.onplan.domain.PriceBar;
+import com.onplan.domain.persistent.PriceBar;
 import com.onplan.domain.PriceBarTimeFrame;
-import com.onplan.domain.PriceTick;
+import com.onplan.domain.persistent.PriceTick;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;

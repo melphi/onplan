@@ -1,6 +1,6 @@
 package com.onplan.adviser;
 
-import com.onplan.domain.PriceTick;
+import com.onplan.domain.persistent.PriceTick;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;

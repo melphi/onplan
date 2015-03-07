@@ -1,6 +1,6 @@
 package com.onplan.adapter.igindex.client;
 
-public class IgIndexConstant {
+public final class IgIndexConstant {
   public static final String PROVIDER_NAME = "IG Index Ltd.";
 
   public static final String TAG_MARKETS = "markets";

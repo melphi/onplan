@@ -1,6 +1,6 @@
 package com.onplan.adviser;
 
-import com.onplan.domain.PriceTick;
+import com.onplan.domain.persistent.PriceTick;
 
 public interface Adviser {
   /**

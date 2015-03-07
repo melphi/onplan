@@ -1,7 +1,7 @@
 package com.onplan.util;
 
 import com.google.common.collect.Range;
-import com.onplan.domain.PriceTick;
+import com.onplan.domain.persistent.PriceTick;
 import org.junit.Test;
 
 import java.util.List;

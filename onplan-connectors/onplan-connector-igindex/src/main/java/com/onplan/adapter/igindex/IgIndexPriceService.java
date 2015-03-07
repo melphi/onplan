@@ -7,7 +7,7 @@ import com.lightstreamer.ls_client.SubscribedTableKey;
 import com.lightstreamer.ls_client.UpdateInfo;
 import com.onplan.adapter.AbstractPriceService;
 import com.onplan.adapter.ServiceConnectionListener;
-import com.onplan.domain.PriceTick;
+import com.onplan.domain.persistent.PriceTick;
 import com.onplan.service.ServiceConnectionInfo;
 import org.apache.log4j.Logger;
 
@@ -19,7 +19,7 @@ import static com.onplan.adapter.igindex.IgIndexMapper.getInstrumentIdByEpic;
 import static com.onplan.adapter.igindex.IgIndexMapper.getTickSubscriptionEpicByInstrumentId;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
-public class IgIndexPriceService extends AbstractPriceService {
+public final class IgIndexPriceService extends AbstractPriceService {
   private static final Logger LOGGER = Logger.getLogger(IgIndexPriceService.class);
   private static final String UPDATE_MODE = "DISTINCT";
   private static final String[] PRICE_TICK_FIELDS = {"OFR", "BID", "UTM"};

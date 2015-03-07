@@ -1,7 +1,7 @@
 package com.onplan.service;
 
 import com.onplan.adviser.AlertInfo;
-import com.onplan.domain.configuration.adviser.AlertConfiguration;
+import com.onplan.domain.configuration.AlertConfiguration;
 
 import java.io.Serializable;
 import java.util.List;

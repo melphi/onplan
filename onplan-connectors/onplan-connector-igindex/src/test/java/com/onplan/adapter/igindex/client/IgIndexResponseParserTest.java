@@ -2,7 +2,7 @@ package com.onplan.adapter.igindex.client;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.onplan.domain.InstrumentInfo;
+import com.onplan.domain.transitory.InstrumentInfo;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 

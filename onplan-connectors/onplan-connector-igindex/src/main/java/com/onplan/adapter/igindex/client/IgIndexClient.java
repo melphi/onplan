@@ -2,7 +2,7 @@ package com.onplan.adapter.igindex.client;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.onplan.domain.InstrumentInfo;
+import com.onplan.domain.transitory.InstrumentInfo;
 import com.onplan.util.http.HttpClientResponse;
 import com.onplan.util.http.HttpMethod;
 import com.onplan.util.http.HttpStatus;
@@ -20,7 +20,7 @@ import static com.onplan.adapter.igindex.client.IgIndexResponseParser.createInst
 import static com.onplan.adapter.igindex.client.IgIndexResponseParser.createInstrumentInfoList;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
-public class IgIndexClient {
+public final class IgIndexClient {
   private static final String FIELD_IDENTIFIER = "identifier";
   private static final String FIELD_PASSWORD = "password";
 

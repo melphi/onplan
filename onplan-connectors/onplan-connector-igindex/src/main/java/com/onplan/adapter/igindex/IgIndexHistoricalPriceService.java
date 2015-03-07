@@ -2,14 +2,14 @@ package com.onplan.adapter.igindex;
 
 import com.onplan.adapter.HistoricalPriceService;
 import com.onplan.service.ServiceConnectionInfo;
-import com.onplan.domain.PriceBar;
+import com.onplan.domain.persistent.PriceBar;
 import org.apache.log4j.Logger;
 
 import java.util.Collection;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class IgIndexHistoricalPriceService implements HistoricalPriceService {
+public final class IgIndexHistoricalPriceService implements HistoricalPriceService {
   private static final Logger LOGGER = Logger.getLogger(IgIndexHistoricalPriceService.class);
 
   private final IgIndexConnection igIndexConnection;

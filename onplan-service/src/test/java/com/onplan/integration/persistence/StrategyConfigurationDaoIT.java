@@ -3,7 +3,7 @@ package com.onplan.integration.persistence;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.onplan.domain.configuration.adviser.StrategyConfiguration;
+import com.onplan.domain.configuration.StrategyConfiguration;
 import com.onplan.persistence.StrategyConfigurationDao;
 
 import java.util.Collection;

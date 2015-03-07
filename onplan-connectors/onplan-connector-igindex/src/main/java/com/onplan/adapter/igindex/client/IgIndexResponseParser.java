@@ -1,7 +1,7 @@
 package com.onplan.adapter.igindex.client;
 
 import com.google.common.collect.ImmutableList;
-import com.onplan.domain.InstrumentInfo;
+import com.onplan.domain.transitory.InstrumentInfo;
 import com.onplan.domain.InstrumentType;
 import com.onplan.util.http.HttpClientResponse;
 import org.codehaus.jackson.JsonNode;
@@ -17,7 +17,7 @@ import static com.onplan.adapter.igindex.IgIndexMapper.getInstrumentTypeByText;
 import static com.onplan.adapter.igindex.client.IgIndexConstant.*;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
-public class IgIndexResponseParser {
+public final class IgIndexResponseParser {
   public static IgIndexConnectionCredentials createConnectionCredentials(
       String apiKey, HttpClientResponse httpClientResponse) throws IOException {
     checkNotNullOrEmpty(apiKey);

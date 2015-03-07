@@ -1,6 +1,6 @@
 package com.onplan.adapter;
 
-import com.onplan.domain.PriceTick;
+import com.onplan.domain.persistent.PriceTick;
 import com.onplan.service.ServiceConnectionInfo;
 
 public class DummyPriceService implements PriceService {

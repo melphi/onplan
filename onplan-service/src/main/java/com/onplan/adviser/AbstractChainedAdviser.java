@@ -3,7 +3,7 @@ package com.onplan.adviser;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.onplan.adviser.predicate.AdviserPredicate;
-import com.onplan.domain.PriceTick;
+import com.onplan.domain.persistent.PriceTick;
 import org.joda.time.DateTime;
 
 import java.util.Optional;

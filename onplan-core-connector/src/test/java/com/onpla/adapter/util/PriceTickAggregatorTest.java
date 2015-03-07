@@ -2,9 +2,9 @@ package com.onpla.adapter.util;
 
 import com.onplan.adapter.PriceListener;
 import com.onplan.adapter.util.PriceTickAggregator;
-import com.onplan.domain.PriceBar;
+import com.onplan.domain.persistent.PriceBar;
 import com.onplan.domain.PriceBarTimeFrame;
-import com.onplan.domain.PriceTick;
+import com.onplan.domain.persistent.PriceTick;
 import com.onplan.util.TestingConstants;
 import org.junit.Test;
 

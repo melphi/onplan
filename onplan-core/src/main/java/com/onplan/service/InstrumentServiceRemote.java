@@ -1,6 +1,6 @@
 package com.onplan.service;
 
-import com.onplan.domain.InstrumentInfo;
+import com.onplan.domain.transitory.InstrumentInfo;
 
 import java.io.IOException;
 import java.io.Serializable;

@@ -1,6 +1,6 @@
 package com.onplan.persistence;
 
-import com.onplan.domain.configuration.adviser.AlertConfiguration;
+import com.onplan.domain.configuration.AlertConfiguration;
 
 import java.util.List;
 

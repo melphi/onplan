@@ -3,7 +3,7 @@ package com.onplan.util;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
-import com.onplan.domain.PriceTick;
+import com.onplan.domain.persistent.PriceTick;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 public class PriceFactory {
   /**
-   * Generates a collection of {@value com.onplan.domain.PriceTick}.
+   * Generates a collection of {@value com.onplan.domain.persistent.PriceTick}.
    *
    * The first price ask value is the lower endpoint, the last price ask value is the
    * higher endpoint, all the remaining prices are randomly generated.

@@ -1,6 +1,6 @@
 package com.onplan.persistence;
 
-import com.onplan.domain.PersistentObject;
+import com.onplan.domain.persistent.PersistentObject;
 
 import java.util.Collection;
 import java.util.List;

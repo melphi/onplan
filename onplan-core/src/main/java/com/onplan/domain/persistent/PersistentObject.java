@@ -1,4 +1,4 @@
-package com.onplan.domain;
+package com.onplan.domain.persistent;
 
 import java.io.Serializable;
 

@@ -11,9 +11,9 @@ import com.onplan.adviser.predicate.PredicateExecutionContext;
 import com.onplan.adviser.strategy.Strategy;
 import com.onplan.adviser.strategy.StrategyExecutionContext;
 import com.onplan.adviser.strategy.StrategyListener;
-import com.onplan.domain.configuration.adviser.AdviserPredicateConfiguration;
-import com.onplan.domain.configuration.adviser.AlertConfiguration;
-import com.onplan.domain.configuration.adviser.StrategyConfiguration;
+import com.onplan.domain.configuration.AdviserPredicateConfiguration;
+import com.onplan.domain.configuration.AlertConfiguration;
+import com.onplan.domain.configuration.StrategyConfiguration;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

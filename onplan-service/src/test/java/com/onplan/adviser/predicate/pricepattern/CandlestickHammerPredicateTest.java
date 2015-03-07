@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Range;
 import com.onplan.adviser.predicate.PredicateExecutionContext;
 import com.onplan.adviser.predicate.PredicateExecutionContextFactory;
-import com.onplan.domain.PriceTick;
+import com.onplan.domain.persistent.PriceTick;
 import com.onplan.util.PriceFactory;
 import com.onplan.util.TestingConstants;
 import org.junit.Test;

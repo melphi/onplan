@@ -2,8 +2,8 @@ package com.onplan.processing;
 
 import com.onplan.adapter.PriceListener;
 import com.onplan.adapter.PriceService;
-import com.onplan.domain.PriceBar;
-import com.onplan.domain.PriceTick;
+import com.onplan.domain.persistent.PriceBar;
+import com.onplan.domain.persistent.PriceTick;
 import com.onplan.service.AlertService;
 import com.onplan.service.InstrumentSubscriptionListener;
 import com.onplan.service.StrategyService;

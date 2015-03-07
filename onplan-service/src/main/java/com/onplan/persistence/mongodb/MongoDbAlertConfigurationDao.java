@@ -5,8 +5,8 @@ import com.google.common.collect.ImmutableMap;
 import com.onplan.adviser.predicate.AdviserPredicate;
 import com.onplan.adviser.predicate.priceaction.PriceSpikePredicate;
 import com.onplan.adviser.predicate.pricepattern.CandlestickHammerPredicate;
-import com.onplan.domain.configuration.adviser.AdviserPredicateConfiguration;
-import com.onplan.domain.configuration.adviser.AlertConfiguration;
+import com.onplan.domain.configuration.AdviserPredicateConfiguration;
+import com.onplan.domain.configuration.AlertConfiguration;
 import com.onplan.persistence.AlertConfigurationDao;
 import org.joda.time.DateTime;
 

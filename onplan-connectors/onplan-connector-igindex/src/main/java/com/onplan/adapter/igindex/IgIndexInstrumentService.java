@@ -3,7 +3,7 @@ package com.onplan.adapter.igindex;
 import com.onplan.adapter.InstrumentService;
 import com.onplan.service.ServiceConnectionInfo;
 import com.onplan.adapter.igindex.client.IgIndexClient;
-import com.onplan.domain.InstrumentInfo;
+import com.onplan.domain.transitory.InstrumentInfo;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -12,7 +12,7 @@ import java.util.List;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.adapter.igindex.IgIndexMapper.getEpicByInstrumentId;
 
-public class IgIndexInstrumentService implements InstrumentService {
+public final class IgIndexInstrumentService implements InstrumentService {
   private static final Logger LOGGER = Logger.getLogger(IgIndexInstrumentService.class);
 
   private final IgIndexConnection igIndexConnection;

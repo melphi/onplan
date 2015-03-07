@@ -3,7 +3,7 @@ package com.onplan.adviser.predicate.pricevalue;
 import com.onplan.adviser.TemplateMetaData;
 import com.onplan.adviser.predicate.AbstractAdviserPredicate;
 import com.onplan.adviser.predicate.PredicateExecutionContext;
-import com.onplan.domain.PriceTick;
+import com.onplan.domain.persistent.PriceTick;
 
 import static com.onplan.util.PropertiesUtils.getRequiredDoubleValue;
 

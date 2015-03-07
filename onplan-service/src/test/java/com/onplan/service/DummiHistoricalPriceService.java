@@ -1,7 +1,7 @@
 package com.onplan.service;
 
 import com.onplan.adapter.HistoricalPriceService;
-import com.onplan.domain.PriceBar;
+import com.onplan.domain.persistent.PriceBar;
 
 import java.util.Collection;
 

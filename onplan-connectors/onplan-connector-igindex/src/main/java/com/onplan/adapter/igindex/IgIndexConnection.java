@@ -14,7 +14,7 @@ import java.util.Optional;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
-public class IgIndexConnection extends AbstractServiceConnection {
+public final class IgIndexConnection extends AbstractServiceConnection {
   private static final Logger LOGGER = Logger.getLogger(IgIndexConnection.class);
 
   private final String apiKey;

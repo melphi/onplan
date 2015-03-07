@@ -1,4 +1,4 @@
-package com.onplan.domain;
+package com.onplan.domain.persistent;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;

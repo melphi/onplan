@@ -2,7 +2,7 @@ package com.onplan.service;
 
 import com.google.common.collect.ImmutableList;
 import com.onplan.adapter.InstrumentService;
-import com.onplan.domain.InstrumentInfo;
+import com.onplan.domain.transitory.InstrumentInfo;
 import com.onplan.domain.InstrumentType;
 
 import java.util.List;

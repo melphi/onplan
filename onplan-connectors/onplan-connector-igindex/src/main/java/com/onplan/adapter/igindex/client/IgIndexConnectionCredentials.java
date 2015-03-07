@@ -4,7 +4,7 @@ import com.google.common.base.MoreObjects;
 
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
-public class IgIndexConnectionCredentials {
+public final class IgIndexConnectionCredentials {
   private String apiKey;
   private String clientSessionToken;
   private String accountSessionToken;

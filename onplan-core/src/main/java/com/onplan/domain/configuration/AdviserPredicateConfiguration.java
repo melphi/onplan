@@ -1,4 +1,4 @@
-package com.onplan.domain.configuration.adviser;
+package com.onplan.domain.configuration;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
