@@ -9,7 +9,7 @@ import java.lang.management.ManagementFactory;
 import java.util.Collection;
 
 @Singleton
-public class VirtualMachineServiceImpl implements VirtualMachineServiceRemote {
+public final class VirtualMachineServiceImpl implements VirtualMachineServiceRemote {
   @Override
   public VirtualMachineInfo getVirtualMachineInfo() {
     long collectionsCount = 0;
