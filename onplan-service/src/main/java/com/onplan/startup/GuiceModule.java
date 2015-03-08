@@ -6,12 +6,11 @@ import com.onplan.persistence.AlertConfigurationDao;
 import com.onplan.persistence.StrategyConfigurationDao;
 import com.onplan.persistence.mongodb.MongoDbAlertConfigurationDao;
 import com.onplan.persistence.mongodb.MongoDbStrategyConfigurationDao;
-import com.onplan.service.AlertService;
-import com.onplan.service.EventNotificationService;
-import com.onplan.service.StrategyService;
+import com.onplan.service.*;
 import com.onplan.service.impl.AlertServiceImpl;
 import com.onplan.service.impl.EventNotificationServiceImpl;
 import com.onplan.service.impl.StrategyServiceImpl;
+import com.onplan.service.impl.VirtualMachineServiceImpl;
 import org.apache.log4j.Logger;
 
 import java.util.Collection;
@@ -37,6 +36,7 @@ public class GuiceModule extends AbstractModule {
     bind(AlertService.class).to(AlertServiceImpl.class);
     bind(StrategyService.class).to(StrategyServiceImpl.class);
     bind(EventNotificationService.class).to(EventNotificationServiceImpl.class);
+    bind(VirtualMachineService.class).to(VirtualMachineServiceImpl.class);
   }
 
   private void loadPropertyFiles() throws Exception {

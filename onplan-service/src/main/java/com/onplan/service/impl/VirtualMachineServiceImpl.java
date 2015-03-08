@@ -1,7 +1,7 @@
 package com.onplan.service.impl;
 
 import com.onplan.domain.transitory.VirtualMachineInfo;
-import com.onplan.service.VirtualMachineServiceRemote;
+import com.onplan.service.VirtualMachineService;
 
 import javax.inject.Singleton;
 import java.lang.management.GarbageCollectorMXBean;
@@ -9,7 +9,7 @@ import java.lang.management.ManagementFactory;
 import java.util.Collection;
 
 @Singleton
-public final class VirtualMachineServiceImpl implements VirtualMachineServiceRemote {
+public final class VirtualMachineServiceImpl implements VirtualMachineService {
   @Override
   public VirtualMachineInfo getVirtualMachineInfo() {
     long collectionsCount = 0;
@@ -25,11 +25,12 @@ public final class VirtualMachineServiceImpl implements VirtualMachineServiceRem
       averageCollectionTime = accumulatedTime / collectionsCount;
     }
 
+    int availableProcessors = Runtime.getRuntime().availableProcessors();
     long freeMemory = Runtime.getRuntime().freeMemory();
     long totalMemory = Runtime.getRuntime().totalMemory();
     long maxMemory = Runtime.getRuntime().maxMemory();
 
-    return new VirtualMachineInfo(maxMemory, totalMemory, freeMemory,
+    return new VirtualMachineInfo(availableProcessors, maxMemory, totalMemory, freeMemory,
         collectionsCount, averageCollectionTime);
   }
 }

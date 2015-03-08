@@ -18,5 +18,6 @@ public class GuiceServletModule extends ServletModule {
     serve("/priceService").with(PriceServiceServlet.class);
     serve("/alertService").with(AlertServiceServlet.class);
     serve("/strategyService").with(StrategyServiceServlet.class);
+    serve("/virtualMachineService").with(VirtualMachineServiceServlet.class);
   }
 }
