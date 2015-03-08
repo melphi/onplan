@@ -1,4 +1,4 @@
-/** ListPricesController */
+/** ShowVirtualMachineController */
 angularApp.controller('ShowVirtualMachineController', function($http) {
 	var self = this;
 
