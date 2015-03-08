@@ -1,0 +1,31 @@
+<div xmlns:util="urn:jsptagdir:/WEB-INF/tags/util"
+     xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+  <jsp:directive.page contentType="text/html;charset=UTF-8" />
+  <jsp:output omit-xml-declaration="yes" />
+  <util:import-controllers name="virtualMachineControllers" />
+
+  <h1>Virtual machine</h1>
+
+  <div ng-controller="ShowVirtualMachineController as ctrl">
+    <p>Free memory (Mb):
+      <span ng-bind-template="{{ctrl.virtualMachineInfo.freeMemory | bytetomegabyte}}">
+      </span>
+    </p>
+    <p>Total memory (Mb):
+      <span ng-bind-template="{{ctrl.virtualMachineInfo.totalMemory | bytetomegabyte}}">
+      </span>
+    </p>
+    <p>Max instantiable memory (Mb):
+      <span ng-bind-template="{{ctrl.virtualMachineInfo.maxMemory | bytetomegabyte}}">
+      </span>
+    </p>
+    <p>Garbage collections count:
+      <span ng-bind-template="{{ctrl.virtualMachineInfo.collectionsCount | number}}">
+      </span>
+    </p>
+    <p>Average garbage collection time (ms):
+      <span ng-bind-template="{{ctrl.virtualMachineInfo.averageCollectionTime}}">
+      </span>
+    </p>
+  </div>
+</div>

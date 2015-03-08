@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:websocket="http://www.springframework.org/schema/websocket"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+            http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+            http://www.springframework.org/schema/websocket http://www.springframework.org/schema/websocket/spring-websocket.xsd">
+  <context:component-scan base-package="com.onplan.web" use-default-filters="false">
+    <context:include-filter expression="org.springframework.stereotype.Controller"
+                            type="annotation"/>
+  </context:component-scan>
+  <mvc:annotation-driven/>
+  <mvc:default-servlet-handler/>
+
+  <!-- TODO(robertom): Re-enable this tag which was disabled to speed up development -->
+  <!-- Efficiently serve up static resources -->
+  <!--<mvc:resources location="/, classpath:/META-INF/web-resources/" mapping="/resources/**"/>-->
+
+  <!-- Default controllers -->
+  <mvc:view-controller path="/" view-name="index"/>
+  <mvc:view-controller path="/uncaughtException"/>
+  <mvc:view-controller path="/resourceNotFound"/>
+  <mvc:view-controller path="/dataAccessFailure"/>
+
+  <!-- Tiles configuration -->
+  <bean class="org.springframework.web.servlet.view.UrlBasedViewResolver" id="tilesViewResolver">
+    <property name="viewClass" value="org.springframework.web.servlet.view.tiles3.TilesView"/>
+  </bean>
+  <bean class="org.springframework.web.servlet.view.tiles3.TilesConfigurer" id="tilesConfigurer">
+    <property name="definitions">
+      <list>
+        <value>/WEB-INF/layouts/layouts.xml</value>
+        <value>/WEB-INF/views/**/views.xml</value>
+      </list>
+    </property>
+  </bean>
+
+  <!-- Exceptions mapping -->
+  <bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver"
+        p:defaultErrorView="uncaughtException">
+    <property name="exceptionMappings">
+      <props>
+        <prop key=".DataAccessException">dataAccessFailure</prop>
+        <prop key=".NoSuchRequestHandlingMethodException">resourceNotFound</prop>
+        <prop key=".TypeMismatchException">resourceNotFound</prop>
+        <prop key=".MissingServletRequestParameterException">resourceNotFound</prop>
+      </props>
+    </property>
+  </bean>
+
+  <!--&lt;!&ndash; JSON serialization and de-serialization &ndash;&gt;-->
+  <!--<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">-->
+    <!--<property name="messageConverters">-->
+      <!--<list>-->
+        <!--<ref bean="jsonMessageConverter"/>-->
+      <!--</list>-->
+    <!--</property>-->
+  <!--</bean>-->
+  <!--<bean id="jsonMessageConverter"-->
+        <!--class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter"/>-->
+
+  <!--&lt;!&ndash; Web socket configuration &ndash;&gt;-->
+  <!--<websocket:message-broker>-->
+  <!--<websocket:stomp-endpoint path="/stomp/priceTick">-->
+  <!--<websocket:sockjs/>-->
+  <!--</websocket:stomp-endpoint>-->
+  <!--<websocket:simple-broker prefix="/topic"/>-->
+  <!--</websocket:message-broker>-->
+</beans>

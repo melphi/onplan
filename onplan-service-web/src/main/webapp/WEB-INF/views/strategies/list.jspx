@@ -1,0 +1,74 @@
+<div xmlns:util="urn:jsptagdir:/WEB-INF/tags/util"
+     xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
+  <jsp:directive.page contentType="text/html;charset=UTF-8" />
+  <jsp:output omit-xml-declaration="yes" />
+  <util:import-controllers name="strategiesControllers" />
+
+  <h1>Active strategies</h1>
+
+  <div ng-controller="ListStrategiesController as ctrl">
+    <table>
+      <tr>
+        <th>Strategy</th>
+        <th>Instruments</th>
+        <th>Parameters</th>
+        <th>Statistics</th>
+        <th></th>
+      </tr>
+      <tr ng-repeat="strategy in ctrl.strategies track by $index">
+        <td>
+          <span ng-bind="strategy.className"/>
+        </td>
+        <td>
+          <ul>
+            <li ng-repeat="registeredInstrument in strategy.registeredInstruments track by $index">
+              <span ng-bind="registeredInstrument"/>
+            </li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li ng-repeat="(key, value) in strategy.executionParameters track by $index">
+              <span ng-bind-template="{{key + ': ' + value}}"/>
+            </li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>
+              <span>Received ticks: </span>
+              <span ng-bind-template=
+                        "{{strategy.strategyStatistics.receivedTicks | number}}"/>
+            </li>
+            <li>
+              <span>Last received tick: </span>
+              <span ng-bind-template=
+                        "{{strategy.strategyStatistics.lastReceivedTickTimestamp | datetime}}"/>
+            </li>
+            <li>
+              <span>Events dispatched: </span>
+              <span ng-bind-template=
+                        "{{strategy.strategyStatistics.eventsDispatchedCounter | number}}"/>
+            </li>
+            <li>
+              <span>Last completion (ms): </span>
+              <span ng-bind-template=
+                        "{{strategy.strategyStatistics.lastCompletionNanoTime |
+                        nanotomilliseconds}}"/>
+            </li>
+            <li>
+              <span>Max completion (ms): </span>
+              <span ng-bind-template=
+                        "{{strategy.strategyStatistics.maxCompletionNanoTime |
+                        nanotomilliseconds}}"/>
+            </li>
+          </ul>
+        </td>
+      </tr>
+    </table>
+
+    <div>
+      <button ng-click="ctrl.loadSampleStrategies()">Load sample strategies</button>
+    </div>
+  </div>
+</div>
