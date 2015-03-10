@@ -17,12 +17,12 @@ public class AlertServiceRest implements AlertServiceRemote {
   private AlertServiceRemote alertService;
 
   @Override
-  public void removeAlert(String alertId) throws Exception {
+  public boolean removeAlert(String alertId) throws Exception {
     throw new IllegalArgumentException("Not yet implemented.");
   }
 
   @Override
-  public void addAlert(AlertConfiguration alertConfigurationConfiguration) throws Exception {
+  public String addAlert(AlertConfiguration alertConfigurationConfiguration) throws Exception {
     throw new IllegalArgumentException("Not yet implemented.");
   }
 

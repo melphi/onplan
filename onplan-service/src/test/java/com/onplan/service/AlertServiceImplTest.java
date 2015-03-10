@@ -3,6 +3,9 @@ package com.onplan.service;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import com.onplan.adviser.AdviserPredicateInfo;
+import com.onplan.adviser.AlertInfo;
+import com.onplan.adviser.TemplateInfo;
 import com.onplan.adviser.alert.Alert;
 import com.onplan.adviser.predicate.AdviserPredicate;
 import com.onplan.dao.TestingAlertConfigurationDao;
@@ -16,6 +19,7 @@ import org.junit.Test;
 import java.util.List;
 
 import static com.google.common.collect.Iterables.size;
+import static com.onplan.adviser.predicate.AdviserPredicateUtil.createAdviserPredicateTemplateInfo;
 import static com.onplan.adviser.predicate.TestingAdviserPredicateUtils.checkAdviserPredicate;
 import static com.onplan.factory.TestingAlertConfigurationFactory.createSampleAlertConfigurationWithNullId;
 import static com.onplan.util.TestingConstants.DEFAULT_ALERT_ID;
@@ -175,7 +179,7 @@ public class AlertServiceImplTest {
   }
 
   @Test
-  public void testAddAlertAfterBeforeInitialization() throws Exception {
+  public void testAddAlertBeforeInitialization() throws Exception {
     AlertConfiguration alertConfiguration = createSampleAlertConfigurationWithNullId();
     String id = alertService.addAlert(alertConfiguration);
     assertTrue(alertService.hasAlerts());
@@ -185,10 +189,21 @@ public class AlertServiceImplTest {
     checkMatch(alertConfiguration, loadedAlert);
   }
 
-  @Ignore
   @Test
   public void testAddAlertReplacingExisting() throws Exception {
-    fail("Not yet implemented.");
+    alertService.loadAllAlerts();
+    AlertConfiguration alertConfiguration =
+        alertConfigurationDao.findAll().stream().findFirst().get();
+    alertConfiguration.setRepeat(!alertConfiguration.getRepeat());
+    alertConfiguration.setInstrumentId("NewInstrumentId");
+    alertConfiguration.setMessage("NewMessage");
+    alertService.addAlert(alertConfiguration);
+    Alert alert = alertService.getAlerts()
+        .stream()
+        .filter(a -> alertConfiguration.getId().equals(a.getId()))
+        .findFirst()
+        .get();
+    checkMatch(alertConfiguration, alert);
   }
 
   @Ignore
@@ -208,18 +223,32 @@ public class AlertServiceImplTest {
     }
   }
 
-  @Ignore
   @Test
-  public void testGetAlertsInfo() {
-    fail("Not yet implemented.");
+  public void testGetAlertsInfo() throws Exception {
+    alertService.loadAllAlerts();
+    List<Alert> alerts = alertService.getAlerts();
+    List<AlertInfo> alertsInfo = alertService.getAlertsInfo();
+    assertEquals(alerts.size(), alertsInfo.size());
+    for (AlertInfo alertInfo : alertsInfo) {
+      boolean recordFound = false;
+      for (Alert alert : alerts) {
+        if (alertInfo.getId().equals(alert.getId())) {
+          checkMatch(alertInfo, alert);
+          recordFound = true;
+        }
+      }
+      assertTrue(recordFound);
+    }
   }
 
+  // TODO(robertom): Implement this test.
   @Ignore
   @Test
   public void testOnPriceTickForRepeatTrue() {
     fail("Not yet implemented.");
   }
 
+  // TODO(robertom): Implement this test.
   @Ignore
   @Test
   public void testOnPriceTickForRepeatFalse() {
@@ -239,6 +268,35 @@ public class AlertServiceImplTest {
     }
   }
 
+  private static void checkMatch(AlertInfo alertInfo, Alert alert) {
+    assertNotNull(alertInfo);
+    assertNotNull(alert);
+    assertEquals(alertInfo.getId(), alert.getId());
+    assertEquals(alertInfo.getInstrumentId(), alert.getInstrumentId());
+    assertEquals(alertInfo.getMessage(), alert.getMessage());
+    assertEquals(alertInfo.getCreatedOn(), alert.getCreatedOn());
+    assertEquals(alertInfo.getLastFiredOn(), alert.getLastFiredOn());
+    assertEquals(alertInfo.getRepeat(), alert.getRepeat());
+    assertEquals(alertInfo.getSeverityLevel(), alert.getSeverityLevel());
+    for (AdviserPredicateInfo adviserPredicateInfo : alertInfo.getPredicatesChainInfo()) {
+      for (AdviserPredicate adviserPredicate : alert.getPredicatesChain()) {
+        boolean recordFound = false;
+        if (adviserPredicateInfo.getClassName().equals(adviserPredicate.getClass().getName()) &&
+            adviserPredicateInfo.getExecutionParameters()
+                .equals(adviserPredicate.getExecutionParameters())) {
+          assertTrue("Duplicated record found.", !recordFound);
+          recordFound = true;
+          TemplateInfo templateInfo =
+              createAdviserPredicateTemplateInfo(adviserPredicate.getClass());
+          assertEquals(adviserPredicateInfo.getAvailableParameters(),
+              templateInfo.getAvailableParameters());
+          assertEquals(adviserPredicateInfo.getDisplayName(), templateInfo.getDisplayName());
+        }
+        assertTrue(recordFound);
+      }
+    }
+  }
+
   private static void checkMatch(AlertConfiguration alertConfiguration, Alert alert) {
     assertNotNull(alertConfiguration);
     assertNotNull(alert);
@@ -251,16 +309,16 @@ public class AlertServiceImplTest {
     assertEquals(size(alertConfiguration.getPredicatesChain()), size(alert.getPredicatesChain()));
     for (AdviserPredicateConfiguration predicateConfiguration
         : alertConfiguration.getPredicatesChain()) {
-      boolean predicateFound = false;
+      boolean recordFound = false;
       for (AdviserPredicate predicate : alert.getPredicatesChain()) {
         if (predicateConfiguration.getClassName().equals(predicate.getClass().getName()) &&
           predicateConfiguration.getParameters().equals(predicate.getExecutionParameters())) {
-          predicateFound = true;
-          break;
+          assertTrue("Duplicated record found.", !recordFound);
+          recordFound = true;
         }
       }
       assertTrue(
-          String.format("Predicate not found [%s].", predicateConfiguration), predicateFound);
+          String.format("Predicate not found [%s].", predicateConfiguration), recordFound);
     }
   }
 }

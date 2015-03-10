@@ -235,9 +235,7 @@ public final class AlertServiceImpl extends AbstractAdviserService implements Al
         dispatchInstrumentSubscriptionRequired(alert.getInstrumentId());
       }
       alertsEntry.add(alert);
-      if (!hasAlerts) {
-        hasAlerts = !alertsMapping.isEmpty();
-      }
+      hasAlerts = !alertsMapping.isEmpty();
     }
     LOGGER.info(
         String.format("Alert [%s] for [%s] loaded.", alert.getId(), alert.getInstrumentId()));
@@ -273,6 +271,7 @@ public final class AlertServiceImpl extends AbstractAdviserService implements Al
     return new AlertInfo(
         alert.getId(),
         alert.getInstrumentId(),
+        alert.getSeverityLevel(),
         predicatesInfo.build(),
         alert.getMessage(),
         alert.getCreatedOn(),

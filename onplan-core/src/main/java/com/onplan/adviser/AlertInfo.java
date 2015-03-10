@@ -8,25 +8,28 @@ import java.io.Serializable;
 public final class AlertInfo implements Serializable {
   private String id;
   private String instrumentId;
-  private Iterable<AdviserPredicateInfo> predicatesInfo;
+  private Iterable<AdviserPredicateInfo> predicatesChainInfo;
   private String message;
   private long createdOn;
   private long lastFiredOn;
   private boolean repeat;
+  private SeverityLevel severityLevel;
 
   public AlertInfo() {
     // Intentionally empty.
   }
 
-  public AlertInfo(String id, String instrumentId, Iterable<AdviserPredicateInfo> predicatesInfo,
-      String message, long createdOn, long lastFiredOn, boolean repeat) {
+  public AlertInfo(String id, String instrumentId, SeverityLevel severityLevel,
+      Iterable<AdviserPredicateInfo> predicatesChainInfo, String message, long createdOn,
+      long lastFiredOn, boolean repeat) {
     this.id = id;
     this.instrumentId = instrumentId;
-    this.predicatesInfo = predicatesInfo;
+    this.predicatesChainInfo = predicatesChainInfo;
     this.message = message;
     this.createdOn = createdOn;
     this.lastFiredOn = lastFiredOn;
     this.repeat = repeat;
+    this.severityLevel = severityLevel;
   }
 
   public String getId() {
@@ -45,12 +48,12 @@ public final class AlertInfo implements Serializable {
     this.instrumentId = instrumentId;
   }
 
-  public Iterable<AdviserPredicateInfo> getPredicatesInfo() {
-    return predicatesInfo;
+  public Iterable<AdviserPredicateInfo> getPredicatesChainInfo() {
+    return predicatesChainInfo;
   }
 
-  public void setPredicatesInfo(Iterable<AdviserPredicateInfo> predicatesInfo) {
-    this.predicatesInfo = predicatesInfo;
+  public void setPredicatesChainInfo(Iterable<AdviserPredicateInfo> predicatesChainInfo) {
+    this.predicatesChainInfo = predicatesChainInfo;
   }
 
   public String getMessage() {
@@ -77,12 +80,20 @@ public final class AlertInfo implements Serializable {
     this.lastFiredOn = lastFiredOn;
   }
 
-  public boolean isRepeat() {
+  public boolean getRepeat() {
     return repeat;
   }
 
   public void setRepeat(boolean repeat) {
     this.repeat = repeat;
+  }
+
+  public SeverityLevel getSeverityLevel() {
+    return severityLevel;
+  }
+
+  public void setSeverityLevel(SeverityLevel severityLevel) {
+    this.severityLevel = severityLevel;
   }
 
   @Override
@@ -96,7 +107,8 @@ public final class AlertInfo implements Serializable {
     AlertInfo alertInfo = (AlertInfo) o;
     return Objects.equal(this.id, alertInfo.id) &&
         Objects.equal(this.instrumentId, alertInfo.instrumentId) &&
-        Objects.equal(this.predicatesInfo, alertInfo.predicatesInfo) &&
+        Objects.equal(this.severityLevel, alertInfo.severityLevel) &&
+        Objects.equal(this.predicatesChainInfo, alertInfo.predicatesChainInfo) &&
         Objects.equal(this.message, alertInfo.message) &&
         Objects.equal(this.createdOn, alertInfo.createdOn) &&
         Objects.equal(this.lastFiredOn, alertInfo.lastFiredOn) &&
@@ -106,7 +118,7 @@ public final class AlertInfo implements Serializable {
   @Override
   public int hashCode() {
     return Objects.hashCode(
-        id, instrumentId, predicatesInfo, message, createdOn, lastFiredOn, repeat);
+        id, instrumentId, severityLevel, predicatesChainInfo, message, createdOn, lastFiredOn, repeat);
   }
 
   @Override
@@ -114,7 +126,8 @@ public final class AlertInfo implements Serializable {
     return MoreObjects.toStringHelper(this)
         .add("id", id)
         .add("instrumentId", instrumentId)
-        .add("predicatesInfo", predicatesInfo)
+        .add("severityLevel", severityLevel)
+        .add("predicatesChainInfo", predicatesChainInfo)
         .add("message", message)
         .add("createdOn", createdOn)
         .add("lastFiredOn", lastFiredOn)
