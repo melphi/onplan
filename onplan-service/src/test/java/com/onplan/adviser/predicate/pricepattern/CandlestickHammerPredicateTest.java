@@ -4,9 +4,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Range;
 import com.onplan.adviser.predicate.PredicateExecutionContext;
-import com.onplan.adviser.predicate.PredicateExecutionContextFactory;
+import com.onplan.adviser.predicate.TestingPredicateExecutionContextFactory;
 import com.onplan.domain.persistent.PriceTick;
-import com.onplan.util.PriceFactory;
+import com.onplan.util.TestingPriceFactory;
 import com.onplan.util.TestingConstants;
 import org.junit.Test;
 
@@ -113,7 +113,7 @@ public class CandlestickHammerPredicateTest {
 
   private List<PriceTick> createPriceTicks(String instrumentId, Range<Long> timestampRange,
       double openPrice, double highPrice, double lowPrice, double closePrice) {
-    List<PriceTick> priceTicks = PriceFactory.createCandlestick(
+    List<PriceTick> priceTicks = TestingPriceFactory.createCandlestick(
         instrumentId, timestampRange, openPrice, highPrice, lowPrice, closePrice, 1);
     return ImmutableList.<PriceTick>builder()
         .add(new PriceTick(
@@ -132,7 +132,7 @@ public class CandlestickHammerPredicateTest {
 
   private CandlestickHammerPredicate createCandlestickHammerPredicate() throws Exception {
     PredicateExecutionContext predicateExecutionContext =
-        PredicateExecutionContextFactory.createPredicateExecutionContext(PROPERTIES, INSTRUMENT);
+        TestingPredicateExecutionContextFactory.createPredicateExecutionContext(PROPERTIES, INSTRUMENT);
     CandlestickHammerPredicate candlestickHammerPredicate =
         new CandlestickHammerPredicate(predicateExecutionContext);
     candlestickHammerPredicate.init();

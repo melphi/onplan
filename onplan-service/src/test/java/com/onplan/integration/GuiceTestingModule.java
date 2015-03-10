@@ -4,14 +4,14 @@ import com.google.common.collect.ImmutableList;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.name.Names;
-import com.onplan.adapter.HistoricalPriceService;
-import com.onplan.adapter.InstrumentService;
-import com.onplan.adapter.PriceService;
-import com.onplan.adapter.ServiceConnection;
-import com.onplan.adapter.igindex.IgIndexConnection;
-import com.onplan.adapter.igindex.IgIndexHistoricalPriceService;
-import com.onplan.adapter.igindex.IgIndexInstrumentService;
-import com.onplan.adapter.igindex.IgIndexPriceService;
+import com.onplan.connector.HistoricalPriceService;
+import com.onplan.connector.InstrumentService;
+import com.onplan.connector.PriceService;
+import com.onplan.connector.ServiceConnection;
+import com.onplan.connector.igindex.IgIndexConnection;
+import com.onplan.connector.igindex.IgIndexHistoricalPriceService;
+import com.onplan.connector.igindex.IgIndexInstrumentService;
+import com.onplan.connector.igindex.IgIndexPriceService;
 import com.onplan.persistence.AlertConfigurationDao;
 import com.onplan.persistence.StrategyConfigurationDao;
 import com.onplan.persistence.mongodb.MongoDbAlertConfigurationDao;
@@ -19,9 +19,11 @@ import com.onplan.persistence.mongodb.MongoDbStrategyConfigurationDao;
 import com.onplan.service.AlertService;
 import com.onplan.service.EventNotificationService;
 import com.onplan.service.StrategyService;
+import com.onplan.service.VirtualMachineService;
 import com.onplan.service.impl.AlertServiceImpl;
 import com.onplan.service.impl.EventNotificationServiceImpl;
 import com.onplan.service.impl.StrategyServiceImpl;
+import com.onplan.service.impl.VirtualMachineServiceImpl;
 import com.onplan.util.PropertiesUtils;
 
 import javax.inject.Singleton;
@@ -53,6 +55,7 @@ public class GuiceTestingModule extends AbstractModule {
     bind(AlertService.class).to(AlertServiceImpl.class);
     bind(StrategyService.class).to(StrategyServiceImpl.class);
     bind(EventNotificationService.class).to(EventNotificationServiceImpl.class);
+    bind(VirtualMachineService.class).to(VirtualMachineServiceImpl.class);
   }
 
   private static IgIndexConnection getIgIndexConnectionInstance() throws Exception {
@@ -62,7 +65,7 @@ public class GuiceTestingModule extends AbstractModule {
       String username = properties.getProperty("com.onplan.adapter.igindex.username");
       String password = properties.getProperty("com.onplan.adapter.igindex.password");
       String serverUrl = properties.getProperty("com.onplan.adapter.igindex.severUrl");
-      return new IgIndexConnection(apiKey, username, password, serverUrl);
+      igIndexServiceConnection = new IgIndexConnection(apiKey, username, password, serverUrl);
     }
     return igIndexServiceConnection;
   }

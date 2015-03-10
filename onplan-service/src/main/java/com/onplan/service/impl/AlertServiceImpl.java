@@ -1,20 +1,21 @@
 package com.onplan.service.impl;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.onplan.adapter.HistoricalPriceService;
-import com.onplan.adapter.InstrumentService;
 import com.onplan.adviser.AdviserListener;
 import com.onplan.adviser.AlertInfo;
 import com.onplan.adviser.alert.Alert;
 import com.onplan.adviser.alert.AlertEvent;
 import com.onplan.adviser.predicate.AdviserPredicate;
-import com.onplan.domain.persistent.PriceTick;
+import com.onplan.connector.HistoricalPriceService;
+import com.onplan.connector.InstrumentService;
 import com.onplan.domain.configuration.AdviserPredicateConfiguration;
 import com.onplan.domain.configuration.AlertConfiguration;
+import com.onplan.domain.persistent.PriceTick;
 import com.onplan.persistence.AlertConfigurationDao;
 import com.onplan.service.AlertService;
 import com.onplan.service.EventNotificationService;
@@ -41,17 +42,33 @@ public final class AlertServiceImpl extends AbstractAdviserService implements Al
 
   private volatile boolean hasAlerts = false;
 
-  @Inject
   private EventNotificationService eventNotificationService;
 
-  @Inject
   private AlertConfigurationDao alertConfigurationDao;
 
-  @Inject
   private InstrumentService instrumentService;
 
-  @Inject
   private HistoricalPriceService historicalPriceService;
+
+  @Inject
+  public void setEventNotificationService(EventNotificationService eventNotificationService) {
+    this.eventNotificationService = eventNotificationService;
+  }
+
+  @Inject
+  public void setAlertConfigurationDao(AlertConfigurationDao alertConfigurationDao) {
+    this.alertConfigurationDao = alertConfigurationDao;
+  }
+
+  @Inject
+  public void setInstrumentService(InstrumentService instrumentService) {
+    this.instrumentService = instrumentService;
+  }
+
+  @Inject
+  public void setHistoricalPriceService(HistoricalPriceService historicalPriceService) {
+    this.historicalPriceService = historicalPriceService;
+  }
 
   @Override
   public void onPriceTick(final PriceTick priceTick) {
@@ -81,10 +98,11 @@ public final class AlertServiceImpl extends AbstractAdviserService implements Al
   }
 
   @Override
-  public void removeAlert(String alertId) throws Exception {
+  public boolean removeAlert(String alertId) throws Exception {
     checkNotNullOrEmpty(alertId);
+    boolean result;
     try {
-      unLoadAlert(alertId);
+      result = unLoadAlert(alertId);
     } catch (Exception e) {
       LOGGER.error(String.format(
           "Error while un-loading alert [%s]: [%s].",
@@ -95,26 +113,32 @@ public final class AlertServiceImpl extends AbstractAdviserService implements Al
     synchronized (alertsMapping) {
       hasAlerts = !alertsMapping.isEmpty();
     }
+    return result;
   }
 
   @Override
-  public void addAlert(AlertConfiguration alertConfiguration) throws Exception {
-    checkArgument(null == alertConfiguration.getId());
+  public String addAlert(AlertConfiguration alertConfiguration) throws Exception {
     checkAlertConfiguration(alertConfiguration);
+    String id = alertConfigurationDao.save(alertConfiguration);
     try {
-      loadAlert(alertConfiguration);
-      synchronized (alertsMapping) {
-        hasAlerts = !alertsMapping.isEmpty();
+      if (!Strings.isNullOrEmpty(alertConfiguration.getId())) {
+        unLoadAlert(id);
       }
+      alertConfiguration = alertConfigurationDao.findById(id);
+      loadAlert(alertConfiguration);
     } catch (Exception e) {
       LOGGER.error(String.format(
           "Error while loading alert configuration [%s]: [%s].",
           alertConfiguration,
           e.getMessage()));
+      alertConfigurationDao.removeById(id);
       throw e;
     }
-    String id = alertConfigurationDao.insert(alertConfiguration);
+    synchronized (alertsMapping) {
+      hasAlerts = !alertsMapping.isEmpty();
+    }
     LOGGER.info(String.format("Alert [%s] saved in database.", id));
+    return id;
   }
 
   @Override
@@ -181,14 +205,16 @@ public final class AlertServiceImpl extends AbstractAdviserService implements Al
         }
         alertsMapping.clear();
       }
+      hasAlerts = !alertsMapping.isEmpty();
     }
   }
 
   private static void checkAlertConfiguration(final AlertConfiguration alertConfiguration) {
     checkNotNull(alertConfiguration);
-    checkNotNullOrEmpty(alertConfiguration.getAlertMessage());
+    checkNotNullOrEmpty(alertConfiguration.getMessage());
     checkNotNull(alertConfiguration.getInstrumentId());
     checkNotNull(alertConfiguration.getPredicatesChain());
+    checkNotNull(alertConfiguration.getSeverityLevel());
     checkArgument(!Iterables.isEmpty(alertConfiguration.getPredicatesChain()));
     for (AdviserPredicateConfiguration predicateConfiguration
         : alertConfiguration.getPredicatesChain()) {
@@ -206,17 +232,36 @@ public final class AlertServiceImpl extends AbstractAdviserService implements Al
       if (null == alertsEntry) {
         alertsEntry = Lists.newArrayList();
         alertsMapping.put(alert.getInstrumentId(), alertsEntry);
+        dispatchInstrumentSubscriptionRequired(alert.getInstrumentId());
       }
       alertsEntry.add(alert);
+      if (!hasAlerts) {
+        hasAlerts = !alertsMapping.isEmpty();
+      }
     }
     LOGGER.info(
         String.format("Alert [%s] for [%s] loaded.", alert.getId(), alert.getInstrumentId()));
-    dispatchInstrumentSubscriptionRequired(alert.getInstrumentId());
   }
 
-  private void unLoadAlert(String alertId) throws Exception {
-    throw new IllegalArgumentException("Not yet implemented.");
-    // TODO(robertom): Update PriceService subscribed instruments by using a listener.
+  private boolean unLoadAlert(String alertId) throws Exception {
+    checkNotNullOrEmpty(alertId);
+    for (Map.Entry<String, Collection<Alert>> entry : alertsMapping.entrySet()) {
+      for (Alert alert : entry.getValue()) {
+        if (alertId.equals(alert.getId())) {
+          entry.getValue().remove(alert);
+          if (entry.getValue().isEmpty()) {
+            alertsMapping.remove(entry.getKey());
+            dispatchInstrumentUnSubscriptionRequired(entry.getKey());
+          }
+          LOGGER.info(String.format("Alert [%s] unloaded.", alertId));
+          if (hasAlerts && alertsMapping.isEmpty()) {
+            hasAlerts = !alertsMapping.isEmpty();
+          }
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   private AlertInfo createAlertInfo(final Alert alert) {
@@ -227,6 +272,7 @@ public final class AlertServiceImpl extends AbstractAdviserService implements Al
     }
     return new AlertInfo(
         alert.getId(),
+        alert.getInstrumentId(),
         predicatesInfo.build(),
         alert.getMessage(),
         alert.getCreatedOn(),
@@ -234,7 +280,7 @@ public final class AlertServiceImpl extends AbstractAdviserService implements Al
         alert.getRepeat());
   }
 
-  private class InternalAlertListener implements AdviserListener<AlertEvent> {
+  private final class InternalAlertListener implements AdviserListener<AlertEvent> {
     @Override
     public void onEvent(AlertEvent event) {
       eventNotificationService.notifyAlertEventAsync(event);

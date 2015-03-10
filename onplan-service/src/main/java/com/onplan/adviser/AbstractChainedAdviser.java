@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.onplan.adviser.predicate.AdviserPredicate;
 import com.onplan.domain.persistent.PriceTick;
-import org.joda.time.DateTime;
 
 import java.util.Optional;
 
@@ -24,12 +23,12 @@ public abstract class AbstractChainedAdviser<T extends AdviserEvent> implements 
   protected final long createdOn;
 
   protected AbstractChainedAdviser(String id, Iterable<AdviserPredicate> predicatesChain,
-      AdviserListener<T> adviserListener, String instrumentId) {
+      AdviserListener<T> adviserListener, String instrumentId, long createdOn) {
     this.id = checkNotNullOrEmpty(id);
     this.instrumentId = checkNotNullOrEmpty(instrumentId);
     this.predicatesChain = ImmutableList.copyOf(checkNotNull(predicatesChain));
     this.adviserListener = checkNotNull(adviserListener);
-    this.createdOn = DateTime.now().getMillis();
+    this.createdOn = createdOn;
     checkArgument(!Iterables.isEmpty(predicatesChain), "Expected a non empty predicates chain.");
   }
 

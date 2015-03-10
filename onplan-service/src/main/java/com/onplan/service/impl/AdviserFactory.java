@@ -1,8 +1,8 @@
 package com.onplan.service.impl;
 
 import com.google.common.collect.ImmutableList;
-import com.onplan.adapter.HistoricalPriceService;
-import com.onplan.adapter.InstrumentService;
+import com.onplan.connector.HistoricalPriceService;
+import com.onplan.connector.InstrumentService;
 import com.onplan.adviser.AdviserListener;
 import com.onplan.adviser.alert.Alert;
 import com.onplan.adviser.alert.AlertEvent;
@@ -67,7 +67,8 @@ public final class AdviserFactory {
 
     return Alert.newBuilder()
         .setId(alertConfiguration.getId())
-        .setAlertMessage(alertConfiguration.getAlertMessage())
+        .setAlertMessage(alertConfiguration.getMessage())
+        .setSeverityLevel(alertConfiguration.getSeverityLevel())
         .setInstrumentId(alertConfiguration.getInstrumentId())
         .setCreatedOn(alertConfiguration.getCreateOn())
         .setRepeat(alertConfiguration.getRepeat())

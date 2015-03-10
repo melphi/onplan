@@ -7,12 +7,15 @@ onplanFilters.filter('connected', function() {
 
 onplanFilters.filter('datetime', function() {
   return function(input) {
+  	if (0 == input) {
+  		return "";
+  	}
 		var date = new Date(input);
 		if (null == date) {
     	console.error("Error while converting input to date:" + input);
     	return;
     }
-		return $.format.date(date, "dd.MM.yyyy HH:mm:ss");
+    return $.format.date(date, "dd.MM.yyyy HH:mm:ss");
   };
 });
 
@@ -23,7 +26,7 @@ onplanFilters.filter('nanotomilliseconds', function() {
   };
 });
 
-onplanFilters.filter('bytetomegabyte', function() {
+onplanFilters.filter('bytestomegabytes', function() {
   return function(input) {
   	var bytes = parseInt(input);
   	return Math.floor(bytes / 1048576);

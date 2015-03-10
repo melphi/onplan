@@ -1,7 +1,7 @@
 package com.onplan.startup.servlet;
 
 import com.caucho.hessian.server.HessianServlet;
-import com.onplan.adapter.InstrumentService;
+import com.onplan.connector.InstrumentService;
 import com.onplan.service.InstrumentServiceRemote;
 
 import javax.inject.Inject;

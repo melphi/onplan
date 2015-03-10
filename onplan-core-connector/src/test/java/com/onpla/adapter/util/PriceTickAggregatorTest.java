@@ -1,7 +1,7 @@
 package com.onpla.adapter.util;
 
-import com.onplan.adapter.PriceListener;
-import com.onplan.adapter.util.PriceTickAggregator;
+import com.onplan.connector.PriceListener;
+import com.onplan.connector.util.PriceTickAggregator;
 import com.onplan.domain.persistent.PriceBar;
 import com.onplan.domain.PriceBarTimeFrame;
 import com.onplan.domain.persistent.PriceTick;

@@ -3,9 +3,9 @@ package com.onplan.adviser.predicate.priceaction;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Range;
 import com.onplan.adviser.predicate.PredicateExecutionContext;
-import com.onplan.adviser.predicate.PredicateExecutionContextFactory;
+import com.onplan.adviser.predicate.TestingPredicateExecutionContextFactory;
 import com.onplan.domain.persistent.PriceTick;
-import com.onplan.util.PriceFactory;
+import com.onplan.util.TestingPriceFactory;
 import com.onplan.util.TestingConstants;
 import org.junit.Test;
 
@@ -19,7 +19,7 @@ public class PriceSpikePredicateTest {
 
   @Test
   public void testPredicateTriggeredEURUSD() throws Exception {
-    Iterable<PriceTick> priceTicks = PriceFactory.createPriceTicks(
+    Iterable<PriceTick> priceTicks = TestingPriceFactory.createPriceTicks(
         TestingConstants.INSTRUMENT_EURUSD_ID,
         Range.closed(
             TestingConstants.DEFAULT_START_DATE.getMillis(),
@@ -38,7 +38,7 @@ public class PriceSpikePredicateTest {
 
   @Test
   public void testPredicateNotTriggeredEURUSD() throws Exception {
-    Iterable<PriceTick> priceTicks = PriceFactory.createPriceTicks(
+    Iterable<PriceTick> priceTicks = TestingPriceFactory.createPriceTicks(
         TestingConstants.INSTRUMENT_EURUSD_ID,
         Range.closed(
             TestingConstants.DEFAULT_START_DATE.getMillis(),
@@ -56,7 +56,7 @@ public class PriceSpikePredicateTest {
 
   @Test
   public void testPredicateTriggeredDAX() throws Exception {
-    Iterable<PriceTick> priceTicks = PriceFactory.createPriceTicks(
+    Iterable<PriceTick> priceTicks = TestingPriceFactory.createPriceTicks(
         TestingConstants.INSTRUMENT_DAX_ID,
         Range.closed(
             TestingConstants.DEFAULT_START_DATE.getMillis(),
@@ -75,7 +75,7 @@ public class PriceSpikePredicateTest {
 
   @Test
   public void testEventNotTriggeredDAX() throws Exception {
-    Iterable<PriceTick> priceTicks = PriceFactory.createPriceTicks(
+    Iterable<PriceTick> priceTicks = TestingPriceFactory.createPriceTicks(
         TestingConstants.INSTRUMENT_DAX_ID,
         Range.closed(
             TestingConstants.DEFAULT_START_DATE.getMillis(),
@@ -93,7 +93,7 @@ public class PriceSpikePredicateTest {
 
   private PriceSpikePredicate createPriceSpikePredicate(String instrumentId) throws Exception {
     PredicateExecutionContext predicateExecutionContext =
-        PredicateExecutionContextFactory.createPredicateExecutionContext(PROPERTIES, instrumentId);
+        TestingPredicateExecutionContextFactory.createPredicateExecutionContext(PROPERTIES, instrumentId);
     PriceSpikePredicate strongPriceVariationStrategy =
         new PriceSpikePredicate(predicateExecutionContext);
     strongPriceVariationStrategy.init();

@@ -28,8 +28,8 @@ public class InstrumentServiceRest implements InstrumentServiceRemote {
     return instrumentService.getInstrumentInfo(instrumentId);
   }
 
-  @RequestMapping(value = "/", method = RequestMethod.GET)
   @Override
+  @RequestMapping(value = "/", method = RequestMethod.GET)
   public List<InstrumentInfo> findInstrumentsBySearchTerm(
       @RequestParam(value = "searchTerm") String searchTerm) throws Exception {
     checkNotNullOrEmpty(searchTerm);

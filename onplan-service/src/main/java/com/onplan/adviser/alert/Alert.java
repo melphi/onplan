@@ -1,8 +1,11 @@
 package com.onplan.adviser.alert;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import com.google.common.collect.Iterables;
 import com.onplan.adviser.AbstractChainedAdviser;
 import com.onplan.adviser.AdviserListener;
+import com.onplan.adviser.SeverityLevel;
 import com.onplan.adviser.predicate.AdviserPredicate;
 import com.onplan.domain.persistent.PriceTick;
 import org.joda.time.DateTime;
@@ -32,10 +35,14 @@ public final class Alert extends AbstractChainedAdviser<AlertEvent> {
     return message;
   }
 
+  public SeverityLevel getSeverityLevel() {
+    return severityLevel;
+  }
+
   private Alert(String id, Iterable<AdviserPredicate> predicatesChain,
       AdviserListener<AlertEvent> adviserListener, String instrumentId, String message,
-      boolean repeat, SeverityLevel severityLevel) {
-    super(id, predicatesChain, adviserListener, instrumentId);
+      boolean repeat, SeverityLevel severityLevel, long createdOn) {
+    super(id, predicatesChain, adviserListener, instrumentId, createdOn);
     this.message = checkNotNullOrEmpty(message);
     this.repeat = repeat;
     this.severityLevel = checkNotNull(severityLevel);
@@ -55,6 +62,43 @@ public final class Alert extends AbstractChainedAdviser<AlertEvent> {
       AlertEvent alertEvent = new AlertEvent(severityLevel, priceTick, lastFiredOn, message);
      return Optional.of(alertEvent);
     }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Alert alert = (Alert) o;
+    return Objects.equal(this.id, alert.id) &&
+        Objects.equal(this.instrumentId, alert.instrumentId) &&
+        Objects.equal(this.predicatesChain, alert.predicatesChain) &&
+        Objects.equal(this.createdOn, alert.createdOn) &&
+        Objects.equal(this.message, alert.message) &&
+        Objects.equal(this.repeat, alert.repeat) &&
+        Objects.equal(this.severityLevel, alert.severityLevel);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(
+        id, instrumentId, predicatesChain, createdOn, message, repeat, severityLevel);
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+        .add("id", id)
+        .add("instrumentId", instrumentId)
+        .add("predicatesChain", predicatesChain)
+        .add("createdOn", createdOn)
+        .add("message", message)
+        .add("repeat", repeat)
+        .add("severityLevel", severityLevel)
+        .toString();
   }
 
   public static class Builder {
@@ -110,8 +154,8 @@ public final class Alert extends AbstractChainedAdviser<AlertEvent> {
     }
 
     public Alert build() {
-      return new Alert(
-          id, predicatesChain, alertListener, instrumentId, alertMessage, repeat, severityLevel);
+      return new Alert(id, predicatesChain, alertListener, instrumentId, alertMessage, repeat,
+          severityLevel, createdOn);
     }
   }
 }

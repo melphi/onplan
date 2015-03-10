@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 public final class AlertInfo implements Serializable {
   private String id;
+  private String instrumentId;
   private Iterable<AdviserPredicateInfo> predicatesInfo;
   private String message;
   private long createdOn;
@@ -17,9 +18,10 @@ public final class AlertInfo implements Serializable {
     // Intentionally empty.
   }
 
-  public AlertInfo(String id, Iterable<AdviserPredicateInfo> predicatesInfo,
+  public AlertInfo(String id, String instrumentId, Iterable<AdviserPredicateInfo> predicatesInfo,
       String message, long createdOn, long lastFiredOn, boolean repeat) {
     this.id = id;
+    this.instrumentId = instrumentId;
     this.predicatesInfo = predicatesInfo;
     this.message = message;
     this.createdOn = createdOn;
@@ -33,6 +35,14 @@ public final class AlertInfo implements Serializable {
 
   public void setId(String id) {
     this.id = id;
+  }
+
+  public String getInstrumentId() {
+    return instrumentId;
+  }
+
+  public void setInstrumentId(String instrumentId) {
+    this.instrumentId = instrumentId;
   }
 
   public Iterable<AdviserPredicateInfo> getPredicatesInfo() {
@@ -85,6 +95,7 @@ public final class AlertInfo implements Serializable {
     }
     AlertInfo alertInfo = (AlertInfo) o;
     return Objects.equal(this.id, alertInfo.id) &&
+        Objects.equal(this.instrumentId, alertInfo.instrumentId) &&
         Objects.equal(this.predicatesInfo, alertInfo.predicatesInfo) &&
         Objects.equal(this.message, alertInfo.message) &&
         Objects.equal(this.createdOn, alertInfo.createdOn) &&
@@ -94,13 +105,15 @@ public final class AlertInfo implements Serializable {
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(id, predicatesInfo, message, createdOn, lastFiredOn, repeat);
+    return Objects.hashCode(
+        id, instrumentId, predicatesInfo, message, createdOn, lastFiredOn, repeat);
   }
 
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
         .add("id", id)
+        .add("instrumentId", instrumentId)
         .add("predicatesInfo", predicatesInfo)
         .add("message", message)
         .add("createdOn", createdOn)

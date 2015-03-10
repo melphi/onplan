@@ -1,6 +1,6 @@
 package com.onpla.adapter.util;
 
-import com.onplan.adapter.util.CompleteEnumMapper;
+import com.onplan.connector.util.CompleteEnumMapper;
 import org.junit.Test;
 
 public class CompleteEnumMapperTest {

@@ -6,6 +6,7 @@ import com.onplan.domain.configuration.StrategyConfiguration;
 import com.onplan.service.StrategyServiceRemote;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -27,12 +28,13 @@ public class StrategyServiceRest implements StrategyServiceRemote {
   }
 
   @Override
+  @RequestMapping(value = "/loadsamplestrategies", method = RequestMethod.GET)
   public void loadSampleStrategies() throws Exception {
-    throw new IllegalArgumentException("Not yet implemented.");
+    strategyService.loadSampleStrategies();
   }
 
   @Override
-  @RequestMapping(value = "/")
+  @RequestMapping(value = "/", method = RequestMethod.GET)
   public List<StrategyInfo> getStrategiesInfo() {
     return strategyService.getStrategiesInfo();
   }

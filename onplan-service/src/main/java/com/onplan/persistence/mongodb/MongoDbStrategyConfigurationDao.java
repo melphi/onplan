@@ -21,6 +21,7 @@ public final class MongoDbStrategyConfigurationDao extends AbstractMongoDbDao<St
     super(STRATEGY_CONFIGURATION_COLLECTION, StrategyConfiguration.class);
   }
 
+  // TODO(robertom): Load the sample strategies from a file.
   @Override
   public List<StrategyConfiguration> getSampleStrategiesConfiguration() {
     return ImmutableList.of(createStrategyConfiguration(

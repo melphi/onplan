@@ -7,10 +7,11 @@ import com.onplan.domain.persistent.PriceTick;
 
 import java.util.Optional;
 
+// TODO(robertom): Implement hashCode, equals.
 public final class AutomatedOrder extends AbstractChainedAdviser<AutomatedOrderEvent> {
   protected AutomatedOrder(String id, Iterable<AdviserPredicate> predicatesChain,
-      AdviserListener<AutomatedOrderEvent> adviserListener, String instrumentId) {
-    super(id, predicatesChain, adviserListener, instrumentId);
+      AdviserListener<AutomatedOrderEvent> adviserListener, String instrumentId, long createOd) {
+    super(id, predicatesChain, adviserListener, instrumentId, createOd);
   }
 
   public static Builder newBuilder() {

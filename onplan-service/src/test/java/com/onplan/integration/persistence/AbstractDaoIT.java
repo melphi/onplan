@@ -12,8 +12,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 import static org.junit.Assert.*;
 
-public abstract class AbstractDaoIT<T extends PersistentObject>
-    extends AbstractIT {
+public abstract class AbstractDaoIT<T extends PersistentObject> extends AbstractIT {
   protected static final int INITIAL_COLLECTION_SIZE = 10;
 
   private static final String INVALID_OBJECT_ID = "InvalidObjectId";

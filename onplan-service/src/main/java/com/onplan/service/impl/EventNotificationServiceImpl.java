@@ -2,8 +2,8 @@ package com.onplan.service.impl;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Injector;
-import com.onplan.adapter.ServiceConnection;
-import com.onplan.adapter.ServiceConnectionListener;
+import com.onplan.connector.ServiceConnection;
+import com.onplan.connector.ServiceConnectionListener;
 import com.onplan.adviser.alert.AlertEvent;
 import com.onplan.notification.*;
 import com.onplan.service.EventNotificationService;

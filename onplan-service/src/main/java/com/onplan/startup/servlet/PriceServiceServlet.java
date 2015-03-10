@@ -1,7 +1,7 @@
 package com.onplan.startup.servlet;
 
 import com.caucho.hessian.server.HessianServlet;
-import com.onplan.adapter.PriceService;
+import com.onplan.connector.PriceService;
 import com.onplan.service.PriceServiceRemote;
 
 import javax.inject.Inject;

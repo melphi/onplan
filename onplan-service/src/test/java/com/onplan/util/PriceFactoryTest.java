@@ -19,7 +19,7 @@ public class PriceFactoryTest {
         DEFAULT_START_DATE.getMillis(),
         TestingConstants.DEFAULT_START_DATE.plusMinutes(1).getMillis());
     Range<Double> priceRange = Range.closed(10.1, 20.2);
-    List<PriceTick> priceTicks = PriceFactory.createPriceTicks(
+    List<PriceTick> priceTicks = TestingPriceFactory.createPriceTicks(
         INSTRUMENT_EURUSD_ID, dateRange, priceRange, DEFAULT_SPREAD);
 
     int lastPriceTickIndex = priceTicks.size() - 1;

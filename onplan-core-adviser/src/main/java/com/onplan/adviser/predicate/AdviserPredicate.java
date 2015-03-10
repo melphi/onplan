@@ -6,8 +6,8 @@ import java.util.Map;
 
 public interface AdviserPredicate {
   /**
-   * Processes a {@link com.onplan.domain.persistent.PriceTick}, if the predicate is satisfied returns true,
-   * otherwise returns false.
+   * Processes a {@link com.onplan.domain.persistent.PriceTick}, returns true if the predicate
+   * is satisfied, false otherwise.
    * @param priceTick The price tick.
    */
   public boolean processPriceTick(final PriceTick priceTick);

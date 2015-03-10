@@ -8,15 +8,15 @@
 
   <div ng-controller="ShowVirtualMachineController as ctrl">
     <p>Free memory (Mb):
-      <span ng-bind-template="{{ctrl.virtualMachineInfo.freeMemory | bytetomegabyte}}">
+      <span ng-bind-template="{{ctrl.virtualMachineInfo.freeMemory | bytestomegabytes}}">
       </span>
     </p>
     <p>Total memory (Mb):
-      <span ng-bind-template="{{ctrl.virtualMachineInfo.totalMemory | bytetomegabyte}}">
+      <span ng-bind-template="{{ctrl.virtualMachineInfo.totalMemory | bytestomegabytes}}">
       </span>
     </p>
     <p>Max instantiable memory (Mb):
-      <span ng-bind-template="{{ctrl.virtualMachineInfo.maxMemory | bytetomegabyte}}">
+      <span ng-bind-template="{{ctrl.virtualMachineInfo.maxMemory | bytestomegabytes}}">
       </span>
     </p>
     <p>Garbage collections count:

@@ -1,7 +1,7 @@
 package com.onplan.adviser.strategy.system;
 
 import com.onplan.adviser.TemplateMetaData;
-import com.onplan.adviser.alert.SeverityLevel;
+import com.onplan.adviser.SeverityLevel;
 import com.onplan.adviser.strategy.AbstractStrategy;
 import com.onplan.adviser.strategy.StrategyExecutionContext;
 import com.onplan.domain.persistent.PriceTick;

@@ -3,8 +3,8 @@ package com.onplan.service.impl;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.onplan.adapter.HistoricalPriceService;
-import com.onplan.adapter.InstrumentService;
+import com.onplan.connector.HistoricalPriceService;
+import com.onplan.connector.InstrumentService;
 import com.onplan.adviser.StrategyInfo;
 import com.onplan.adviser.TemplateInfo;
 import com.onplan.adviser.alert.AlertEvent;
@@ -13,8 +13,8 @@ import com.onplan.adviser.strategy.Strategy;
 import com.onplan.adviser.strategy.StrategyListener;
 import com.onplan.adviser.strategy.StrategyUtil;
 import com.onplan.adviser.strategy.system.IntegrationTestStrategy;
-import com.onplan.domain.persistent.PriceTick;
 import com.onplan.domain.configuration.StrategyConfiguration;
+import com.onplan.domain.persistent.PriceTick;
 import com.onplan.persistence.StrategyConfigurationDao;
 import com.onplan.service.EventNotificationService;
 import com.onplan.service.StrategyService;
@@ -248,7 +248,7 @@ public final class StrategyServiceImpl extends AbstractAdviserService implements
     }
   }
 
-  private class InternalStrategyListener implements StrategyListener {
+  private final class InternalStrategyListener implements StrategyListener {
     @Override
     public void onNewOrder(final AutomatedOrderEvent automatedOrderEvent) {
       throw new IllegalArgumentException("Not yet implemented.");

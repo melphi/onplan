@@ -1,7 +1,7 @@
 package com.onplan.processing;
 
-import com.onplan.adapter.PriceListener;
-import com.onplan.adapter.PriceService;
+import com.onplan.connector.PriceListener;
+import com.onplan.connector.PriceService;
 import com.onplan.domain.persistent.PriceBar;
 import com.onplan.domain.persistent.PriceTick;
 import com.onplan.service.AlertService;
@@ -27,10 +27,6 @@ public final class PriceServiceBus {
   private PriceService priceService;
   private StrategyService strategyService;
   private AlertService alertService;
-
-  public PriceServiceBus() {
-    LOGGER.info("Price service alive!");
-  }
 
   @Inject
   public void setStrategyService(StrategyService strategyService) {

@@ -2,14 +2,14 @@ package com.onplan.startup;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.onplan.adapter.HistoricalPriceService;
-import com.onplan.adapter.InstrumentService;
-import com.onplan.adapter.PriceService;
-import com.onplan.adapter.ServiceConnection;
-import com.onplan.adapter.igindex.IgIndexConnection;
-import com.onplan.adapter.igindex.IgIndexHistoricalPriceService;
-import com.onplan.adapter.igindex.IgIndexInstrumentService;
-import com.onplan.adapter.igindex.IgIndexPriceService;
+import com.onplan.connector.HistoricalPriceService;
+import com.onplan.connector.InstrumentService;
+import com.onplan.connector.PriceService;
+import com.onplan.connector.ServiceConnection;
+import com.onplan.connector.igindex.IgIndexConnection;
+import com.onplan.connector.igindex.IgIndexHistoricalPriceService;
+import com.onplan.connector.igindex.IgIndexInstrumentService;
+import com.onplan.connector.igindex.IgIndexPriceService;
 import com.onplan.util.PropertiesUtils;
 
 import javax.inject.Singleton;

@@ -86,7 +86,7 @@ public abstract class AbstractMongoDbDao<T extends PersistentObject> implements 
   public boolean remove(T object) {
     checkNotNull(object);
     WriteResult writeResult = dbCollection.remove(createDbObject(object));
-    return  writeResult.getN() > 0;
+    return writeResult.getN() > 0;
   }
 
   @Override

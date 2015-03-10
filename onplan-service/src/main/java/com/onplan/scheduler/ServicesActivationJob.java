@@ -1,8 +1,8 @@
 package com.onplan.scheduler;
 
-import com.onplan.adapter.PriceService;
-import com.onplan.adapter.ServiceConnection;
-import com.onplan.adapter.ServiceConnectionListener;
+import com.onplan.connector.PriceService;
+import com.onplan.connector.ServiceConnection;
+import com.onplan.connector.ServiceConnectionListener;
 import com.onplan.service.AlertService;
 import com.onplan.service.StrategyService;
 import org.apache.log4j.Logger;
@@ -73,7 +73,7 @@ public class ServicesActivationJob implements Job {
       }
     } else {
       if(serviceConnection.isConnected()) {
-        LOGGER.warn("Out of market hours, closing adapter service connection.");
+        LOGGER.warn("Out of market hours, closing connector service connection.");
         serviceConnection.disconnect();
       }
     }
