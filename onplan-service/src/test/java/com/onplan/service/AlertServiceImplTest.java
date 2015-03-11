@@ -9,7 +9,7 @@ import com.onplan.adviser.AdviserPredicateInfo;
 import com.onplan.adviser.AlertInfo;
 import com.onplan.adviser.TemplateInfo;
 import com.onplan.adviser.alert.Alert;
-import com.onplan.adviser.alert.AlertEvent;
+import com.onplan.domain.persistent.AlertEvent;
 import com.onplan.adviser.predicate.AdviserPredicate;
 import com.onplan.adviser.predicate.pricevalue.PriceValuePredicate;
 import com.onplan.dao.TestingAlertConfigurationDao;

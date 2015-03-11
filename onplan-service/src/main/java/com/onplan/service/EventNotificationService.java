@@ -1,7 +1,7 @@
 package com.onplan.service;
 
-import com.onplan.adviser.alert.AlertEvent;
-import com.onplan.notification.SystemEvent;
+import com.onplan.domain.persistent.AlertEvent;
+import com.onplan.domain.persistent.SystemEvent;
 
 /**
  * Notifies alerts and system events to the registered channels (eg. SMTP, JMS, Twitter, etc).

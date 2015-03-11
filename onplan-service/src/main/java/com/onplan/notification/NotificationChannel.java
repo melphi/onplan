@@ -1,13 +1,14 @@
 package com.onplan.notification;
 
-import com.onplan.adviser.alert.AlertEvent;
+import com.onplan.domain.persistent.AlertEvent;
+import com.onplan.domain.persistent.SystemEvent;
 
 /**
  * Common interface for events notification media.
  */
 public interface NotificationChannel {
   /**
-   * Notifies a {@link com.onplan.notification.SystemEvent}.
+   * Notifies a {@link com.onplan.domain.persistent.SystemEvent}.
    *
    * @param systemEvent The system event to be notified.
    * @throws Exception Error while notifying the event.
@@ -15,7 +16,7 @@ public interface NotificationChannel {
   public void notifySystemEvent(final SystemEvent systemEvent) throws Exception;
 
   /**
-   * Notifies a {@link com.onplan.adviser.alert.AlertEvent}.
+   * Notifies a {@link com.onplan.domain.persistent.AlertEvent}.
    *
    * @param alertEvent The alert event to be notified.
    * @throws Exception Error while notifying the event.

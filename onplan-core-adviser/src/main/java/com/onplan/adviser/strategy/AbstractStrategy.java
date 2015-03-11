@@ -3,7 +3,7 @@ package com.onplan.adviser.strategy;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.onplan.adviser.StrategyStatistics;
-import com.onplan.adviser.alert.AlertEvent;
+import com.onplan.domain.persistent.AlertEvent;
 import com.onplan.adviser.SeverityLevel;
 import com.onplan.domain.persistent.PriceTick;
 import org.joda.time.DateTime;

@@ -1,6 +1,7 @@
 package com.onplan.notification;
 
-import com.onplan.adviser.alert.AlertEvent;
+import com.onplan.domain.persistent.AlertEvent;
+import com.onplan.domain.persistent.SystemEvent;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;

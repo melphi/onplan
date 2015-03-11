@@ -4,7 +4,8 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClient;
-import com.onplan.adviser.alert.AlertEvent;
+import com.onplan.domain.persistent.AlertEvent;
+import com.onplan.domain.persistent.SystemEvent;
 import org.apache.log4j.Logger;
 
 import javax.inject.Inject;

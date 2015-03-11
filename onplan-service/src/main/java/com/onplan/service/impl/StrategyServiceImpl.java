@@ -7,7 +7,7 @@ import com.onplan.connector.HistoricalPriceService;
 import com.onplan.connector.InstrumentService;
 import com.onplan.adviser.StrategyInfo;
 import com.onplan.adviser.TemplateInfo;
-import com.onplan.adviser.alert.AlertEvent;
+import com.onplan.domain.persistent.AlertEvent;
 import com.onplan.adviser.automatedorder.AutomatedOrderEvent;
 import com.onplan.adviser.strategy.Strategy;
 import com.onplan.adviser.strategy.StrategyListener;

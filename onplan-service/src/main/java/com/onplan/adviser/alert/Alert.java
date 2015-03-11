@@ -7,6 +7,7 @@ import com.onplan.adviser.AbstractChainedAdviser;
 import com.onplan.adviser.AdviserListener;
 import com.onplan.adviser.SeverityLevel;
 import com.onplan.adviser.predicate.AdviserPredicate;
+import com.onplan.domain.persistent.AlertEvent;
 import com.onplan.domain.persistent.PriceTick;
 import org.joda.time.DateTime;
 
