@@ -57,6 +57,9 @@ public final class PriceServiceBus {
       strategyService.onPriceTick(priceTick);
       if (alertService.hasAlerts()) {
         runAsync(new AlertServiceNotification(priceTick));
+        /* TODO(robertom): Benchmark if there is any speed / memory improvement with lambda.
+         * For example: new Thread(() -> alertService.onPriceTick(priceTick)).start();
+         */
       }
     }
 

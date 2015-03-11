@@ -35,7 +35,7 @@ import static com.onplan.util.PropertiesUtils.loadPropertiesFromFile;
 public class GuiceTestingModule extends AbstractModule {
   private static final String BROKER_PROPERTIES_FILE = "broker-testing.properties";
   private static final List<String> PROPERTIES_FILES = ImmutableList.of(
-      "marketinfo-testing.properties",
+      "system-testing.properties",
       "mongodb-testing.properties",
       "notification-testing.properties");
 
