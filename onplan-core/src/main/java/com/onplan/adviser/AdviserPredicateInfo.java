@@ -5,6 +5,9 @@ import com.google.common.base.Objects;
 
 import java.util.Map;
 
+/**
+ * Contains information about an adviser predicate.
+ */
 public final class AdviserPredicateInfo extends TemplateInfo {
   private Map<String, String> executionParameters;
 

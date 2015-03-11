@@ -5,6 +5,9 @@ import com.google.common.base.Objects;
 
 import java.io.Serializable;
 
+/**
+ * Contains information about an alert.
+ */
 public final class AlertInfo implements Serializable {
   private String id;
   private String instrumentId;

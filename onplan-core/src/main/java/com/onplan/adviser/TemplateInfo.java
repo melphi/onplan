@@ -5,6 +5,9 @@ import com.google.common.base.Objects;
 
 import java.io.Serializable;
 
+/**
+ * Contains information about a generic template.
+ */
 public class TemplateInfo implements Serializable {
   protected String displayName;
   protected String className;

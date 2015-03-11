@@ -6,6 +6,9 @@ import com.google.common.base.Objects;
 import java.util.Collection;
 import java.util.Map;
 
+/**
+ * Contains information about a strategy.
+ */
 public final class StrategyInfo extends TemplateInfo {
   private String id;
   private Map<String, String> executionParameters;

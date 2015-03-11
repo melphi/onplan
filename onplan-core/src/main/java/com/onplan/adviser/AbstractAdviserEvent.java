@@ -7,6 +7,9 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
+/**
+ * Basic class for adviser events.
+ */
 public abstract class AbstractAdviserEvent implements AdviserEvent, PersistentObject {
   protected String id;
   protected String adviserId;

@@ -5,6 +5,9 @@ import com.google.common.base.Objects;
 
 import java.io.Serializable;
 
+/**
+ * Strategy statistics.
+ */
 public final class StrategyStatistics implements Serializable {
   private long lastReceivedTickTimestamp;
   private long receivedTicks;
