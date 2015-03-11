@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 @Singleton
@@ -45,6 +46,7 @@ public final class SmtpNotificationChannel implements NotificationChannel {
 
   @Override
   public void notifySystemEvent(SystemEvent systemEvent) throws Exception {
+    checkNotNull(systemEvent);
     LOGGER.info(String.format(
         "Sending system event email (SMTP) notification to [%s]. Subject: [%s]",
         to,
@@ -54,6 +56,7 @@ public final class SmtpNotificationChannel implements NotificationChannel {
 
   @Override
   public void notifyAlertEvent(AlertEvent alertEvent) throws Exception {
+    checkNotNull(alertEvent);
     String title = String.format(
         "[%s] alert, severity: [%s]",
         alertEvent.getPriceTick().getInstrumentId(),
@@ -62,11 +65,6 @@ public final class SmtpNotificationChannel implements NotificationChannel {
     LOGGER.info(
         String.format("Sending alert event email (SMTP) to [%s]. Subject: [%s]", to, title));
     createEmail(title, message).send();
-  }
-
-  @Override
-  public boolean isActive() {
-    return true;
   }
 
   private Email createEmail(final String title, final String body) throws EmailException {

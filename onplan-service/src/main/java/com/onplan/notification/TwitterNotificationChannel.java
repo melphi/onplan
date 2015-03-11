@@ -1,6 +1,5 @@
 package com.onplan.notification;
 
-import com.google.common.base.Strings;
 import com.onplan.domain.persistent.AlertEvent;
 import com.onplan.domain.persistent.SystemEvent;
 import com.onplan.util.StringUtils;
@@ -13,6 +12,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 @Singleton
@@ -47,6 +47,7 @@ public final  class TwitterNotificationChannel implements NotificationChannel {
 
   @Override
   public void notifySystemEvent(SystemEvent systemEvent) throws Exception {
+    checkNotNull(systemEvent);
     String message = String.format(
         "[%s]: [%s] severity: [%s]",
         systemEvent.getClassName(),
@@ -60,6 +61,7 @@ public final  class TwitterNotificationChannel implements NotificationChannel {
 
   @Override
   public void notifyAlertEvent(AlertEvent alertEvent) throws Exception {
+    checkNotNull(alertEvent);
     String message = String.format(
         "[%s]: [%s] severity: [%s]",
         alertEvent.getPriceTick().getInstrumentId(),
@@ -70,14 +72,5 @@ public final  class TwitterNotificationChannel implements NotificationChannel {
         recipientScreenName,
         message));
     sendDirectMessage(recipientScreenName, message);
-  }
-
-  @Override
-  public boolean isActive() {
-    try {
-      return !Strings.isNullOrEmpty(twitterClient.getAccountSettings().getScreenName());
-    } catch (TwitterException e) {
-      return false;
-    }
   }
 }

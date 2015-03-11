@@ -22,10 +22,4 @@ public interface NotificationChannel {
    * @throws Exception Error while notifying the event.
    */
   public void notifyAlertEvent(final AlertEvent alertEvent) throws Exception;
-
-  /**
-   * Returns true when the connection is active.
-   * This can be a resource expensive operation.
-   */
-  public boolean isActive();
 }

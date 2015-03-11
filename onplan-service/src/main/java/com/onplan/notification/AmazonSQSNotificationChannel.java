@@ -54,14 +54,4 @@ public final class AmazonSQSNotificationChannel implements NotificationChannel {
         "Sending alert event to Amazon SQS with message [%s].", alertEvent.getMessage()));
     sqsClient.sendMessage(alertEventQueueUrl, createJson(alertEvent));
   }
-
-  @Override
-  public boolean isActive() {
-    try {
-      sqsClient.listQueues();
-      return true;
-    } catch (Exception e) {
-      return false;
-    }
-  }
 }
