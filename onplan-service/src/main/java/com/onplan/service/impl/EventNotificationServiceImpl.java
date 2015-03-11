@@ -46,12 +46,16 @@ public final class EventNotificationServiceImpl implements EventNotificationServ
       @Named("notification.notify.service.disconnection") String notifyServiceDisconnection,
       @Named("notification.twitter.enabled") String enableTwitterNotification,
       @Named("notification.smtp.enabled") String enableSmtpNotification,
-      @Named("notification.amazonsqs.enabled") String enableAmazonSqsNotification) {
+      @Named("notification.amazonsqs.enabled") String enableAmazonSqsNotification,
+      @Named("notification.mongodb.enabled") String enableMondoDbNotification) {
     this.notifyServiceConnection = checkAndGetBoolean(notifyServiceConnection);
     this.notifyServiceDisconnection = checkAndGetBoolean(notifyServiceDisconnection);
     ImmutableList.Builder<NotificationChannel> notificationChannels = ImmutableList.builder();
     if (checkAndGetBoolean(enableAmazonSqsNotification)) {
       notificationChannels.add(injector.getInstance(AmazonSQSNotificationChannel.class));
+    }
+    if (checkAndGetBoolean(enableMondoDbNotification)) {
+      notificationChannels.add(injector.getInstance(MongoDbNotificationChannel.class));
     }
     if (checkAndGetBoolean(enableTwitterNotification)) {
       notificationChannels.add(injector.getInstance(TwitterNotificationChannel.class));

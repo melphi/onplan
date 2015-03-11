@@ -15,6 +15,8 @@ import com.onplan.util.PropertiesUtils;
 import javax.inject.Singleton;
 import java.util.Properties;
 
+import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
+
 /**
  * Guice module specific for IgIndex services.
  */
@@ -32,10 +34,14 @@ public class IgIndexGuiceModule extends AbstractModule {
   private static IgIndexConnection getIgIndexConnectionInstance() throws Exception {
     if (null == igIndexServiceConnection) {
       Properties properties = PropertiesUtils.loadPropertiesFromFile(BROKER_PROPERTIES_FILE);
-      String apiKey = properties.getProperty("com.onplan.adapter.igindex.apiKey");
-      String username = properties.getProperty("com.onplan.adapter.igindex.username");
-      String password = properties.getProperty("com.onplan.adapter.igindex.password");
-      String serverUrl = properties.getProperty("com.onplan.adapter.igindex.severUrl");
+      String apiKey =
+          checkNotNullOrEmpty(properties.getProperty("com.onplan.connector.igindex.apiKey"));
+      String username =
+          checkNotNullOrEmpty(properties.getProperty("com.onplan.connector.igindex.username"));
+      String password =
+          checkNotNullOrEmpty(properties.getProperty("com.onplan.connector.igindex.password"));
+      String serverUrl =
+          checkNotNullOrEmpty(properties.getProperty("com.onplan.connector.igindex.severUrl"));
       igIndexServiceConnection = new IgIndexConnection(apiKey, username, password, serverUrl);
     }
     return igIndexServiceConnection;

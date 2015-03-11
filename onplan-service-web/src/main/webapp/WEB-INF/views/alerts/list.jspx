@@ -12,6 +12,7 @@
         <th>Instrument</th>
         <th>Created on</th>
         <th>Message</th>
+        <th>Severity</th>
         <th>Repeat</th>
         <th>Last fired on</th>
       </tr>
@@ -24,6 +25,9 @@
         </td>
         <td>
           <span ng-bind="alert.message"/>
+        </td>
+        <td>
+          <span ng-bind="alert.severityLevel"/>
         </td>
         <td>
           <span ng-bind="alert.repeat"/>

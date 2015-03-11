@@ -17,7 +17,7 @@ import static com.onplan.util.PropertiesUtils.getRequiredStringValue;
     availableParameters = {
         PriceValuePredicate.PARAMETER_PRICE_VALUE,
         PriceValuePredicate.PARAMETER_COMPARISON_OPERATOR})
-public class PriceValuePredicate extends AbstractAdviserPredicate {
+public final class PriceValuePredicate extends AbstractAdviserPredicate {
   public static final String PARAMETER_PRICE_VALUE = "priceValue";
   public static final String PARAMETER_COMPARISON_OPERATOR = "comparisonOperator";
   // TODO(robertom): Move these constants in a dedicated class.
