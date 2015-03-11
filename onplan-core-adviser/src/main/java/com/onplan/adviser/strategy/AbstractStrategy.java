@@ -52,7 +52,7 @@ public abstract class AbstractStrategy implements Strategy {
   protected void dispatchAlertEvent(
       final SeverityLevel severityLevel, final String message, final PriceTick priceTick) {
     long createdOn = DateTime.now().getMillis();
-    AlertEvent alertEvent = new AlertEvent(severityLevel, priceTick, createdOn, message);
+    AlertEvent alertEvent = new AlertEvent(getId(), severityLevel, priceTick, createdOn, message);
     strategyListener.onAlert(alertEvent);
   }
 

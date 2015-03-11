@@ -5,7 +5,7 @@ import com.google.common.collect.Range;
 import com.onplan.adviser.predicate.PredicateExecutionContext;
 import com.onplan.adviser.predicate.TestingPredicateExecutionContextFactory;
 import com.onplan.domain.persistent.PriceTick;
-import com.onplan.util.TestingPriceFactory;
+import com.onplan.domain.TestingPriceFactory;
 import com.onplan.util.TestingConstants;
 import org.junit.Test;
 
@@ -29,7 +29,7 @@ public class PriceSpikePredicateTest {
     PriceSpikePredicate priceSpikePredicate =
         createPriceSpikePredicate(TestingConstants.INSTRUMENT_EURUSD_ID);
     for (PriceTick priceTick : priceTicks) {
-      if (priceSpikePredicate.processPriceTick(priceTick)) {
+      if (priceSpikePredicate.apply(priceTick)) {
         return;
       }
     }
@@ -48,7 +48,7 @@ public class PriceSpikePredicateTest {
     PriceSpikePredicate priceSpikePredicate =
         createPriceSpikePredicate(TestingConstants.INSTRUMENT_EURUSD_ID);
     for (PriceTick priceTick : priceTicks) {
-      if (priceSpikePredicate.processPriceTick(priceTick)) {
+      if (priceSpikePredicate.apply(priceTick)) {
         fail("Predicate triggered.");
       }
     }
@@ -66,7 +66,7 @@ public class PriceSpikePredicateTest {
     PriceSpikePredicate priceSpikePredicate =
         createPriceSpikePredicate(TestingConstants.INSTRUMENT_DAX_ID);
     for (PriceTick priceTick : priceTicks) {
-      if (priceSpikePredicate.processPriceTick(priceTick)) {
+      if (priceSpikePredicate.apply(priceTick)) {
         return;
       }
     }
@@ -85,7 +85,7 @@ public class PriceSpikePredicateTest {
     PriceSpikePredicate priceSpikePredicate =
         createPriceSpikePredicate(TestingConstants.INSTRUMENT_DAX_ID);
     for (PriceTick priceTick : priceTicks) {
-      if (priceSpikePredicate.processPriceTick(priceTick)) {
+      if (priceSpikePredicate.apply(priceTick)) {
         fail("Predicate triggered.");
       }
     }

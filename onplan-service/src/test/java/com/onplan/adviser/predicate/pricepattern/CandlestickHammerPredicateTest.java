@@ -6,7 +6,7 @@ import com.google.common.collect.Range;
 import com.onplan.adviser.predicate.PredicateExecutionContext;
 import com.onplan.adviser.predicate.TestingPredicateExecutionContextFactory;
 import com.onplan.domain.persistent.PriceTick;
-import com.onplan.util.TestingPriceFactory;
+import com.onplan.domain.TestingPriceFactory;
 import com.onplan.util.TestingConstants;
 import org.junit.Test;
 
@@ -35,7 +35,7 @@ public class CandlestickHammerPredicateTest {
         9909.8);
     CandlestickHammerPredicate candlestickHammerPredicate = createCandlestickHammerPredicate();
     for (PriceTick priceTick : priceTicks) {
-      if (candlestickHammerPredicate.processPriceTick(priceTick)) {
+      if (candlestickHammerPredicate.apply(priceTick)) {
         return;
       }
     }
@@ -53,7 +53,7 @@ public class CandlestickHammerPredicateTest {
         9908.0);
     CandlestickHammerPredicate candlestickHammerPredicate = createCandlestickHammerPredicate();
     for (PriceTick priceTick : priceTicks) {
-      if (candlestickHammerPredicate.processPriceTick(priceTick)) {
+      if (candlestickHammerPredicate.apply(priceTick)) {
         fail("Predicate triggered.");
       }
     }
@@ -70,7 +70,7 @@ public class CandlestickHammerPredicateTest {
         10020.0);
     CandlestickHammerPredicate candlestickHammerPredicate = createCandlestickHammerPredicate();
     for (PriceTick priceTick : priceTicks) {
-      if (candlestickHammerPredicate.processPriceTick(priceTick)) {
+      if (candlestickHammerPredicate.apply(priceTick)) {
         return;
       }
     }
@@ -88,7 +88,7 @@ public class CandlestickHammerPredicateTest {
         9965.0);
     CandlestickHammerPredicate candlestickHammerPredicate = createCandlestickHammerPredicate();
     for (PriceTick priceTick : priceTicks) {
-      if (candlestickHammerPredicate.processPriceTick(priceTick)) {
+      if (candlestickHammerPredicate.apply(priceTick)) {
         fail("Predicate triggered.");
       }
     }
@@ -105,7 +105,7 @@ public class CandlestickHammerPredicateTest {
         9925.5);
     CandlestickHammerPredicate candlestickHammerPredicate = createCandlestickHammerPredicate();
     for (PriceTick priceTick : priceTicks) {
-      if (candlestickHammerPredicate.processPriceTick(priceTick)) {
+      if (candlestickHammerPredicate.apply(priceTick)) {
         fail("Predicate triggered.");
       }
     }

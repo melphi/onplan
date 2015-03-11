@@ -7,7 +7,7 @@ import com.onplan.domain.persistent.PersistentObject;
 import java.util.Map;
 import java.util.Set;
 
-public class StrategyConfiguration implements PersistentObject {
+public final class StrategyConfiguration implements PersistentObject {
   private String id;
   private String className;
   private Map<String, String> executionParameters;

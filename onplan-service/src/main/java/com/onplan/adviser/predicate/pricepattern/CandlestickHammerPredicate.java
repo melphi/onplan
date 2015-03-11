@@ -35,7 +35,7 @@ public final class CandlestickHammerPredicate extends AbstractAdviserPredicate {
   }
 
   @Override
-  public boolean processPriceTick(PriceTick priceTick) {
+  public boolean apply(PriceTick priceTick) {
     if (priceTick.getTimestamp() > barEndTimestamp) {
       if (isFirstBar) {
         if (barEndTimestamp > 0) {

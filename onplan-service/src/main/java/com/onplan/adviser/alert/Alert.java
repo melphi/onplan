@@ -52,6 +52,12 @@ public final class Alert extends AbstractChainedAdviser<AlertEvent> {
     return new Builder();
   }
 
+  public void init() throws Exception {
+    for (AdviserPredicate adviserPredicate : predicatesChain) {
+      adviserPredicate.init();
+    }
+  }
+
   @Override
   protected Optional<AlertEvent> prepareAdviserEvent(final PriceTick priceTick) {
     // TODO(robertom): Implement a repeat delay to avoid an event for each subsequent tick.
@@ -59,7 +65,7 @@ public final class Alert extends AbstractChainedAdviser<AlertEvent> {
       return Optional.empty();
     } else {
       this.lastFiredOn = DateTime.now().getMillis();
-      AlertEvent alertEvent = new AlertEvent(severityLevel, priceTick, lastFiredOn, message);
+      AlertEvent alertEvent = new AlertEvent(id, severityLevel, priceTick, lastFiredOn, message);
      return Optional.of(alertEvent);
     }
   }

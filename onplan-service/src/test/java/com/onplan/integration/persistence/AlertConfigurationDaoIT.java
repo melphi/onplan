@@ -5,8 +5,8 @@ import com.onplan.persistence.AlertConfigurationDao;
 
 import java.util.Collection;
 
-import static com.onplan.factory.TestingAlertConfigurationFactory.createSampleAlertConfigurationWithNullId;
-import static com.onplan.factory.TestingAlertConfigurationFactory.createSampleAlertConfigurationsWithNullId;
+import static com.onplan.adviser.alert.TestingAlertConfigurationFactory.createSampleAlertConfigurationWithNullId;
+import static com.onplan.adviser.alert.TestingAlertConfigurationFactory.createSampleAlertConfigurationsWithNullId;
 
 public class AlertConfigurationDaoIT extends AbstractDaoIT<AlertConfiguration> {
   public AlertConfigurationDaoIT() {

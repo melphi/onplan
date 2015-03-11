@@ -28,7 +28,7 @@ public final class PriceSpikePredicate extends AbstractAdviserPredicate {
   }
 
   @Override
-  public boolean processPriceTick(PriceTick priceTick) {
+  public boolean apply(PriceTick priceTick) {
     if (barOpenTimestamp <= 0 || priceTick.getTimestamp() > barCloseTimestamp) {
       prepareNewBar(priceTick);
       return false;

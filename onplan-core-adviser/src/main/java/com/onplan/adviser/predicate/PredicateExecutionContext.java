@@ -1,5 +1,7 @@
 package com.onplan.adviser.predicate;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
 import com.onplan.service.HistoricalPriceServiceRemote;
 import com.onplan.service.InstrumentServiceRemote;
@@ -42,6 +44,35 @@ public final class PredicateExecutionContext {
 
   public String getInstrumentId() {
     return instrumentId;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    PredicateExecutionContext executionContext = (PredicateExecutionContext) o;
+    return Objects.equal(this.historicalPriceService, executionContext.historicalPriceService) &&
+        Objects.equal(this.instrumentService, executionContext.instrumentService) &&
+        Objects.equal(this.instrumentId, executionContext.instrumentId) &&
+        Objects.equal(this.executionParameters, executionContext.executionParameters);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(
+        historicalPriceService, instrumentService, instrumentId, executionParameters);
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+        .add("instrumentId", instrumentId)
+        .add("executionParameters", executionParameters)
+        .toString();
   }
 
   public static class Builder {

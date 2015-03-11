@@ -10,7 +10,7 @@ public interface AdviserPredicate {
    * is satisfied, false otherwise.
    * @param priceTick The price tick.
    */
-  public boolean processPriceTick(final PriceTick priceTick);
+  public boolean apply(final PriceTick priceTick);
 
   /**
    * Initializes the predicate.

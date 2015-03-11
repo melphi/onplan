@@ -40,7 +40,7 @@ public abstract class AbstractChainedAdviser<T extends AdviserEvent> implements 
         instrumentId,
         priceTick.getInstrumentId()));
     for (AdviserPredicate adviserPredicate : predicatesChain) {
-      if (!adviserPredicate.processPriceTick(priceTick)) {
+      if (!adviserPredicate.apply(priceTick)) {
         return;
       }
     }

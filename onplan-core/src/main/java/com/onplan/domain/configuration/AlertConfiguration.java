@@ -5,7 +5,7 @@ import com.google.common.base.Objects;
 import com.onplan.adviser.SeverityLevel;
 import com.onplan.domain.persistent.PersistentObject;
 
-public class AlertConfiguration implements PersistentObject {
+public final class AlertConfiguration implements PersistentObject {
   private String id;
   private String message;
   private String instrumentId;

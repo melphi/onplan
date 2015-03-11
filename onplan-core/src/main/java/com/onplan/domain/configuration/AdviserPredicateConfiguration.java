@@ -6,7 +6,7 @@ import com.google.common.base.Objects;
 import java.io.Serializable;
 import java.util.Map;
 
-public class AdviserPredicateConfiguration implements Serializable {
+public final class AdviserPredicateConfiguration implements Serializable {
   private String className;
   private Map<String, String> parameters;
 

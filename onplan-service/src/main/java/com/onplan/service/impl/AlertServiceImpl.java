@@ -1,7 +1,6 @@
 package com.onplan.service.impl;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -29,8 +28,10 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.onplan.adviser.predicate.AdviserPredicateUtil.createAdviserPredicateInfo;
 import static com.onplan.service.impl.AdviserFactory.createAlert;
+import static com.onplan.util.ExceptionUtils.stackTraceToString;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 @Singleton
@@ -105,9 +106,10 @@ public final class AlertServiceImpl extends AbstractAdviserService implements Al
       result = unLoadAlert(alertId);
     } catch (Exception e) {
       LOGGER.error(String.format(
-          "Error while un-loading alert [%s]: [%s].",
+          "Error while un-loading alert [%s]: [%s] [%s].",
           alertId,
-          e.getMessage()));
+          e.getMessage(),
+          stackTraceToString(e)));
       throw e;
     }
     synchronized (alertsMapping) {
@@ -121,7 +123,7 @@ public final class AlertServiceImpl extends AbstractAdviserService implements Al
     checkAlertConfiguration(alertConfiguration);
     String id = alertConfigurationDao.save(alertConfiguration);
     try {
-      if (!Strings.isNullOrEmpty(alertConfiguration.getId())) {
+      if (!isNullOrEmpty(alertConfiguration.getId())) {
         unLoadAlert(id);
       }
       alertConfiguration = alertConfigurationDao.findById(id);
@@ -185,8 +187,8 @@ public final class AlertServiceImpl extends AbstractAdviserService implements Al
       try {
         loadAlert(alertConfiguration);
       } catch (Exception e) {
-        LOGGER.error(String.format(
-            "Error while loading alert [%s]: [%s].", alertConfiguration.getId(), e.getMessage()));
+        LOGGER.error(String.format("Error while loading alert [%s]: [%s] [%s].",
+            alertConfiguration.getId(), e.getMessage(), stackTraceToString(e)));
         throw e;
       }
     }
@@ -223,10 +225,28 @@ public final class AlertServiceImpl extends AbstractAdviserService implements Al
     }
   }
 
+  private static AlertInfo createAlertInfo(final Alert alert) {
+    checkNotNull(alert);
+    ImmutableList.Builder predicatesInfo = ImmutableList.builder();
+    for (AdviserPredicate adviserPredicate : alert.getPredicatesChain()) {
+      predicatesInfo.add(createAdviserPredicateInfo(adviserPredicate));
+    }
+    return new AlertInfo(
+        alert.getId(),
+        alert.getInstrumentId(),
+        alert.getSeverityLevel(),
+        predicatesInfo.build(),
+        alert.getMessage(),
+        alert.getCreatedOn(),
+        alert.getLastFiredOn(),
+        alert.getRepeat());
+  }
+
   private void loadAlert(AlertConfiguration alertConfiguration) throws Exception {
     checkAlertConfiguration(alertConfiguration);
     Alert alert = createAlert(
         alertConfiguration, alertEventListener, instrumentService, historicalPriceService);
+    alert.init();
     synchronized (alertsMapping) {
       Collection<Alert> alertsEntry = alertsMapping.get(alert.getInstrumentId());
       if (null == alertsEntry) {
@@ -262,27 +282,11 @@ public final class AlertServiceImpl extends AbstractAdviserService implements Al
     return false;
   }
 
-  private AlertInfo createAlertInfo(final Alert alert) {
-    checkNotNull(alert);
-    ImmutableList.Builder predicatesInfo = ImmutableList.builder();
-    for (AdviserPredicate adviserPredicate : alert.getPredicatesChain()) {
-      predicatesInfo.add(createAdviserPredicateInfo(adviserPredicate));
-    }
-    return new AlertInfo(
-        alert.getId(),
-        alert.getInstrumentId(),
-        alert.getSeverityLevel(),
-        predicatesInfo.build(),
-        alert.getMessage(),
-        alert.getCreatedOn(),
-        alert.getLastFiredOn(),
-        alert.getRepeat());
-  }
-
   private final class InternalAlertListener implements AdviserListener<AlertEvent> {
     @Override
     public void onEvent(AlertEvent event) {
       eventNotificationService.notifyAlertEventAsync(event);
+      // TODO(robertom): Non-repeat event remains in memory, however they should be removed.
     }
   }
 }

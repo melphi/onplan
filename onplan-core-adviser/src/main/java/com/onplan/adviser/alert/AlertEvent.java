@@ -11,9 +11,9 @@ public final class AlertEvent extends AbstractAdviserEvent {
   private final String message;
   private final SeverityLevel severityLevel;
 
-  public AlertEvent(
-      SeverityLevel severityLevel, PriceTick priceTick, long createdOn, String message) {
-    super(priceTick, createdOn);
+  public AlertEvent(String adviserId, SeverityLevel severityLevel, PriceTick priceTick,
+      long createdOn, String message) {
+    super(adviserId, priceTick, createdOn);
     this.message = checkNotNullOrEmpty(message);
     this.severityLevel = checkNotNull(severityLevel);
   }

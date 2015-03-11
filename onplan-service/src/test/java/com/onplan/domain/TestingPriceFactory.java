@@ -1,4 +1,4 @@
-package com.onplan.util;
+package com.onplan.domain;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;

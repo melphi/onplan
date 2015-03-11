@@ -36,11 +36,18 @@ public final class PropertiesUtils {
         : Optional.empty();
   }
 
+  /**
+   * Returns the value of the parameter as string, making sure the parameter is set and the string
+   * is not null or empty.
+   *
+   * @param parameters The parameters map.
+   * @param key The parameter key.
+   */
   public static String getRequiredStringValue(Map<String, String> parameters, String key) {
     Optional<String> propertyValue = getStringValue(parameters, key);
     checkArgument(
         propertyValue.isPresent(), String.format("Property [%s] not set or empty.", key));
-    return propertyValue.get();
+    return checkNotNullOrEmpty(propertyValue.get());
   }
 
   public static Long getRequiredLongValue(Map<String, String> parameters, String key) {

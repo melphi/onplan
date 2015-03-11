@@ -2,7 +2,6 @@ package com.onplan.dao;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.onplan.adviser.SeverityLevel;
 import com.onplan.adviser.predicate.priceaction.PriceSpikePredicate;
 import com.onplan.adviser.predicate.pricepattern.CandlestickHammerPredicate;
 import com.onplan.domain.configuration.AlertConfiguration;
@@ -11,7 +10,8 @@ import com.onplan.persistence.AlertConfigurationDao;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.onplan.factory.TestingAlertConfigurationFactory.createAlertConfiguration;
+import static com.onplan.adviser.AdviserConfigurationFactory.createAlertConfiguration;
+import static com.onplan.util.TestingConstants.DEFAULT_CREATION_DATE;
 import static com.onplan.util.TestingConstants.INITIAL_ALERTS_LIST_SIZE;
 
 public class TestingAlertConfigurationDao
@@ -29,19 +29,22 @@ public class TestingAlertConfigurationDao
         "CS.EURUSD.TODAY",
         ImmutableMap.of(PriceSpikePredicate.PROPERTY_MINIMUM_PIPS, "15"),
         "Price spike > 15 pips.",
-        SeverityLevel.LOW));
+        true,
+        DEFAULT_CREATION_DATE.getMillis()));
     builder.add(createAlertConfiguration(
         PriceSpikePredicate.class,
         "CS.AUDUSD.TODAY",
         ImmutableMap.of(PriceSpikePredicate.PROPERTY_MINIMUM_PIPS, "15"),
         "Price spike > 15 pips.",
-        SeverityLevel.MEDIUM));
+        true,
+        DEFAULT_CREATION_DATE.getMillis()));
     builder.add(createAlertConfiguration(
         PriceSpikePredicate.class,
         "IX.DAX.DAILY",
         ImmutableMap.of(PriceSpikePredicate.PROPERTY_MINIMUM_PIPS, "15"),
         "Price spike > 15 pips.",
-        SeverityLevel.HIGH));
+        true,
+        DEFAULT_CREATION_DATE.getMillis()));
     builder.add(createAlertConfiguration(
         CandlestickHammerPredicate.class,
         "IX.DAX.DAILY",
@@ -49,7 +52,8 @@ public class TestingAlertConfigurationDao
             CandlestickHammerPredicate.PROPERTY_TIME_FRAME, "MINUTES_15",
             CandlestickHammerPredicate.PROPERTY_MINIMUM_CANDLE_SIZE, "10"),
         "Candlestick hammer.",
-        SeverityLevel.LOW));
+        true,
+        DEFAULT_CREATION_DATE.getMillis()));
     builder.add(createAlertConfiguration(
         CandlestickHammerPredicate.class,
         "IX.FTSE.DAILY",
@@ -57,7 +61,8 @@ public class TestingAlertConfigurationDao
             CandlestickHammerPredicate.PROPERTY_TIME_FRAME, "MINUTES_15",
             CandlestickHammerPredicate.PROPERTY_MINIMUM_CANDLE_SIZE, "8"),
         "Candlestick hammer.",
-        SeverityLevel.MEDIUM));
+        true,
+        DEFAULT_CREATION_DATE.getMillis()));
     builder.add(createAlertConfiguration(
         CandlestickHammerPredicate.class,
         "IX.DAX.DAILY",
@@ -65,7 +70,8 @@ public class TestingAlertConfigurationDao
             CandlestickHammerPredicate.PROPERTY_TIME_FRAME, "MINUTES_5",
             CandlestickHammerPredicate.PROPERTY_MINIMUM_CANDLE_SIZE, "8"),
         "Candlestick hammer.",
-        SeverityLevel.HIGH));
+        true,
+        DEFAULT_CREATION_DATE.getMillis()));
     builder.add(createAlertConfiguration(
         CandlestickHammerPredicate.class,
         "IX.FTSE.DAILY",
@@ -73,7 +79,8 @@ public class TestingAlertConfigurationDao
             CandlestickHammerPredicate.PROPERTY_TIME_FRAME, "MINUTES_5",
             CandlestickHammerPredicate.PROPERTY_MINIMUM_CANDLE_SIZE, "6"),
         "Candlestick hammer.",
-        SeverityLevel.LOW));
+        true,
+        DEFAULT_CREATION_DATE.getMillis()));
     List<AlertConfiguration> result = builder.build();
     checkArgument(result.size() == INITIAL_ALERTS_LIST_SIZE);
     return result;

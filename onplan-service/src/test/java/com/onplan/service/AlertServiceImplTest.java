@@ -2,28 +2,34 @@ package com.onplan.service;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Range;
 import com.onplan.adviser.AdviserPredicateInfo;
 import com.onplan.adviser.AlertInfo;
 import com.onplan.adviser.TemplateInfo;
 import com.onplan.adviser.alert.Alert;
+import com.onplan.adviser.alert.AlertEvent;
 import com.onplan.adviser.predicate.AdviserPredicate;
+import com.onplan.adviser.predicate.pricevalue.PriceValuePredicate;
 import com.onplan.dao.TestingAlertConfigurationDao;
 import com.onplan.domain.configuration.AdviserPredicateConfiguration;
 import com.onplan.domain.configuration.AlertConfiguration;
+import com.onplan.domain.persistent.PriceTick;
 import com.onplan.service.impl.AlertServiceImpl;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.util.List;
 
 import static com.google.common.collect.Iterables.size;
+import static com.onplan.adviser.AdviserConfigurationFactory.createAlertConfiguration;
+import static com.onplan.adviser.alert.TestingAlertConfigurationFactory.createSampleAlertConfigurationWithNullId;
 import static com.onplan.adviser.predicate.AdviserPredicateUtil.createAdviserPredicateTemplateInfo;
 import static com.onplan.adviser.predicate.TestingAdviserPredicateUtils.checkAdviserPredicate;
-import static com.onplan.factory.TestingAlertConfigurationFactory.createSampleAlertConfigurationWithNullId;
-import static com.onplan.util.TestingConstants.DEFAULT_ALERT_ID;
-import static com.onplan.util.TestingConstants.INITIAL_ALERTS_LIST_SIZE;
+import static com.onplan.domain.TestingPriceFactory.createPriceTicks;
+import static com.onplan.util.TestingConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -127,7 +133,10 @@ public class AlertServiceImplTest {
   @Test
   public void testRemoveAlertAfterInitialization() throws Exception {
     alertService.loadAllAlerts();
-    Alert alertToRemove = alertService.getAlerts().stream().findFirst().get();
+    Alert alertToRemove = alertService.getAlerts()
+        .stream()
+        .findFirst()
+        .get();
     assertValidAlert(alertToRemove);
     assertTrue(alertService.removeAlert(alertToRemove.getId()));
     assertTrue(alertService.getAlerts()
@@ -156,7 +165,10 @@ public class AlertServiceImplTest {
   public void testRemoveSingleAlert() throws Exception {
     AlertConfiguration alertConfiguration = createSampleAlertConfigurationWithNullId();
     alertService.addAlert(alertConfiguration);
-    Alert alert = alertService.getAlerts().stream().findFirst().get();
+    Alert alert = alertService.getAlerts()
+        .stream()
+        .findFirst()
+        .get();
     assertTrue(alertService.removeAlert(alert.getId()));
     assertTrue(!alertService.hasAlerts());
     assertTrue(alertService.getAlerts().isEmpty());
@@ -167,13 +179,18 @@ public class AlertServiceImplTest {
     alertService.loadAllAlerts();
     AlertConfiguration alertConfiguration = createSampleAlertConfigurationWithNullId();
     String id = alertService.addAlert(alertConfiguration);
-    long counter =
-        alertService.getAlerts().stream().filter(alert -> id.equals(alert.getId())).count();
+    long counter = alertService.getAlerts()
+        .stream()
+        .filter(alert -> id.equals(alert.getId()))
+        .count();
     assertEquals(1, counter);
     assertEquals(INITIAL_ALERTS_LIST_SIZE + 1, alertService.getAlerts().size());
     assertTrue(alertService.hasAlerts());
     Alert loadedAlert = alertService.getAlerts()
-        .stream().filter(alert -> id.equals(alert.getId())).findFirst().get();
+        .stream()
+        .filter(alert -> id.equals(alert.getId()))
+        .findFirst()
+        .get();
     alertConfiguration.setId(id);
     checkMatch(alertConfiguration, loadedAlert);
   }
@@ -184,7 +201,10 @@ public class AlertServiceImplTest {
     String id = alertService.addAlert(alertConfiguration);
     assertTrue(alertService.hasAlerts());
     assertEquals(1, alertService.getAlerts().size());
-    Alert loadedAlert = alertService.getAlerts().stream().findFirst().get();
+    Alert loadedAlert = alertService.getAlerts()
+        .stream()
+        .findFirst()
+        .get();
     alertConfiguration.setId(id);
     checkMatch(alertConfiguration, loadedAlert);
   }
@@ -192,10 +212,12 @@ public class AlertServiceImplTest {
   @Test
   public void testAddAlertReplacingExisting() throws Exception {
     alertService.loadAllAlerts();
-    AlertConfiguration alertConfiguration =
-        alertConfigurationDao.findAll().stream().findFirst().get();
+    AlertConfiguration alertConfiguration = alertConfigurationDao.findAll()
+        .stream()
+        .findFirst()
+        .get();
     alertConfiguration.setRepeat(!alertConfiguration.getRepeat());
-    alertConfiguration.setInstrumentId("NewInstrumentId");
+    alertConfiguration.setInstrumentId("IX.DAX.DAILY");
     alertConfiguration.setMessage("NewMessage");
     alertService.addAlert(alertConfiguration);
     Alert alert = alertService.getAlerts()
@@ -206,14 +228,12 @@ public class AlertServiceImplTest {
     checkMatch(alertConfiguration, alert);
   }
 
-  @Ignore
   @Test
   public void testLoadSampleAlerts() throws Exception {
     alertService.loadSampleAlerts();
     List<Alert> sampleAlerts = alertService.getAlerts();
     assertTrue(alertService.hasAlerts());
     assertEquals(INITIAL_ALERTS_LIST_SIZE, sampleAlerts.size());
-
     alertService.unLoadAllAlerts();
     alertService.loadAllAlerts();
     List<Alert> savedAlerts = alertService.getAlerts();
@@ -241,18 +261,76 @@ public class AlertServiceImplTest {
     }
   }
 
-  // TODO(robertom): Implement this test.
-  @Ignore
   @Test
-  public void testOnPriceTickForRepeatTrue() {
-    fail("Not yet implemented.");
+  public void testOnPriceTickForRepeatTrue() throws Exception {
+    AlertConfiguration alertConfiguration = createAlertConfiguration(
+        PriceValuePredicate.class,
+        INSTRUMENT_EURUSD_ID,
+        ImmutableMap.of(
+            PriceValuePredicate.PARAMETER_COMPARISON_OPERATOR, PriceValuePredicate.OPERATOR_EQUALS,
+            PriceValuePredicate.PARAMETER_PRICE_VALUE, String.valueOf(PRICE_VALUE_1)),
+        DEFAULT_ALERT_MESSAGE,
+        true,
+        DEFAULT_CREATION_DATE.getMillis());
+    alertService.addAlert(alertConfiguration);
+    List<PriceTick> priceTicks = createPriceTicks(
+        INSTRUMENT_EURUSD_ID,
+        Range.closed(DEFAULT_START_DATE.getMillis(), DEFAULT_START_DATE.getMillis() + 4),
+        Range.closed(0.1, PRICE_VALUE_1),
+        0);
+    for (PriceTick priceTick : priceTicks) {
+      alertService.onPriceTick(priceTick);
+    }
+    assertAlertEventFired(eventNotificationService, alertConfiguration, 1);
+    reset(eventNotificationService);
+    for (PriceTick priceTick : priceTicks) {
+      alertService.onPriceTick(priceTick);
+    }
+    assertAlertEventFired(eventNotificationService, alertConfiguration, 1);
   }
 
-  // TODO(robertom): Implement this test.
-  @Ignore
   @Test
-  public void testOnPriceTickForRepeatFalse() {
-    fail("Not yet implemented.");
+  public void testOnPriceTickForRepeatFalse() throws Exception {
+    AlertConfiguration alertConfiguration = createAlertConfiguration(
+        PriceValuePredicate.class,
+        INSTRUMENT_EURUSD_ID,
+        ImmutableMap.of(
+            PriceValuePredicate.PARAMETER_COMPARISON_OPERATOR, PriceValuePredicate.OPERATOR_EQUALS,
+            PriceValuePredicate.PARAMETER_PRICE_VALUE, String.valueOf(PRICE_VALUE_1)),
+        DEFAULT_ALERT_MESSAGE,
+        false,
+        DEFAULT_CREATION_DATE.getMillis());
+    alertService.addAlert(alertConfiguration);
+    List<PriceTick> priceTicks = createPriceTicks(
+        INSTRUMENT_EURUSD_ID,
+        Range.closed(DEFAULT_START_DATE.getMillis(), DEFAULT_END_DATE.getMillis()),
+        Range.closed(0.1, PRICE_VALUE_1),
+        0);
+    for (PriceTick priceTick : priceTicks) {
+      alertService.onPriceTick(priceTick);
+    }
+    assertAlertEventFired(eventNotificationService, alertConfiguration, 1);
+    reset(eventNotificationService);
+    for (PriceTick priceTick : priceTicks) {
+      alertService.onPriceTick(priceTick);
+    }
+    assertAlertEventFired(eventNotificationService, alertConfiguration, 0);
+  }
+
+  private static void assertAlertEventFired(EventNotificationService eventNotificationService,
+      AlertConfiguration alertConfiguration, int times) {
+    ArgumentCaptor<AlertEvent> alertEventCaptor = ArgumentCaptor.forClass(AlertEvent.class);
+    if (times == 0) {
+      verify(eventNotificationService, never())
+          .notifyAlertEventAsync(alertEventCaptor.capture());
+    } else {
+      verify(eventNotificationService, times(times))
+          .notifyAlertEventAsync(alertEventCaptor.capture());
+      AlertEvent alertEvent = alertEventCaptor.getValue();
+      assertEquals(alertEvent.getMessage(), alertConfiguration.getMessage());
+      assertEquals(alertEvent.getSeverityLevel(), alertConfiguration.getSeverityLevel());
+      assertEquals(alertEvent.getAdviserId(), alertConfiguration.getId());
+    }
   }
 
   private static void assertValidAlert(Alert alert) {
