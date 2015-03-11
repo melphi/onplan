@@ -33,10 +33,6 @@
     <module>../onplan-core</module>
     <module>../onplan-core-connector</module>
     <module>../onplan-core-adviser</module>
-    <module>../onplan-service-trader</module>
-    <module>../onplan-service</module>
-    <module>../onplan-service-esb</module>
-    <module>../onplan-service-web</module>
     <module>../onplan-connectors/onplan-connector-igindex</module>
   </modules>
 

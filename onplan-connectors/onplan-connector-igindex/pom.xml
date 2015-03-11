@@ -8,6 +8,7 @@
     <groupId>com.melphi</groupId>
     <artifactId>onplan</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <relativePath>../../onplan</relativePath>
   </parent>
 
   <artifactId>onplan-connector-igindex</artifactId>
