@@ -265,7 +265,7 @@ public class AlertServiceImplTest {
         INSTRUMENT_EURUSD_ID,
         ImmutableMap.of(
             PriceValuePredicate.PARAMETER_COMPARISON_OPERATOR, PriceValuePredicate.OPERATOR_EQUALS,
-            PriceValuePredicate.PARAMETER_PRICE_VALUE, String.valueOf(PRICE_VALUE_1)),
+            PriceValuePredicate.PARAMETER_PRICE_VALUE, String.valueOf(PRICE_VALUE_FROM)),
         DEFAULT_ALERT_MESSAGE,
         true,
         DEFAULT_CREATION_DATE.getMillis());
@@ -273,7 +273,7 @@ public class AlertServiceImplTest {
     List<PriceTick> priceTicks = createPriceTicks(
         INSTRUMENT_EURUSD_ID,
         Range.closed(DEFAULT_START_DATE.getMillis(), DEFAULT_START_DATE.getMillis() + 4),
-        Range.closed(0.1, PRICE_VALUE_1),
+        Range.closed(PRICE_VALUE_FROM, PRICE_VALUE_TO),
         0);
     for (PriceTick priceTick : priceTicks) {
       alertService.onPriceTick(priceTick);
@@ -293,7 +293,7 @@ public class AlertServiceImplTest {
         INSTRUMENT_EURUSD_ID,
         ImmutableMap.of(
             PriceValuePredicate.PARAMETER_COMPARISON_OPERATOR, PriceValuePredicate.OPERATOR_EQUALS,
-            PriceValuePredicate.PARAMETER_PRICE_VALUE, String.valueOf(PRICE_VALUE_1)),
+            PriceValuePredicate.PARAMETER_PRICE_VALUE, String.valueOf(PRICE_VALUE_FROM)),
         DEFAULT_ALERT_MESSAGE,
         false,
         DEFAULT_CREATION_DATE.getMillis());
@@ -301,7 +301,7 @@ public class AlertServiceImplTest {
     List<PriceTick> priceTicks = createPriceTicks(
         INSTRUMENT_EURUSD_ID,
         Range.closed(DEFAULT_START_DATE.getMillis(), DEFAULT_END_DATE.getMillis()),
-        Range.closed(0.1, PRICE_VALUE_1),
+        Range.closed(PRICE_VALUE_FROM, PRICE_VALUE_TO),
         0);
     for (PriceTick priceTick : priceTicks) {
       alertService.onPriceTick(priceTick);

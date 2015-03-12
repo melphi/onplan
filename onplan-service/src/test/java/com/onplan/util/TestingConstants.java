@@ -40,5 +40,6 @@ public class TestingConstants {
   public static final int INITIAL_PREDICATES_LIST_SIZE = 5;
   public static final int INITIAL_STRATEGIES_LIST_SIZE = 4;
 
-  public static final double PRICE_VALUE_1 = 1.00223423;
+  public static final double PRICE_VALUE_FROM = 0.99239020;
+  public static final double PRICE_VALUE_TO = 1.00223423;
 }

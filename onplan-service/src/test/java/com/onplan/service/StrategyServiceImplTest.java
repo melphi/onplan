@@ -3,24 +3,28 @@ package com.onplan.service;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Range;
 import com.onplan.adviser.StrategyInfo;
 import com.onplan.adviser.TemplateInfo;
 import com.onplan.adviser.TemplateMetaData;
+import com.onplan.adviser.alert.AlertEvent;
 import com.onplan.adviser.strategy.Strategy;
 import com.onplan.adviser.strategy.system.IntegrationTestStrategy;
 import com.onplan.connector.HistoricalPriceService;
 import com.onplan.connector.InstrumentService;
 import com.onplan.dao.TestingStrategyConfigurationDao;
 import com.onplan.domain.configuration.StrategyConfiguration;
+import com.onplan.domain.transitory.PriceTick;
 import com.onplan.persistence.StrategyConfigurationDao;
 import com.onplan.service.impl.StrategyServiceImpl;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
 import java.util.List;
 
 import static com.onplan.adviser.alert.TestingStrategyConfigurationFactory.createSampleStrategyConfigurationWithNullId;
+import static com.onplan.domain.TestingPriceFactory.createPriceTicks;
 import static com.onplan.util.TestingConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -226,14 +230,54 @@ public class StrategyServiceImplTest {
     assertMatch(templateInfo, IntegrationTestStrategy.class);
   }
 
-  @Ignore
-  public void testOnPriceTickWithAlertEvent() {
-    fail("Not yet implemented.");
+  @Test
+  public void testOnPriceTickWithAlertEvent() throws Exception {
+    StrategyConfiguration strategyConfiguration = createSampleStrategyConfigurationWithNullId();
+    strategyService.addStrategy(strategyConfiguration);
+    List<PriceTick> priceTicks = createPriceTicks(
+        INSTRUMENT_EURUSD_ID,
+        Range.closed(DEFAULT_START_DATE.getMillis(), DEFAULT_START_DATE.getMillis() + 4),
+        Range.closed(PRICE_VALUE_FROM, PRICE_VALUE_TO),
+        0);
+    for (PriceTick priceTick : priceTicks) {
+      strategyService.onPriceTick(priceTick);
+    }
+    assertAlertEventFired(eventNotificationService, strategyConfiguration, 1);
+    reset(eventNotificationService);
+    for (PriceTick priceTick : priceTicks) {
+      strategyService.onPriceTick(priceTick);
+    }
+    assertAlertEventNotFired(eventNotificationService);
   }
 
-  @Ignore
-  public void testOnPriceTickWithoutAlertEvent() {
-    fail("Not yet implemented.");
+  @Test
+  public void testOnPriceTickWithoutAlertEvent() throws Exception {
+    StrategyConfiguration strategyConfiguration = createSampleStrategyConfigurationWithNullId();
+    strategyService.addStrategy(strategyConfiguration);
+    // Create a collection of price ticks for a different instrument.
+    List<PriceTick> priceTicks = createPriceTicks(
+        INSTRUMENT_AUDUSD_ID,
+        Range.closed(DEFAULT_START_DATE.getMillis(), DEFAULT_START_DATE.getMillis() + 4),
+        Range.closed(PRICE_VALUE_FROM, PRICE_VALUE_TO),
+        0);
+    for (PriceTick priceTick : priceTicks) {
+      strategyService.onPriceTick(priceTick);
+    }
+    assertAlertEventNotFired(eventNotificationService);
+  }
+
+  private static void assertAlertEventFired(
+      EventNotificationService eventNotificationService,
+      StrategyConfiguration strategyConfiguration,
+      int times) {
+    ArgumentCaptor<AlertEvent> alertEvent = ArgumentCaptor.forClass(AlertEvent.class);
+    verify(eventNotificationService, times(times)).notifyAlertEventAsync(alertEvent.capture());
+    assertEquals(strategyConfiguration.getId(), alertEvent.getValue().getAdviserId());
+  }
+
+  private static void assertAlertEventNotFired(EventNotificationService eventNotificationService) {
+    ArgumentCaptor<AlertEvent> alertEvent = ArgumentCaptor.forClass(AlertEvent.class);
+    verify(eventNotificationService, never()).notifyAlertEventAsync(alertEvent.capture());
   }
 
   private static void assertValidStrategy(Strategy strategy) {
