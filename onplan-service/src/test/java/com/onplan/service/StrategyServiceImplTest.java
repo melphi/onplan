@@ -2,7 +2,12 @@ package com.onplan.service;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+import com.onplan.adviser.StrategyInfo;
+import com.onplan.adviser.TemplateInfo;
+import com.onplan.adviser.TemplateMetaData;
 import com.onplan.adviser.strategy.Strategy;
+import com.onplan.adviser.strategy.system.IntegrationTestStrategy;
 import com.onplan.connector.HistoricalPriceService;
 import com.onplan.connector.InstrumentService;
 import com.onplan.dao.TestingStrategyConfigurationDao;
@@ -187,23 +192,47 @@ public class StrategyServiceImplTest {
     }
   }
 
-  @Ignore
-  public void testGetStrategiesInfo() {
-    fail("Not yet implemented.");
+  @Test
+  public void testGetStrategiesInfo() throws Exception {
+    strategyService.loadAllStrategies();
+    List<Strategy> strategies = strategyService.getStrategies();
+    List<StrategyInfo> strategiesInfo = strategyService.getStrategiesInfo();
+    assertEquals(strategies.size(), INITIAL_STRATEGIES_LIST_SIZE);
+    assertEquals(strategies.size(), strategiesInfo.size());
+    for (StrategyInfo strategyInfo : strategiesInfo) {
+      assertMatch(
+          strategyInfo,
+          strategies.stream()
+              .filter(record -> strategyInfo.getId().equals(record.getId()))
+              .findFirst()
+              .get());
+    }
   }
 
-  @Ignore
-  public void testGetStrategiesTemplateInfo() {
-    fail("Not yet implemented.");
+  @Test
+  public void testGetStrategiesTemplateInfo() throws Exception {
+    List<TemplateInfo> templatesInfo = strategyService.getStrategiesTemplateInfo();
+    TemplateInfo templateInfo = templatesInfo.stream()
+        .filter(record -> record.getClassName().equals(IntegrationTestStrategy.class.getName()))
+        .findFirst()
+        .get();
+    assertMatch(templateInfo, IntegrationTestStrategy.class);
   }
 
-  @Ignore
+  @Test
   public void testGetStrategyTemplateInfo() {
+    TemplateInfo templateInfo =
+        strategyService.getStrategyTemplateInfo(IntegrationTestStrategy.class.getName());
+    assertMatch(templateInfo, IntegrationTestStrategy.class);
+  }
+
+  @Ignore
+  public void testOnPriceTickWithAlertEvent() {
     fail("Not yet implemented.");
   }
 
   @Ignore
-  public void testOnPriceTick() {
+  public void testOnPriceTickWithoutAlertEvent() {
     fail("Not yet implemented.");
   }
 
@@ -216,14 +245,38 @@ public class StrategyServiceImplTest {
     assertTrue(!strategy.getRegisteredInstruments().isEmpty());
   }
 
+  private static void assertMatch(StrategyInfo strategyInfo, Strategy strategy) {
+    assertNotNull(strategyInfo);
+    assertNotNull(strategy);
+    assertEquals(strategy.getId(), strategyInfo.getId());
+    assertEquals(strategy.getExecutionParameters(), strategyInfo.getExecutionParameters());
+    assertEquals(strategy.getRegisteredInstruments(), strategyInfo.getRegisteredInstruments());
+    TemplateMetaData templateMetaData = strategy.getClass().getAnnotation(TemplateMetaData.class);
+    assertEquals(templateMetaData.displayName(), strategyInfo.getDisplayName());
+    assertArrayEquals(templateMetaData.availableParameters(),
+        Iterables.toArray(strategyInfo.getAvailableParameters(), String.class));
+    assertEquals(strategy.getClass().getName(), strategyInfo.getClassName());
+  }
+
   private static void assertMatch(
-      StrategyConfiguration strategyConfiguration, Strategy loadedStrategy) {
+      TemplateInfo templateInfo, Class<? extends Strategy> strategyClass) {
+    assertNotNull(templateInfo);
+    assertNotNull(strategyClass);
+    assertEquals(templateInfo.getClassName(), strategyClass.getName());
+    TemplateMetaData templateMetaData = strategyClass.getAnnotation(TemplateMetaData.class);
+    assertEquals(templateMetaData.displayName(), templateInfo.getDisplayName());
+    assertArrayEquals(templateMetaData.availableParameters(),
+        Iterables.toArray(templateInfo.getAvailableParameters(), String.class));
+  }
+
+  private static void assertMatch(
+      StrategyConfiguration strategyConfiguration, Strategy strategy) {
     assertNotNull(strategyConfiguration);
-    assertNotNull(loadedStrategy);
-    assertEquals(strategyConfiguration.getId(), loadedStrategy.getId());
-    assertEquals(strategyConfiguration.getClassName(), loadedStrategy.getClass().getName());
+    assertNotNull(strategy);
+    assertEquals(strategyConfiguration.getId(), strategy.getId());
+    assertEquals(strategyConfiguration.getClassName(), strategy.getClass().getName());
     assertEquals(
-        strategyConfiguration.getExecutionParameters(), loadedStrategy.getExecutionParameters());
-    assertEquals(strategyConfiguration.getInstruments(), loadedStrategy.getRegisteredInstruments());
+        strategyConfiguration.getExecutionParameters(), strategy.getExecutionParameters());
+    assertEquals(strategyConfiguration.getInstruments(), strategy.getRegisteredInstruments());
   }
 }

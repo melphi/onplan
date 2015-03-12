@@ -246,16 +246,15 @@ public class AlertServiceImplTest {
     alertService.loadAllAlerts();
     List<Alert> alerts = alertService.getAlerts();
     List<AlertInfo> alertsInfo = alertService.getAlertsInfo();
+    assertEquals(alerts.size(), INITIAL_ALERTS_LIST_SIZE);
     assertEquals(alerts.size(), alertsInfo.size());
     for (AlertInfo alertInfo : alertsInfo) {
-      boolean recordFound = false;
-      for (Alert alert : alerts) {
-        if (alertInfo.getId().equals(alert.getId())) {
-          assertMatch(alertInfo, alert);
-          recordFound = true;
-        }
-      }
-      assertTrue(recordFound);
+      assertMatch(
+          alertInfo,
+          alerts.stream()
+              .filter(record -> alertInfo.getId().equals(record.getId()))
+              .findFirst()
+              .get());
     }
   }
 
