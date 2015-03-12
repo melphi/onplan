@@ -6,6 +6,7 @@ import com.onplan.adviser.predicate.priceaction.PriceSpikePredicate;
 import com.onplan.adviser.predicate.pricepattern.CandlestickHammerPredicate;
 import com.onplan.domain.configuration.AlertConfiguration;
 import com.onplan.persistence.AlertConfigurationDao;
+import com.onplan.util.TestingConstants;
 
 import java.util.List;
 
@@ -26,28 +27,28 @@ public class TestingAlertConfigurationDao
     ImmutableList.Builder builder = ImmutableList.builder();
     builder.add(createAlertConfiguration(
         PriceSpikePredicate.class,
-        "CS.EURUSD.TODAY",
+        TestingConstants.INSTRUMENT_EURUSD_ID,
         ImmutableMap.of(PriceSpikePredicate.PROPERTY_MINIMUM_PIPS, "15"),
         "Price spike > 15 pips.",
         true,
         DEFAULT_CREATION_DATE.getMillis()));
     builder.add(createAlertConfiguration(
         PriceSpikePredicate.class,
-        "CS.AUDUSD.TODAY",
+        TestingConstants.INSTRUMENT_AUDUSD_ID,
         ImmutableMap.of(PriceSpikePredicate.PROPERTY_MINIMUM_PIPS, "15"),
         "Price spike > 15 pips.",
         true,
         DEFAULT_CREATION_DATE.getMillis()));
     builder.add(createAlertConfiguration(
         PriceSpikePredicate.class,
-        "IX.DAX.DAILY",
+        TestingConstants.INSTRUMENT_DAX_ID,
         ImmutableMap.of(PriceSpikePredicate.PROPERTY_MINIMUM_PIPS, "15"),
         "Price spike > 15 pips.",
         true,
         DEFAULT_CREATION_DATE.getMillis()));
     builder.add(createAlertConfiguration(
         CandlestickHammerPredicate.class,
-        "IX.DAX.DAILY",
+        TestingConstants.INSTRUMENT_DAX_ID,
         ImmutableMap.of(
             CandlestickHammerPredicate.PROPERTY_TIME_FRAME, "MINUTES_15",
             CandlestickHammerPredicate.PROPERTY_MINIMUM_CANDLE_SIZE, "10"),
@@ -56,7 +57,7 @@ public class TestingAlertConfigurationDao
         DEFAULT_CREATION_DATE.getMillis()));
     builder.add(createAlertConfiguration(
         CandlestickHammerPredicate.class,
-        "IX.FTSE.DAILY",
+        TestingConstants.INSTRUMENT_FTSE100_ID,
         ImmutableMap.of(
             CandlestickHammerPredicate.PROPERTY_TIME_FRAME, "MINUTES_15",
             CandlestickHammerPredicate.PROPERTY_MINIMUM_CANDLE_SIZE, "8"),
@@ -65,7 +66,7 @@ public class TestingAlertConfigurationDao
         DEFAULT_CREATION_DATE.getMillis()));
     builder.add(createAlertConfiguration(
         CandlestickHammerPredicate.class,
-        "IX.DAX.DAILY",
+        TestingConstants.INSTRUMENT_DAX_ID,
         ImmutableMap.of(
             CandlestickHammerPredicate.PROPERTY_TIME_FRAME, "MINUTES_5",
             CandlestickHammerPredicate.PROPERTY_MINIMUM_CANDLE_SIZE, "8"),
@@ -74,7 +75,7 @@ public class TestingAlertConfigurationDao
         DEFAULT_CREATION_DATE.getMillis()));
     builder.add(createAlertConfiguration(
         CandlestickHammerPredicate.class,
-        "IX.FTSE.DAILY",
+        TestingConstants.INSTRUMENT_FTSE100_ID,
         ImmutableMap.of(
             CandlestickHammerPredicate.PROPERTY_TIME_FRAME, "MINUTES_5",
             CandlestickHammerPredicate.PROPERTY_MINIMUM_CANDLE_SIZE, "6"),

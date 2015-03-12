@@ -1,5 +1,7 @@
 package com.onplan.adviser.strategy;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.onplan.service.HistoricalPriceServiceRemote;
@@ -58,6 +60,34 @@ public final class StrategyExecutionContext implements Serializable {
     this.strategyListener = checkNotNull(strategyListener);
     this.executionParameters = checkNotNull(executionParameters);
     this.registeredInstruments = checkNotNull(registeredInstruments);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    StrategyExecutionContext executionContext = (StrategyExecutionContext) o;
+    return Objects.equal(this.strategyId, executionContext.strategyId) &&
+        Objects.equal(this.executionParameters, executionContext.executionParameters) &&
+        Objects.equal(this.registeredInstruments, executionContext.registeredInstruments);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(strategyId, executionParameters, registeredInstruments);
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this)
+        .add("strategyId", strategyId)
+        .add("executionParameters", executionParameters)
+        .add("registeredInstruments", registeredInstruments)
+        .toString();
   }
 
   public static class Builder {

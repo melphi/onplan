@@ -1,10 +1,12 @@
 package com.onplan.util;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import java.util.List;
 import java.util.Map;
 
 public class TestingConstants {
@@ -28,9 +30,15 @@ public class TestingConstants {
   public static final String INSTRUMENT_AUDUSD_ID = "CS.AUDUSD.TODAY";
   public static final String INSTRUMENT_DAX_ID = "IX.DAX.DAILY";
   public static final String INSTRUMENT_FTSE100_ID = "IX.FTSE.DAILY";
+  public static final List<String> INSTRUMENT_IDS = ImmutableList.of(
+      INSTRUMENT_EURUSD_ID,
+      INSTRUMENT_AUDUSD_ID,
+      INSTRUMENT_DAX_ID,
+      INSTRUMENT_FTSE100_ID);
 
   public static final int INITIAL_ALERTS_LIST_SIZE = 7;
   public static final int INITIAL_PREDICATES_LIST_SIZE = 5;
+  public static final int INITIAL_STRATEGIES_LIST_SIZE = 4;
 
   public static final double PRICE_VALUE_1 = 1.00223423;
 }

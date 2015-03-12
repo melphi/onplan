@@ -2,15 +2,14 @@ package com.onplan.persistence.mongodb;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.onplan.adviser.strategy.Strategy;
 import com.onplan.adviser.strategy.system.IntegrationTestStrategy;
 import com.onplan.domain.configuration.StrategyConfiguration;
 import com.onplan.persistence.StrategyConfigurationDao;
 
 import javax.inject.Singleton;
 import java.util.List;
-import java.util.Map;
+
+import static com.onplan.adviser.StrategyConfigurationFactory.createStrategyConfiguration;
 
 @Singleton
 public final class MongoDbStrategyConfigurationDao extends AbstractMongoDbDao<StrategyConfiguration>
@@ -28,14 +27,5 @@ public final class MongoDbStrategyConfigurationDao extends AbstractMongoDbDao<St
         IntegrationTestStrategy.class,
         "CS.EURUSD.TODAY",
         ImmutableMap.of()));
-  }
-
-  private StrategyConfiguration createStrategyConfiguration(Class<? extends Strategy> clazz,
-      String instrumentId, Map<String, String> properties) {
-    StrategyConfiguration strategyConfiguration = new StrategyConfiguration();
-    strategyConfiguration.setClassName(clazz.getName());
-    strategyConfiguration.setInstruments(ImmutableSet.of(instrumentId));
-    strategyConfiguration.setExecutionParameters(properties);
-    return strategyConfiguration;
   }
 }

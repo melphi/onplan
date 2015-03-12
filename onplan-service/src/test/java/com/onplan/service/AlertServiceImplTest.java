@@ -1,7 +1,6 @@
 package com.onplan.service;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Range;
@@ -34,12 +33,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class AlertServiceImplTest {
-  private final List<String> instrumentIds = ImmutableList.of(
-      "CS.EURUSD.TODAY",
-      "CS.AUDUSD.TODAY",
-      "IX.DAX.DAILY",
-      "IX.FTSE.DAILY");
-
   private AlertServiceImpl alertService;
   private InstrumentSubscriptionListener instrumentSubscriptionListener;
   private EventNotificationService eventNotificationService;
@@ -62,6 +55,7 @@ public class AlertServiceImplTest {
   public void getAlerts() throws Exception {
     alertService.loadAllAlerts();
     List<Alert> alerts = alertService.getAlerts();
+    assertTrue(!alerts.isEmpty());
     for (Alert alert : alerts) {
       assertValidAlert(alert);
     }
@@ -103,11 +97,11 @@ public class AlertServiceImplTest {
     alertService.loadAllAlerts();
     assertTrue(alertService.hasAlerts());
     assertTrue(!alertService.getAlerts().isEmpty());
-    for (String instrumentId : instrumentIds) {
+    for (String instrumentId : INSTRUMENT_IDS) {
       verify(instrumentSubscriptionListener, times(1))
           .onInstrumentSubscriptionRequest(instrumentId);
     }
-    for (String instrumentId : instrumentIds) {
+    for (String instrumentId : INSTRUMENT_IDS) {
       verify(instrumentSubscriptionListener, never())
           .onInstrumentUnSubscriptionRequest(instrumentId);
     }
@@ -120,11 +114,11 @@ public class AlertServiceImplTest {
     alertService.unLoadAllAlerts();
     assertTrue(!alertService.hasAlerts());
     assertTrue(alertService.getAlerts().isEmpty());
-    for (String instrumentId : instrumentIds) {
+    for (String instrumentId : INSTRUMENT_IDS) {
       verify(instrumentSubscriptionListener, never())
           .onInstrumentSubscriptionRequest(instrumentId);
     }
-    for (String instrumentId : instrumentIds) {
+    for (String instrumentId : INSTRUMENT_IDS) {
       verify(instrumentSubscriptionListener, times(1))
           .onInstrumentUnSubscriptionRequest(instrumentId);
     }
@@ -169,9 +163,13 @@ public class AlertServiceImplTest {
         .stream()
         .findFirst()
         .get();
+    assertTrue(alertConfigurationDao.findAll().stream()
+        .anyMatch(record -> alert.getId().equals(record.getId())));
     assertTrue(alertService.removeAlert(alert.getId()));
     assertTrue(!alertService.hasAlerts());
     assertTrue(alertService.getAlerts().isEmpty());
+    assertTrue(alertConfigurationDao.findAll().stream()
+        .noneMatch(record -> alert.getId().equals(record.getId())));
   }
 
   @Test
@@ -192,7 +190,7 @@ public class AlertServiceImplTest {
         .findFirst()
         .get();
     alertConfiguration.setId(id);
-    checkMatch(alertConfiguration, loadedAlert);
+    assertMatch(alertConfiguration, loadedAlert);
   }
 
   @Test
@@ -206,7 +204,7 @@ public class AlertServiceImplTest {
         .findFirst()
         .get();
     alertConfiguration.setId(id);
-    checkMatch(alertConfiguration, loadedAlert);
+    assertMatch(alertConfiguration, loadedAlert);
   }
 
   @Test
@@ -225,7 +223,7 @@ public class AlertServiceImplTest {
         .filter(a -> alertConfiguration.getId().equals(a.getId()))
         .findFirst()
         .get();
-    checkMatch(alertConfiguration, alert);
+    assertMatch(alertConfiguration, alert);
   }
 
   @Test
@@ -253,7 +251,7 @@ public class AlertServiceImplTest {
       boolean recordFound = false;
       for (Alert alert : alerts) {
         if (alertInfo.getId().equals(alert.getId())) {
-          checkMatch(alertInfo, alert);
+          assertMatch(alertInfo, alert);
           recordFound = true;
         }
       }
@@ -346,7 +344,7 @@ public class AlertServiceImplTest {
     }
   }
 
-  private static void checkMatch(AlertInfo alertInfo, Alert alert) {
+  private static void assertMatch(AlertInfo alertInfo, Alert alert) {
     assertNotNull(alertInfo);
     assertNotNull(alert);
     assertEquals(alertInfo.getId(), alert.getId());
@@ -375,7 +373,7 @@ public class AlertServiceImplTest {
     }
   }
 
-  private static void checkMatch(AlertConfiguration alertConfiguration, Alert alert) {
+  private static void assertMatch(AlertConfiguration alertConfiguration, Alert alert) {
     assertNotNull(alertConfiguration);
     assertNotNull(alert);
     assertEquals(alertConfiguration.getId(), alert.getId());

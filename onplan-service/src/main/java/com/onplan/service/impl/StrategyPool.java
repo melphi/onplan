@@ -50,7 +50,12 @@ public final class StrategyPool {
     }
   }
 
-  public synchronized void removeStrategy(String strategyId) {
+  /**
+   * Removes a strategy from the pool, returns true if the strategy was found, false otherwise.
+   *
+   * @param strategyId The strategy id.
+   */
+  public synchronized boolean removeStrategy(String strategyId) {
     checkNotNullOrEmpty(strategyId);
     for (int i = 0; i < poolStrategies.length; i++) {
       for (int j = 0; j < poolStrategies[i].length; j++) {
@@ -61,9 +66,11 @@ public final class StrategyPool {
           } else {
             poolStrategies[i] = ArrayUtils.remove(poolStrategies[i], j);
           }
+          return true;
         }
       }
     }
+    return false;
   }
 
   // TODO(robertom): Run high priority strategies in a separated thread.

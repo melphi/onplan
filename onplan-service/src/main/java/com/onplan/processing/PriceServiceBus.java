@@ -54,6 +54,7 @@ public final class PriceServiceBus {
   private final class InternalPriceListener implements PriceListener {
     @Override
     public void onPriceTick(final PriceTick priceTick) {
+      // TODO(robertom): This risks to be blocking.
       strategyService.onPriceTick(priceTick);
       if (alertService.hasAlerts()) {
         runAsync(new AlertServiceNotification(priceTick));

@@ -1,5 +1,6 @@
 package com.onplan.adviser.strategy;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.onplan.adviser.SeverityLevel;
@@ -73,5 +74,23 @@ public abstract class AbstractStrategy implements Strategy {
         strategyStatistics.incrementEventsDispatchedCounter();
       }
     }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    AbstractStrategy strategy = (AbstractStrategy) o;
+    return Objects.equal(this.strategyExecutionContext, strategy.strategyExecutionContext) &&
+        Objects.equal(this.strategyStatistics, strategy.strategyStatistics);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(strategyExecutionContext, strategyStatistics);
   }
 }

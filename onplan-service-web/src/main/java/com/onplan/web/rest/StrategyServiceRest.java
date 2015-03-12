@@ -18,7 +18,7 @@ public class StrategyServiceRest implements StrategyServiceRemote {
   private StrategyServiceRemote strategyService;
 
   @Override
-  public void removeStrategy(String strategyId) throws Exception {
+  public boolean removeStrategy(String strategyId) throws Exception {
     throw new IllegalArgumentException("Not yet implemented.");
   }
 

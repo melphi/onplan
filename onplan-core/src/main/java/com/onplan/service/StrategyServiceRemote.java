@@ -10,20 +10,24 @@ import java.util.List;
 public interface StrategyServiceRemote extends Serializable {
   /**
    * Removes an instantiated strategy by its id.
+   *
    * @param strategyId the strategy id.
    */
-  public void removeStrategy(String strategyId) throws Exception;
+  public boolean removeStrategy(String strategyId) throws Exception;
 
   /**
-   * Registers and initializes a strategy with the provided configuration. If the strategy id is
-   * assigned it replaces the previous strategy values with the new data.
+   * Registers and initializes a strategy with the provided configuration. Returns the id of the
+   * registered configuration. If the strategy id is already assigned it replaces the previous
+   * strategy values with the new data.
+   *
    * @param strategyConfiguration the strategy configuration.
    */
-  public void addStrategy(StrategyConfiguration strategyConfiguration) throws Exception;
+  public String addStrategy(StrategyConfiguration strategyConfiguration) throws Exception;
 
   /**
    * Loads a collection of sample strategies, deleting and replacing all the ones which have been
    * instantiated.
+   *
    * @throws Exception error while loading the collection of sample strategies.
    */
   public void loadSampleStrategies() throws Exception;

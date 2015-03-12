@@ -44,11 +44,8 @@ public final class AlertServiceImpl extends AbstractAdviserService implements Al
   private volatile boolean hasAlerts = false;
 
   private EventNotificationService eventNotificationService;
-
   private AlertConfigurationDao alertConfigurationDao;
-
   private InstrumentService instrumentService;
-
   private HistoricalPriceService historicalPriceService;
 
   @Inject
@@ -103,6 +100,7 @@ public final class AlertServiceImpl extends AbstractAdviserService implements Al
     checkNotNullOrEmpty(alertId);
     boolean result;
     try {
+      alertConfigurationDao.removeById(alertId);
       result = unLoadAlert(alertId);
     } catch (Exception e) {
       LOGGER.error(String.format(

@@ -69,11 +69,13 @@ public final class EventNotificationServiceImpl implements EventNotificationServ
 
   @Override
   public void notifyAlertEventAsync(final AlertEvent alertEvent) {
+    // TODO(robertom): Benchmark with lambda.
     executeAsync(new AlertEventNotification(alertEvent));
   }
 
   @Override
   public void notifySystemEventAsync(final SystemEvent systemEvent) {
+    // TODO(robertom): Benchmark with lambda.
     executeAsync(new SystemEventNotification(systemEvent));
   }
 

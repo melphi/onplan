@@ -1,6 +1,7 @@
 package com.onplan.service.impl;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.onplan.adviser.StrategyInfo;
@@ -40,17 +41,30 @@ public final class StrategyServiceImpl extends AbstractAdviserService implements
   private final Iterable<Class<? extends Strategy>> availableStrategies =
       ImmutableList.of(IntegrationTestStrategy.class);
 
-  @Inject
   private StrategyConfigurationDao strategyConfigurationDao;
-
-  @Inject
   private InstrumentService instrumentService;
-
-  @Inject
   private HistoricalPriceService historicalPriceService;
+  private EventNotificationService eventNotificationService;
 
   @Inject
-  private EventNotificationService eventNotificationService;
+  public void setStrategyConfigurationDao(StrategyConfigurationDao strategyConfigurationDao) {
+    this.strategyConfigurationDao = strategyConfigurationDao;
+  }
+
+  @Inject
+  public void setInstrumentService(InstrumentService instrumentService) {
+    this.instrumentService = instrumentService;
+  }
+
+  @Inject
+  public void setHistoricalPriceService(HistoricalPriceService historicalPriceService) {
+    this.historicalPriceService = historicalPriceService;
+  }
+
+  @Inject
+  public void setEventNotificationService(EventNotificationService eventNotificationService){
+    this.eventNotificationService = eventNotificationService;
+  }
 
   @Override
   public void onPriceTick(final PriceTick priceTick) {
@@ -106,12 +120,16 @@ public final class StrategyServiceImpl extends AbstractAdviserService implements
     }
   }
 
-  // TODO(robertom): Call the garbage collector, test the performance improvement.
   @Override
-  public void addStrategy(StrategyConfiguration strategyConfiguration) throws Exception {
-    checkArgument(null == strategyConfiguration.getId());
+  public String addStrategy(StrategyConfiguration strategyConfiguration) throws Exception {
     checkStrategyConfiguration(strategyConfiguration);
+    // TODO(robertom): Implement a configuration rollback in case of exception.
+    String id = strategyConfigurationDao.save(strategyConfiguration);
     try {
+      if (!Strings.isNullOrEmpty(strategyConfiguration.getId())) {
+        unLoadStrategy(strategyConfiguration.getId());
+      }
+      strategyConfiguration = strategyConfigurationDao.findById(id);
       loadStrategy(strategyConfiguration);
     } catch (Exception e) {
       LOGGER.error(String.format(
@@ -120,21 +138,20 @@ public final class StrategyServiceImpl extends AbstractAdviserService implements
           e.getMessage()));
       throw e;
     }
-    String id = strategyConfigurationDao.insert(strategyConfiguration);
     LOGGER.info(String.format("Strategy [%s] saved in database.", id));
+    return id;
   }
 
-  // TODO(robertom): Call the garbage collector, test the performance improvement.
   @Override
-  public void removeStrategy(String strategyId) throws Exception {
+  public boolean removeStrategy(String strategyId) throws Exception {
     checkNotNullOrEmpty(strategyId);
     if (strategyConfigurationDao.removeById(strategyId)) {
       LOGGER.info(String.format("Strategy [%s] removed from database.", strategyId));
     } else {
-      LOGGER.error(String.format("Strategy [%s] not found in database.", strategyId));
+      LOGGER.warn(String.format("Strategy [%s] not found in database.", strategyId));
     }
     try {
-      unLoadStrategy(strategyId);
+      return unLoadStrategy(strategyId);
     } catch (Exception e) {
       LOGGER.error(
           String.format("Error while removing strategy [%s]: [%s].", strategyId, e.getMessage()));
@@ -230,22 +247,26 @@ public final class StrategyServiceImpl extends AbstractAdviserService implements
     }
   }
 
-  private void unLoadStrategy(String strategyId) throws Exception{
+  private boolean unLoadStrategy(String strategyId) throws Exception{
     checkNotNullOrEmpty(strategyId);
-    strategiesPool.removeStrategy(strategyId);
-    Strategy strategy = null;
-    for (Strategy item : registeredStrategies) {
-      if (strategyId.equals(item.getId())) {
-        strategy = item;
-        break;
-      }
+    if (!strategiesPool.removeStrategy(strategyId)) {
+      LOGGER.warn(String.format("Strategy [%s] not found in the pool.", strategyId));
     }
-    checkNotNull(strategy, String.format("Strategy [%] not found.", strategyId));
+    Strategy strategy = registeredStrategies.stream()
+        .filter(record -> strategyId.equals(record.getId()))
+        .findFirst()
+        .orElse(null);
+    if (null == strategy) {
+      LOGGER.warn(String.format("Strategy [%s] not found in registeredStrategies.", strategyId));
+      return false;
+    }
     registeredStrategies.remove(strategy);
     LOGGER.info(String.format("Strategy [%s] un-loaded.", strategyId));
+    // TODO(robertom): Fix instrument un-subscription logic.
     for (String instrumentId : strategy.getRegisteredInstruments()) {
       dispatchInstrumentUnSubscriptionRequired(instrumentId);
     }
+    return true;
   }
 
   private final class InternalStrategyListener implements StrategyListener {
