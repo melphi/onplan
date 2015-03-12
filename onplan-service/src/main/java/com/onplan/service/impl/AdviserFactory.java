@@ -1,16 +1,16 @@
 package com.onplan.service.impl;
 
 import com.google.common.collect.ImmutableList;
-import com.onplan.connector.HistoricalPriceService;
-import com.onplan.connector.InstrumentService;
 import com.onplan.adviser.AdviserListener;
 import com.onplan.adviser.alert.Alert;
-import com.onplan.domain.persistent.AlertEvent;
+import com.onplan.adviser.alert.AlertEvent;
 import com.onplan.adviser.predicate.AdviserPredicate;
 import com.onplan.adviser.predicate.PredicateExecutionContext;
 import com.onplan.adviser.strategy.Strategy;
 import com.onplan.adviser.strategy.StrategyExecutionContext;
 import com.onplan.adviser.strategy.StrategyListener;
+import com.onplan.connector.HistoricalPriceService;
+import com.onplan.connector.InstrumentService;
 import com.onplan.domain.configuration.AdviserPredicateConfiguration;
 import com.onplan.domain.configuration.AlertConfiguration;
 import com.onplan.domain.configuration.StrategyConfiguration;

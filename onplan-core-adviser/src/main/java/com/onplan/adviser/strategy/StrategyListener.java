@@ -1,6 +1,6 @@
 package com.onplan.adviser.strategy;
 
-import com.onplan.domain.persistent.AlertEvent;
+import com.onplan.adviser.alert.AlertEvent;
 import com.onplan.adviser.automatedorder.AutomatedOrderEvent;
 
 // TODO(robertom): Looks cool but is it fast? Profile please!

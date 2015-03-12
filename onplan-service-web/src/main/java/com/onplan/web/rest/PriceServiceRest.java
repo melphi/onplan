@@ -1,6 +1,6 @@
 package com.onplan.web.rest;
 
-import com.onplan.domain.persistent.PriceTick;
+import com.onplan.domain.transitory.PriceTick;
 import com.onplan.service.PriceServiceRemote;
 import com.onplan.service.ServiceConnectionInfo;
 import org.springframework.beans.factory.annotation.Autowired;

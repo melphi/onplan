@@ -1,7 +1,6 @@
 package com.onplan.adviser;
 
-import com.onplan.domain.persistent.PersistentObject;
-import com.onplan.domain.persistent.PriceTick;
+import com.onplan.domain.transitory.PriceTick;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -10,28 +9,13 @@ import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 /**
  * Basic class for adviser events.
  */
-public abstract class AbstractAdviserEvent implements AdviserEvent, PersistentObject {
-  protected String id;
-  protected String adviserId;
-  protected PriceTick priceTick;
-  protected long createdOn;
-
-  @Override
-  public String getId() {
-    return id;
-  }
-
-  @Override
-  public void setId(String id) {
-    this.id = id;
-  }
+public abstract class AbstractAdviserEvent implements AdviserEvent {
+  protected final String adviserId;
+  protected final PriceTick priceTick;
+  protected final long createdOn;
 
   public String getAdviserId() {
     return adviserId;
-  }
-
-  public void setAdviserId(String adviserId) {
-    this.adviserId = adviserId;
   }
 
   @Override
@@ -39,21 +23,9 @@ public abstract class AbstractAdviserEvent implements AdviserEvent, PersistentOb
     return priceTick;
   }
 
-  public void setPriceTick(PriceTick priceTick) {
-    this.priceTick = priceTick;
-  }
-
   @Override
   public long getCreatedOn() {
     return createdOn;
-  }
-
-  public void setCreatedOn(long createdOn) {
-    this.createdOn = createdOn;
-  }
-
-  public AbstractAdviserEvent() {
-    // Intentionally empty.
   }
 
   public AbstractAdviserEvent(String adviserId, PriceTick priceTick, long createdOn) {

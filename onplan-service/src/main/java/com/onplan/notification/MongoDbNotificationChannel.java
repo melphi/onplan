@@ -1,9 +1,11 @@
 package com.onplan.notification;
 
-import com.onplan.domain.persistent.AlertEvent;
-import com.onplan.domain.persistent.SystemEvent;
-import com.onplan.persistence.AlertEventDao;
-import com.onplan.persistence.SystemEventDao;
+import com.onplan.adviser.alert.AlertEvent;
+import com.onplan.domain.persistent.AlertEventHistory;
+import com.onplan.domain.persistent.SystemEventHistory;
+import com.onplan.persistence.AlertEventHistoryDao;
+import com.onplan.persistence.SystemEventHistoryDao;
+import com.onplan.service.SystemEvent;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -16,20 +18,32 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Singleton
 public class MongoDbNotificationChannel implements NotificationChannel {
   @Inject
-  private AlertEventDao alertEventDao;
+  private AlertEventHistoryDao alertEventHistoryDao;
 
   @Inject
-  private SystemEventDao systemEventDao;
+  private SystemEventHistoryDao systemEventHistoryDao;
 
   @Override
-  public void notifySystemEvent(SystemEvent systemEvent) throws Exception {
+  public void notifySystemEvent(final SystemEvent systemEvent) throws Exception {
     checkNotNull(systemEvent);
-    systemEventDao.insert(systemEvent);
+    SystemEventHistory systemEventHistory = new SystemEventHistory(
+        null,
+        systemEvent.getClassName(),
+        systemEvent.getMessage(),
+        systemEvent.getCreatedOn());
+    systemEventHistoryDao.insert(systemEventHistory);
   }
 
   @Override
-  public void notifyAlertEvent(AlertEvent alertEvent) throws Exception {
+  public void notifyAlertEvent(final AlertEvent alertEvent) throws Exception {
     checkNotNull(alertEvent);
-    alertEventDao.insert(alertEvent);
+    AlertEventHistory alertEventHistory = new AlertEventHistory(
+        null,
+        alertEvent.getAdviserId(),
+        alertEvent.getSeverityLevel(),
+        alertEvent.getPriceTick(),
+        alertEvent.getCreatedOn(),
+        alertEvent.getMessage());
+    alertEventHistoryDao.insert(alertEventHistory);
   }
 }

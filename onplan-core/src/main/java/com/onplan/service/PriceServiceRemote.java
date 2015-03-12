@@ -1,6 +1,6 @@
 package com.onplan.service;
 
-import com.onplan.domain.persistent.PriceTick;
+import com.onplan.domain.transitory.PriceTick;
 
 import java.io.Serializable;
 

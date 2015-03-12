@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.onplan.adviser.AlertInfo;
 import com.onplan.adviser.alert.Alert;
 import com.onplan.domain.configuration.AlertConfiguration;
-import com.onplan.domain.persistent.PriceTick;
+import com.onplan.domain.transitory.PriceTick;
 import com.onplan.service.AlertService;
 import com.onplan.service.InstrumentSubscriptionListener;
 
@@ -12,7 +12,7 @@ import javax.inject.Singleton;
 import java.util.List;
 
 /**
- * To save resources the AlertService can be disabled and replace by this placeholder.
+ * To save resources the AlertService can be replaced by this placeholder.
  */
 @Singleton
 public final class AlertServicePlaceholder implements AlertService {

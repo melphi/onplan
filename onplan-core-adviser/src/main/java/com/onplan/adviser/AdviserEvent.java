@@ -1,6 +1,6 @@
 package com.onplan.adviser;
 
-import com.onplan.domain.persistent.PriceTick;
+import com.onplan.domain.transitory.PriceTick;
 
 import java.io.Serializable;
 

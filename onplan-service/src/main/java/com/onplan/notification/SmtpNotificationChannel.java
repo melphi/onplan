@@ -1,7 +1,7 @@
 package com.onplan.notification;
 
-import com.onplan.domain.persistent.AlertEvent;
-import com.onplan.domain.persistent.SystemEvent;
+import com.onplan.adviser.alert.AlertEvent;
+import com.onplan.service.SystemEvent;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
@@ -45,7 +45,7 @@ public final class SmtpNotificationChannel implements NotificationChannel {
   }
 
   @Override
-  public void notifySystemEvent(SystemEvent systemEvent) throws Exception {
+  public void notifySystemEvent(final SystemEvent systemEvent) throws Exception {
     checkNotNull(systemEvent);
     LOGGER.info(String.format(
         "Sending system event email (SMTP) notification to [%s]. Subject: [%s]",
@@ -55,7 +55,7 @@ public final class SmtpNotificationChannel implements NotificationChannel {
   }
 
   @Override
-  public void notifyAlertEvent(AlertEvent alertEvent) throws Exception {
+  public void notifyAlertEvent(final AlertEvent alertEvent) throws Exception {
     checkNotNull(alertEvent);
     String title = String.format(
         "[%s] alert, severity: [%s]",

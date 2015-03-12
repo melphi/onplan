@@ -7,7 +7,7 @@ import com.lightstreamer.ls_client.SubscribedTableKey;
 import com.lightstreamer.ls_client.UpdateInfo;
 import com.onplan.connector.AbstractPriceService;
 import com.onplan.connector.ServiceConnectionListener;
-import com.onplan.domain.persistent.PriceTick;
+import com.onplan.domain.transitory.PriceTick;
 import com.onplan.service.ServiceConnectionInfo;
 import org.apache.log4j.Logger;
 

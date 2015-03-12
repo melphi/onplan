@@ -3,7 +3,7 @@ package com.onplan.adviser.automatedorder;
 import com.onplan.adviser.AbstractChainedAdviser;
 import com.onplan.adviser.AdviserListener;
 import com.onplan.adviser.predicate.AdviserPredicate;
-import com.onplan.domain.persistent.PriceTick;
+import com.onplan.domain.transitory.PriceTick;
 
 import java.util.Optional;
 

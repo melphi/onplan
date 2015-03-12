@@ -1,54 +1,29 @@
-package com.onplan.domain.persistent;
+package com.onplan.service;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+
+import java.io.Serializable;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
-public final class SystemEvent implements PersistentObject {
-  private String id;
-  private String className;
-  private String message;
-  private long createdOn;
-
-  @Override
-  public String getId() {
-    return id;
-  }
-
-  @Override
-  public void setId(String id) {
-    this.id = id;
-  }
+public final class SystemEvent implements Serializable {
+  private final String className;
+  private final String message;
+  private final long createdOn;
 
   public String getClassName() {
     return className;
-  }
-
-  public void setClassName(String className) {
-    this.className = className;
   }
 
   public String getMessage() {
     return message;
   }
 
-  public void setMessage(String message) {
-    this.message = message;
-  }
-
   public long getCreatedOn() {
     return createdOn;
-  }
-
-  public void setCreatedOn(long createdOn) {
-    this.createdOn = createdOn;
-  }
-
-  public SystemEvent() {
-    // Intentionally empty.
   }
 
   public SystemEvent(Class clazz, String message, long createdOn) {
@@ -60,7 +35,7 @@ public final class SystemEvent implements PersistentObject {
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(id, className, message, createdOn);
+    return Objects.hashCode(className, message, createdOn);
   }
 
   @Override
@@ -72,8 +47,7 @@ public final class SystemEvent implements PersistentObject {
       return false;
     }
     SystemEvent systemEvent = (SystemEvent) o;
-    return Objects.equal(this.id, systemEvent.id) &&
-        Objects.equal(this.className, systemEvent.className) &&
+    return Objects.equal(this.className, systemEvent.className) &&
         Objects.equal(this.message, systemEvent.message) &&
         Objects.equal(this.createdOn, systemEvent.createdOn);
   }
@@ -81,7 +55,6 @@ public final class SystemEvent implements PersistentObject {
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
-        .add("id", id)
         .add("className", className)
         .add("message", message)
         .add("createdOn", createdOn)

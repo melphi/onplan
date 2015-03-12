@@ -2,12 +2,12 @@ package com.onplan.service.impl;
 
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Injector;
+import com.onplan.adviser.alert.AlertEvent;
 import com.onplan.connector.ServiceConnection;
 import com.onplan.connector.ServiceConnectionListener;
-import com.onplan.domain.persistent.AlertEvent;
-import com.onplan.domain.persistent.SystemEvent;
 import com.onplan.notification.*;
 import com.onplan.service.EventNotificationService;
+import com.onplan.service.SystemEvent;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 

@@ -1,7 +1,7 @@
 package com.onplan.notification;
 
-import com.onplan.domain.persistent.AlertEvent;
-import com.onplan.domain.persistent.SystemEvent;
+import com.onplan.adviser.alert.AlertEvent;
+import com.onplan.service.SystemEvent;
 import com.onplan.util.StringUtils;
 import org.apache.log4j.Logger;
 import twitter4j.Twitter;

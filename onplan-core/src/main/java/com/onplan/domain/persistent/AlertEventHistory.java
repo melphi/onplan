@@ -2,15 +2,16 @@ package com.onplan.domain.persistent;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
-import com.onplan.adviser.AbstractAdviserEvent;
 import com.onplan.adviser.SeverityLevel;
+import com.onplan.domain.transitory.PriceTick;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
-
-public final class AlertEvent extends AbstractAdviserEvent {
+public final class AlertEventHistory implements PersistentObject {
+  private String id;
+  private String adviserId;
+  private PriceTick priceTick;
   private String message;
   private SeverityLevel severityLevel;
+  private long createdOn;
 
   public String getMessage() {
     return message;
@@ -28,15 +29,51 @@ public final class AlertEvent extends AbstractAdviserEvent {
     this.severityLevel = severityLevel;
   }
 
-  public AlertEvent() {
+  public String getAdviserId() {
+    return adviserId;
+  }
+
+  public void setAdviserId(String adviserId) {
+    this.adviserId = adviserId;
+  }
+
+  public PriceTick getPriceTick() {
+    return priceTick;
+  }
+
+  public void setPriceTick(PriceTick priceTick) {
+    this.priceTick = priceTick;
+  }
+
+  public long getCreatedOn() {
+    return createdOn;
+  }
+
+  public void setCreatedOn(long createdOn) {
+    this.createdOn = createdOn;
+  }
+
+  @Override
+  public String getId() {
+    return id;
+  }
+
+  @Override
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public AlertEventHistory() {
     // Intentionally empty.
   }
 
-  public AlertEvent(String adviserId, SeverityLevel severityLevel, PriceTick priceTick,
-      long createdOn, String message) {
-    super(adviserId, priceTick, createdOn);
-    this.message = checkNotNullOrEmpty(message);
-    this.severityLevel = checkNotNull(severityLevel);
+  public AlertEventHistory(String id, String adviserId, SeverityLevel severityLevel,
+      PriceTick priceTick, long createdOn, String message) {
+    this.adviserId = adviserId;
+    this.severityLevel = severityLevel;
+    this.priceTick = priceTick;
+    this.message = message;
+    this.createdOn = createdOn;
   }
 
   @Override
@@ -52,7 +89,7 @@ public final class AlertEvent extends AbstractAdviserEvent {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    AlertEvent alertEvent = (AlertEvent) o;
+    AlertEventHistory alertEvent = (AlertEventHistory) o;
     return Objects.equal(this.id, alertEvent.id) &&
         Objects.equal(this.adviserId, alertEvent.adviserId) &&
         Objects.equal(this.createdOn, alertEvent.createdOn) &&

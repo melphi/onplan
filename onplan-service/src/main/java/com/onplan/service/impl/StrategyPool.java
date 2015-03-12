@@ -2,7 +2,7 @@
 
 import com.google.common.annotations.VisibleForTesting;
 import com.onplan.adviser.strategy.Strategy;
-import com.onplan.domain.persistent.PriceTick;
+import com.onplan.domain.transitory.PriceTick;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;

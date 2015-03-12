@@ -3,7 +3,7 @@ package com.onplan.domain;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
-import com.onplan.domain.persistent.PriceTick;
+import com.onplan.domain.transitory.PriceTick;
 
 import java.util.List;
 
@@ -12,7 +12,7 @@ import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 public class TestingPriceFactory {
   /**
-   * Generates a deterministic collection of {@value com.onplan.domain.persistent.PriceTick}.
+   * Generates a deterministic collection of {@value com.onplan.domain.transitory.PriceTick}.
    *
    * @param instrumentId The instrument id.
    * @param timestamps The list of timestamps.
@@ -32,7 +32,7 @@ public class TestingPriceFactory {
   }
 
   /**
-   * Generates a collection of {@value com.onplan.domain.persistent.PriceTick}.
+   * Generates a collection of {@value com.onplan.domain.transitory.PriceTick}.
    *
    * The first price ask value is the lower endpoint, the last price ask value is the
    * higher endpoint, all the remaining prices are randomly generated.

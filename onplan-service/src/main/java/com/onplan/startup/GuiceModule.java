@@ -3,9 +3,9 @@ package com.onplan.startup;
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
 import com.onplan.persistence.AlertConfigurationDao;
-import com.onplan.persistence.AlertEventDao;
+import com.onplan.persistence.AlertEventHistoryDao;
 import com.onplan.persistence.StrategyConfigurationDao;
-import com.onplan.persistence.SystemEventDao;
+import com.onplan.persistence.SystemEventHistoryDao;
 import com.onplan.persistence.mongodb.MongoDbAlertConfigurationDao;
 import com.onplan.persistence.mongodb.MongoDbAlertEventDao;
 import com.onplan.persistence.mongodb.MongoDbStrategyConfigurationDao;
@@ -42,8 +42,8 @@ public class GuiceModule extends AbstractModule {
 
     bind(StrategyConfigurationDao.class).to(MongoDbStrategyConfigurationDao.class);
     bind(AlertConfigurationDao.class).to(MongoDbAlertConfigurationDao.class);
-    bind(AlertEventDao.class).to(MongoDbAlertEventDao.class);
-    bind(SystemEventDao.class).to(MongoDbSystemEventDao.class);
+    bind(AlertEventHistoryDao.class).to(MongoDbAlertEventDao.class);
+    bind(SystemEventHistoryDao.class).to(MongoDbSystemEventDao.class);
 
     // To save resources AlertService can be disabled and replaced by a placeholder.
     if (checkAndGetBoolean(Names.named(PROPERTY_ALERT_SERVICE_DISABLED).value())) {

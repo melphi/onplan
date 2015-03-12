@@ -13,16 +13,6 @@ public class TemplateInfo implements Serializable {
   protected String className;
   protected Iterable<String> availableParameters;
 
-  public TemplateInfo() {
-    // Intentionally empty.
-  }
-
-  public TemplateInfo(String displayName, String className, Iterable<String> availableParameters) {
-    this.displayName = displayName;
-    this.className = className;
-    this.availableParameters = availableParameters;
-  }
-
   public String getDisplayName() {
     return displayName;
   }
@@ -33,6 +23,16 @@ public class TemplateInfo implements Serializable {
 
   public Iterable<String> getAvailableParameters() {
     return availableParameters;
+  }
+
+  public TemplateInfo() {
+    // Intentionally empty.
+  }
+
+  public TemplateInfo(String displayName, String className, Iterable<String> availableParameters) {
+    this.displayName = displayName;
+    this.className = className;
+    this.availableParameters = availableParameters;
   }
 
   @Override

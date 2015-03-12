@@ -4,7 +4,7 @@ import com.onplan.adviser.TemplateMetaData;
 import com.onplan.adviser.predicate.AbstractAdviserPredicate;
 import com.onplan.adviser.predicate.PredicateExecutionContext;
 import com.onplan.domain.PriceBarTimeFrame;
-import com.onplan.domain.persistent.PriceTick;
+import com.onplan.domain.transitory.PriceTick;
 
 import static com.onplan.util.PropertiesUtils.getRequiredLongValue;
 import static com.onplan.util.PriceBarUtil.*;

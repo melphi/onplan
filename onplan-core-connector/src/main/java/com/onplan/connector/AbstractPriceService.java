@@ -1,7 +1,7 @@
 package com.onplan.connector;
 
-import com.onplan.domain.persistent.PriceBar;
-import com.onplan.domain.persistent.PriceTick;
+import com.onplan.domain.transitory.PriceBar;
+import com.onplan.domain.transitory.PriceTick;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;

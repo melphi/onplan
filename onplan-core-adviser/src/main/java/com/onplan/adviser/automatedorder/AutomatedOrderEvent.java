@@ -1,7 +1,7 @@
 package com.onplan.adviser.automatedorder;
 
 import com.onplan.adviser.AbstractAdviserEvent;
-import com.onplan.domain.persistent.PriceTick;
+import com.onplan.domain.transitory.PriceTick;
 
 // TODO(robertom): Implement this class.
 public final class AutomatedOrderEvent extends AbstractAdviserEvent {

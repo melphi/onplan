@@ -1,6 +1,6 @@
 package com.onplan.service;
 
-import com.onplan.domain.persistent.PriceBar;
+import com.onplan.domain.transitory.PriceBar;
 
 import java.io.Serializable;
 import java.util.Collection;

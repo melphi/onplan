@@ -2,7 +2,7 @@ package com.onplan.connector.igindex;
 
 import com.onplan.connector.HistoricalPriceService;
 import com.onplan.service.ServiceConnectionInfo;
-import com.onplan.domain.persistent.PriceBar;
+import com.onplan.domain.transitory.PriceBar;
 import org.apache.log4j.Logger;
 
 import java.util.Collection;

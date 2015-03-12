@@ -15,19 +15,6 @@ public final class StrategyStatistics implements Serializable {
   private long lastCompletionNanoTime;
   private long maxCompletionNanoTime;
 
-  public StrategyStatistics() {
-    // Intentionally empty.
-  }
-
-  public StrategyStatistics(long lastReceivedTickTimestamp, long receivedTicks,
-      long eventsDispatchedCounter, long lastCompletionNanoTime, long maxCompletionNanoTime) {
-    this.lastReceivedTickTimestamp = lastReceivedTickTimestamp;
-    this.receivedTicks = receivedTicks;
-    this.eventsDispatchedCounter = eventsDispatchedCounter;
-    this.lastCompletionNanoTime = lastCompletionNanoTime;
-    this.maxCompletionNanoTime = maxCompletionNanoTime;
-  }
-
   public long getLastCompletionNanoTime() {
     return lastCompletionNanoTime;
   }
@@ -74,6 +61,19 @@ public final class StrategyStatistics implements Serializable {
 
   public void incrementEventsDispatchedCounter() {
     this.eventsDispatchedCounter++;
+  }
+
+  public StrategyStatistics() {
+    // Intentionally empty.
+  }
+
+  public StrategyStatistics(long lastReceivedTickTimestamp, long receivedTicks,
+      long eventsDispatchedCounter, long lastCompletionNanoTime, long maxCompletionNanoTime) {
+    this.lastReceivedTickTimestamp = lastReceivedTickTimestamp;
+    this.receivedTicks = receivedTicks;
+    this.eventsDispatchedCounter = eventsDispatchedCounter;
+    this.lastCompletionNanoTime = lastCompletionNanoTime;
+    this.maxCompletionNanoTime = maxCompletionNanoTime;
   }
 
   @Override

@@ -18,23 +18,6 @@ public final class AlertInfo implements Serializable {
   private boolean repeat;
   private SeverityLevel severityLevel;
 
-  public AlertInfo() {
-    // Intentionally empty.
-  }
-
-  public AlertInfo(String id, String instrumentId, SeverityLevel severityLevel,
-      Iterable<AdviserPredicateInfo> predicatesChainInfo, String message, long createdOn,
-      long lastFiredOn, boolean repeat) {
-    this.id = id;
-    this.instrumentId = instrumentId;
-    this.predicatesChainInfo = predicatesChainInfo;
-    this.message = message;
-    this.createdOn = createdOn;
-    this.lastFiredOn = lastFiredOn;
-    this.repeat = repeat;
-    this.severityLevel = severityLevel;
-  }
-
   public String getId() {
     return id;
   }
@@ -96,6 +79,23 @@ public final class AlertInfo implements Serializable {
   }
 
   public void setSeverityLevel(SeverityLevel severityLevel) {
+    this.severityLevel = severityLevel;
+  }
+
+  public AlertInfo() {
+    // Intentionally empty.
+  }
+
+  public AlertInfo(String id, String instrumentId, SeverityLevel severityLevel,
+                   Iterable<AdviserPredicateInfo> predicatesChainInfo, String message, long createdOn,
+                   long lastFiredOn, boolean repeat) {
+    this.id = id;
+    this.instrumentId = instrumentId;
+    this.predicatesChainInfo = predicatesChainInfo;
+    this.message = message;
+    this.createdOn = createdOn;
+    this.lastFiredOn = lastFiredOn;
+    this.repeat = repeat;
     this.severityLevel = severityLevel;
   }
 

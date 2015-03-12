@@ -3,7 +3,7 @@ package com.onplan.adviser.predicate.scripting;
 import com.onplan.adviser.TemplateMetaData;
 import com.onplan.adviser.predicate.AbstractAdviserPredicate;
 import com.onplan.adviser.predicate.PredicateExecutionContext;
-import com.onplan.domain.persistent.PriceTick;
+import com.onplan.domain.transitory.PriceTick;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
