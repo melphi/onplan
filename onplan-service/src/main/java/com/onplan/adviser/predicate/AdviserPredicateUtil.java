@@ -30,6 +30,6 @@ public final class AdviserPredicateUtil {
         templateInfo.getDisplayName(),
         templateInfo.getClassName(),
         templateInfo.getAvailableParameters(),
-        adviserPredicate.getExecutionParameters());
+        adviserPredicate.getParametersCopy());
   }
 }

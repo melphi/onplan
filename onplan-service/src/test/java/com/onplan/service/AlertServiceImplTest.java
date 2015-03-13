@@ -358,7 +358,7 @@ public class AlertServiceImplTest {
         boolean recordFound = false;
         if (adviserPredicateInfo.getClassName().equals(adviserPredicate.getClass().getName()) &&
             adviserPredicateInfo.getExecutionParameters()
-                .equals(adviserPredicate.getExecutionParameters())) {
+                .equals(adviserPredicate.getParametersCopy())) {
           assertTrue("Duplicated record found.", !recordFound);
           recordFound = true;
           TemplateInfo templateInfo =
@@ -387,7 +387,7 @@ public class AlertServiceImplTest {
       boolean recordFound = false;
       for (AdviserPredicate predicate : alert.getPredicatesChain()) {
         if (predicateConfiguration.getClassName().equals(predicate.getClass().getName()) &&
-          predicateConfiguration.getParameters().equals(predicate.getExecutionParameters())) {
+          predicateConfiguration.getParameters().equals(predicate.getParametersCopy())) {
           assertTrue("Duplicated record found.", !recordFound);
           recordFound = true;
         }

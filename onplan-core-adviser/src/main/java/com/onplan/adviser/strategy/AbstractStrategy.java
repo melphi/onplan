@@ -27,7 +27,7 @@ public abstract class AbstractStrategy implements Strategy {
 
   public Map<String, String> getExecutionParameters() {
     checkNotNull(strategyExecutionContext);
-    return ImmutableMap.copyOf(strategyExecutionContext.getExecutionParameters());
+    return ImmutableMap.copyOf(strategyExecutionContext.getParameters());
   }
 
   public Collection<String> getRegisteredInstruments() {

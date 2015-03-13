@@ -5,21 +5,17 @@ import com.onplan.adviser.predicate.AbstractAdviserPredicate;
 import com.onplan.adviser.predicate.PredicateExecutionContext;
 import com.onplan.domain.transitory.PriceTick;
 
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
+import javax.script.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.onplan.util.PropertiesUtils.getRequiredStringValue;
 
 @TemplateMetaData(
     displayName = "JavaScript expression",
-    availableParameters = {JavaScripExpressionPredicate.PARAMETER_JAVASCRIPT_EXPRESSION})
-public class JavaScripExpressionPredicate extends AbstractAdviserPredicate {
+    availableParameters = {JavaScripPredicate.PARAMETER_JAVASCRIPT_EXPRESSION})
+public class JavaScripPredicate extends AbstractAdviserPredicate {
   public static final String PARAMETER_JAVASCRIPT_EXPRESSION = "javascriptExpression";
 
-  private static final String BINDING_NAME_CONTEXT = "context";
+  private static final String BINDING_NAME_CONTEXT = "executionContext";
   private static final String JAVASCRIPT_ENGINE_NAME = "nashorn";
   private static final String FUNCTION_INIT = "init";
   private static final String FUNCTION_APPLY = "apply";
@@ -29,7 +25,7 @@ public class JavaScripExpressionPredicate extends AbstractAdviserPredicate {
   private Invocable scriptEngine;
   private String javaScripExpression;
 
-  public JavaScripExpressionPredicate(PredicateExecutionContext predicateExecutionContext) {
+  public JavaScripPredicate(PredicateExecutionContext predicateExecutionContext) {
     super(predicateExecutionContext);
   }
 
@@ -47,10 +43,14 @@ public class JavaScripExpressionPredicate extends AbstractAdviserPredicate {
 
   @Override
   public void init() throws Exception {
-    javaScripExpression = getRequiredStringValue(
-        predicateExecutionContext.getExecutionParameters(), PARAMETER_JAVASCRIPT_EXPRESSION);
+    javaScripExpression = checkNotNull(getParameterValue(PARAMETER_JAVASCRIPT_EXPRESSION));
     ScriptEngine engine = createJavaScriptEngine();
-    engine.put(BINDING_NAME_CONTEXT, predicateExecutionContext);
+    /*
+     * TODO(robertom): Wrap PredicateExecutionContext in a JavaScriptPredicateExecutionContext and
+     * reintroduce PredicateExecutionContext.newBuilder().
+     */
+    engine.getContext().getBindings(ScriptContext.ENGINE_SCOPE)
+        .put(BINDING_NAME_CONTEXT, predicateExecutionContext);
     try {
       engine.eval(javaScripExpression);
     } catch (Exception e) {

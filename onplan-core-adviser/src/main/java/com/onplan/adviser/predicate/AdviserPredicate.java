@@ -18,7 +18,14 @@ public interface AdviserPredicate {
   public void init() throws Exception;
 
   /**
-   * Returns a copy of the execution parameters.
+   * Returns the parameter value.
+   *
+   * @param parameterName The parameter key.
    */
-  public Map<String, String> getExecutionParameters();
+  public String getParameterValue(String parameterName);
+
+  /**
+   * Returns a copy of the parameters set.
+   */
+  public Map<String, String> getParametersCopy();
 }

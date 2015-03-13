@@ -14,19 +14,15 @@ import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 public final class PredicateExecutionContext {
   private final HistoricalPriceServiceRemote historicalPriceService;
   private final InstrumentServiceRemote instrumentService;
-  private final Map<String, String> executionParameters;
+  private final Map<String, String> parameters;
   private final String instrumentId;
 
-  public static Builder newBuilder() {
-    return new Builder();
-  }
-
-  private PredicateExecutionContext(HistoricalPriceServiceRemote historicalPriceService,
+  public PredicateExecutionContext(HistoricalPriceServiceRemote historicalPriceService,
       InstrumentServiceRemote instrumentService, Map<String, String> executionParameters,
       String instrumentId) {
     this.historicalPriceService = checkNotNull(historicalPriceService);
     this.instrumentService = checkNotNull(instrumentService);
-    this.executionParameters = ImmutableMap.copyOf(checkNotNull(executionParameters));
+    this.parameters = ImmutableMap.copyOf(checkNotNull(executionParameters));
     this.instrumentId = checkNotNullOrEmpty(instrumentId);
   }
 
@@ -38,8 +34,12 @@ public final class PredicateExecutionContext {
     return instrumentService;
   }
 
-  public Map<String, String> getExecutionParameters() {
-    return executionParameters;
+  public String getParameterValue(String parameterName) {
+    return parameters.get(parameterName);
+  }
+
+  public Map<String, String> getParametersCopy() {
+    return ImmutableMap.copyOf(parameters);
   }
 
   public String getInstrumentId() {
@@ -58,52 +58,20 @@ public final class PredicateExecutionContext {
     return Objects.equal(this.historicalPriceService, executionContext.historicalPriceService) &&
         Objects.equal(this.instrumentService, executionContext.instrumentService) &&
         Objects.equal(this.instrumentId, executionContext.instrumentId) &&
-        Objects.equal(this.executionParameters, executionContext.executionParameters);
+        Objects.equal(this.parameters, executionContext.parameters);
   }
 
   @Override
   public int hashCode() {
     return Objects.hashCode(
-        historicalPriceService, instrumentService, instrumentId, executionParameters);
+        historicalPriceService, instrumentService, instrumentId, parameters);
   }
 
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
         .add("instrumentId", instrumentId)
-        .add("executionParameters", executionParameters)
+        .add("parameters", parameters)
         .toString();
-  }
-
-  public static class Builder {
-    private HistoricalPriceServiceRemote historicalPriceService;
-    private InstrumentServiceRemote instrumentService;
-    private Map<String, String> executionParameters;
-    private String instrumentId;
-
-    public Builder setHistoricalPriceService(HistoricalPriceServiceRemote historicalPriceService) {
-      this.historicalPriceService = checkNotNull(historicalPriceService);
-      return this;
-    }
-
-    public Builder setInstrumentService(InstrumentServiceRemote instrumentService) {
-      this.instrumentService = checkNotNull(instrumentService);
-      return this;
-    }
-
-    public Builder setExecutionParameters(Map<String, String> executionParameters) {
-      this.executionParameters = checkNotNull(executionParameters);
-      return this;
-    }
-
-    public Builder setInstrumentId(String instrumentId) {
-      this.instrumentId = checkNotNullOrEmpty(instrumentId);
-      return this;
-    }
-
-    public PredicateExecutionContext build() {
-      return new PredicateExecutionContext(
-          historicalPriceService, instrumentService, executionParameters, instrumentId);
-    }
   }
 }

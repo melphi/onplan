@@ -8,8 +8,6 @@ import com.onplan.domain.transitory.PriceTick;
 import java.util.function.Function;
 
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
-import static com.onplan.util.PropertiesUtils.getRequiredDoubleValue;
-import static com.onplan.util.PropertiesUtils.getRequiredStringValue;
 
 // TODO(robertom): Parametrize evaluation on ask/bid values.
 @TemplateMetaData(
@@ -40,10 +38,9 @@ public final class PriceValuePredicate extends AbstractAdviserPredicate {
 
   @Override
   public void init() throws Exception {
-    final double priceValue = getRequiredDoubleValue(
-        predicateExecutionContext.getExecutionParameters(), PARAMETER_PRICE_VALUE);
-    String comparisonOperator = getRequiredStringValue(
-        predicateExecutionContext.getExecutionParameters(), PARAMETER_COMPARISON_OPERATOR);
+    final double priceValue = getDoubleValue(PARAMETER_PRICE_VALUE).get();
+    String comparisonOperator =
+        checkNotNullOrEmpty(getParameterValue(PARAMETER_COMPARISON_OPERATOR));
     checkNotNullOrEmpty(comparisonOperator);
     switch (comparisonOperator) {
       case OPERATOR_EQUALS:

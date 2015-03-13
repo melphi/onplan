@@ -5,10 +5,12 @@ import com.onplan.domain.transitory.PriceBar;
 
 import java.util.Collection;
 
+import static com.onplan.util.TestingConstants.DEFAULT_SERVICE_CONNECTION_INFO;
+
 public class TestingHistoricalPriceService implements HistoricalPriceService {
   @Override
   public ServiceConnectionInfo getServiceConnectionInfo() {
-    return null;
+    return DEFAULT_SERVICE_CONNECTION_INFO;
   }
 
   @Override

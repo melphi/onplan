@@ -6,7 +6,6 @@ import com.onplan.adviser.predicate.PredicateExecutionContext;
 import com.onplan.domain.PriceBarTimeFrame;
 import com.onplan.domain.transitory.PriceTick;
 
-import static com.onplan.util.PropertiesUtils.getRequiredLongValue;
 import static com.onplan.util.PriceBarUtil.*;
 
 @TemplateMetaData(
@@ -44,8 +43,7 @@ public final class PriceSpikePredicate extends AbstractAdviserPredicate {
 
   @Override
   public void init() throws Exception {
-    minimumPips = getRequiredLongValue(
-        predicateExecutionContext.getExecutionParameters(), PROPERTY_MINIMUM_PIPS);
+    minimumPips = getLongValue(PROPERTY_MINIMUM_PIPS).get();
     String instrumentId = predicateExecutionContext.getInstrumentId();
     priceMinimalDecimalPosition = predicateExecutionContext.getInstrumentService()
         .getInstrumentInfo(instrumentId).getPriceMinimalDecimalPosition();

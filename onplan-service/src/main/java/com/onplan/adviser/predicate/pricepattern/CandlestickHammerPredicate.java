@@ -7,8 +7,7 @@ import com.onplan.domain.PriceBarTimeFrame;
 import com.onplan.domain.transitory.PriceTick;
 import com.onplan.util.PriceBarUtil;
 
-import static com.onplan.util.PropertiesUtils.getRequiredDoubleValue;
-import static com.onplan.util.PropertiesUtils.getRequiredStringValue;
+import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 @TemplateMetaData(
     displayName = "Candlestick hammer",
@@ -52,11 +51,9 @@ public final class CandlestickHammerPredicate extends AbstractAdviserPredicate {
 
   @Override
   public void init() throws Exception {
-    String priceBarTimeFrameText = getRequiredStringValue(
-        predicateExecutionContext.getExecutionParameters(), PROPERTY_TIME_FRAME);
+    String priceBarTimeFrameText = checkNotNullOrEmpty(getParameterValue(PROPERTY_TIME_FRAME));
     priceBarTimeFrame = PriceBarTimeFrame.parseString(priceBarTimeFrameText);
-    minimumCandleSize = getRequiredDoubleValue(
-        predicateExecutionContext.getExecutionParameters(), PROPERTY_MINIMUM_CANDLE_SIZE);
+    minimumCandleSize = getDoubleValue(PROPERTY_MINIMUM_CANDLE_SIZE).get();
   }
 
   private boolean isHammerPattern(

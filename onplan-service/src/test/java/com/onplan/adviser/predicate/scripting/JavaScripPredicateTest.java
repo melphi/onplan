@@ -7,7 +7,6 @@ import com.onplan.domain.TestingPriceFactory;
 import com.onplan.domain.transitory.PriceTick;
 import com.onplan.service.TestingHistoricalPriceService;
 import com.onplan.service.TestingInstrumentService;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -17,7 +16,7 @@ import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 import static com.onplan.util.TestingConstants.INSTRUMENT_EURUSD_ID;
 import static org.junit.Assert.assertEquals;
 
-public class JavaScripExpressionPredicateTest {
+public class JavaScripPredicateTest {
   @Test
   public void testApplyScriptReturningTrue() throws Exception {
     String script = "init = function() {};" +
@@ -64,7 +63,7 @@ public class JavaScripExpressionPredicateTest {
   }
 
   @Test
-  public void testApplyScriptNoReturnin() throws Exception {
+  public void testApplyScriptNoReturn() throws Exception {
     String script = "init = function() {};" +
         "apply = function(priceTick) {};";
     AdviserPredicate adviserPredicate = createAdviserPredicate(script);
@@ -112,23 +111,47 @@ public class JavaScripExpressionPredicateTest {
     }
   }
 
-  // TODO(roberotm): Complete and enable this test.
-  @Ignore
   @Test
   public void testApplyScriptWithContextParameters() throws Exception {
     String script = "apply = function(priceTick) {" +
-        "return (context.getInstrumentId() != null);"+
+        "return (priceTick.closePriceAsk >= executionContext.getParameterValue('minValue'));"+
         "};";
     AdviserPredicate adviserPredicate =
-        createAdviserPredicate(script, ImmutableMap.of("paramKey", "0.00002"));
+        createAdviserPredicate(script, ImmutableMap.of("minValue", "0.00002"));
     adviserPredicate.init();
-    int trueCount = 0;
-    for (PriceTick priceTick : createPriceTicks()) {
-      if (adviserPredicate.apply(priceTick)) {
-        trueCount++;
-      }
-    }
+    long trueCount = createPriceTicks().stream()
+        .filter(record -> adviserPredicate.apply(record))
+        .count();
     assertEquals(3, trueCount);
+  }
+
+  @Test
+  public void testApplyScriptWithHistoricalPriceService() throws Exception {
+    String script = "apply = function(priceTick) {" +
+        "return executionContext.getHistoricalPriceService().getServiceConnectionInfo()" +
+        "   .getIsConnected();"+
+        "};";
+    AdviserPredicate adviserPredicate = createAdviserPredicate(script);
+    adviserPredicate.init();
+    long trueCount = createPriceTicks().stream()
+        .filter(record -> adviserPredicate.apply(record))
+        .count();
+    assertEquals(4, trueCount);
+  }
+
+  @Test
+  public void testApplyScriptWithInstrumentService() throws Exception {
+    String script = "apply = function(priceTick) {" +
+        "return (executionContext.getInstrumentService()" +
+        "   .getInstrumentInfo('CS.EURUSD.TODAY')" +
+        "   .getPriceMinimalDecimalPosition() == 4);"+
+        "};";
+    AdviserPredicate adviserPredicate = createAdviserPredicate(script);
+    adviserPredicate.init();
+    long trueCount = createPriceTicks().stream()
+        .filter(record -> adviserPredicate.apply(record))
+        .count();
+    assertEquals(4, trueCount);
   }
 
   private List<PriceTick> createPriceTicks() {
@@ -145,16 +168,14 @@ public class JavaScripExpressionPredicateTest {
 
   private AdviserPredicate createAdviserPredicate(String script, Map<String, String> parameters) {
     checkNotNullOrEmpty(script);
-    PredicateExecutionContext predicateExecutionContext = PredicateExecutionContext.newBuilder()
-        .setExecutionParameters(
-            ImmutableMap.<String, String>builder()
-              .put(JavaScripExpressionPredicate.PARAMETER_JAVASCRIPT_EXPRESSION, script)
-              .putAll(parameters)
-              .build())
-        .setInstrumentId(INSTRUMENT_EURUSD_ID)
-        .setHistoricalPriceService(new TestingHistoricalPriceService())
-        .setInstrumentService(new TestingInstrumentService())
-        .build();
-    return new JavaScripExpressionPredicate(predicateExecutionContext);
+    PredicateExecutionContext predicateExecutionContext = new PredicateExecutionContext(
+        new TestingHistoricalPriceService(),
+        new TestingInstrumentService(),
+        ImmutableMap.<String, String>builder()
+            .put(JavaScripPredicate.PARAMETER_JAVASCRIPT_EXPRESSION, script)
+            .putAll(parameters)
+            .build(),
+        INSTRUMENT_EURUSD_ID);
+    return new JavaScripPredicate(predicateExecutionContext);
   }
 }

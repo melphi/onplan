@@ -86,12 +86,11 @@ public final class AdviserFactory {
     checkNotNull(instrumentService, "instrumentService is null.");
     checkNotNull(historicalPriceService, "historicalPriceService is null.");
     try {
-      PredicateExecutionContext predicateExecutionContext = PredicateExecutionContext.newBuilder()
-          .setExecutionParameters(adviserPredicateConfiguration.getParameters())
-          .setInstrumentId(instrumentId)
-          .setInstrumentService(instrumentService)
-          .setHistoricalPriceService(historicalPriceService)
-          .build();
+      PredicateExecutionContext predicateExecutionContext = new PredicateExecutionContext(
+          historicalPriceService,
+          instrumentService,
+          adviserPredicateConfiguration.getParameters(),
+          instrumentId);
       Class clazz = getClass(adviserPredicateConfiguration.getClassName());
       return (AdviserPredicate) clazz.getConstructor(PredicateExecutionContext.class)
           .newInstance(predicateExecutionContext);

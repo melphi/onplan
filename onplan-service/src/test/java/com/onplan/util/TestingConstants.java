@@ -2,6 +2,7 @@ package com.onplan.util;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.onplan.service.ServiceConnectionInfo;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -42,4 +43,7 @@ public class TestingConstants {
 
   public static final double PRICE_VALUE_FROM = 0.99239020;
   public static final double PRICE_VALUE_TO = 1.00223423;
+
+  public static final ServiceConnectionInfo DEFAULT_SERVICE_CONNECTION_INFO =
+      new ServiceConnectionInfo("Testing Provider", true, DEFAULT_START_DATE.getMillis());
 }

@@ -19,7 +19,7 @@ public final class StrategyExecutionContext implements Serializable {
   private final HistoricalPriceServiceRemote historicalPriceService;
   private final InstrumentServiceRemote instrumentService;
   private final StrategyListener strategyListener;
-  private final Map<String, String> executionParameters;
+  private final Map<String, String> parameters;
   private final Set<String> registeredInstruments;
 
   public static Builder newBuilder() {
@@ -42,8 +42,8 @@ public final class StrategyExecutionContext implements Serializable {
     return strategyListener;
   }
 
-  public Map<String, String> getExecutionParameters() {
-    return executionParameters;
+  public Map<String, String> getParameters() {
+    return parameters;
   }
 
   public Set<String> getRegisteredInstruments() {
@@ -53,12 +53,12 @@ public final class StrategyExecutionContext implements Serializable {
   private StrategyExecutionContext(String strategyId,
       HistoricalPriceServiceRemote historicalPriceService,
       InstrumentServiceRemote instrumentService, StrategyListener strategyListener,
-      Map<String, String> executionParameters, Set<String> registeredInstruments) {
+      Map<String, String> parameters, Set<String> registeredInstruments) {
     this.strategyId = checkNotNullOrEmpty(strategyId);
     this.historicalPriceService = checkNotNull(historicalPriceService);
     this.instrumentService = checkNotNull(instrumentService);
     this.strategyListener = checkNotNull(strategyListener);
-    this.executionParameters = checkNotNull(executionParameters);
+    this.parameters = checkNotNull(parameters);
     this.registeredInstruments = checkNotNull(registeredInstruments);
   }
 
@@ -72,20 +72,20 @@ public final class StrategyExecutionContext implements Serializable {
     }
     StrategyExecutionContext executionContext = (StrategyExecutionContext) o;
     return Objects.equal(this.strategyId, executionContext.strategyId) &&
-        Objects.equal(this.executionParameters, executionContext.executionParameters) &&
+        Objects.equal(this.parameters, executionContext.parameters) &&
         Objects.equal(this.registeredInstruments, executionContext.registeredInstruments);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(strategyId, executionParameters, registeredInstruments);
+    return Objects.hashCode(strategyId, parameters, registeredInstruments);
   }
 
   @Override
   public String toString() {
     return MoreObjects.toStringHelper(this)
         .add("strategyId", strategyId)
-        .add("executionParameters", executionParameters)
+        .add("parameters", parameters)
         .add("registeredInstruments", registeredInstruments)
         .toString();
   }

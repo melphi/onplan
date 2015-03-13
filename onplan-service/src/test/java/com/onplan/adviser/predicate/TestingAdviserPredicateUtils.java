@@ -9,10 +9,10 @@ import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 public class TestingAdviserPredicateUtils {
   public static final void checkAdviserPredicate(AdviserPredicate adviserPredicate) {
     checkNotNull(adviserPredicate);
-    checkNotNull(adviserPredicate.getExecutionParameters());
-    checkArgument(!adviserPredicate.getExecutionParameters().isEmpty());
+    checkNotNull(adviserPredicate.getParametersCopy());
+    checkArgument(!adviserPredicate.getParametersCopy().isEmpty());
     for (Map.Entry<String, String> parameter :
-        adviserPredicate.getExecutionParameters().entrySet()) {
+        adviserPredicate.getParametersCopy().entrySet()) {
       checkNotNullOrEmpty(parameter.getValue());
       checkNotNullOrEmpty(parameter.getKey());
     }

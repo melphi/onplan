@@ -1,14 +1,14 @@
 package com.onplan.util;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.io.FileUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -17,52 +17,6 @@ import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 public final class PropertiesUtils {
   private static final String PROPERTIES_FILE_EXTENSION = "properties";
-
-  public static Optional<String> getStringValue(Map<String, String> parameters, String key) {
-    checkNotNullOrEmpty(key);
-    String propertyValue = checkNotNull(parameters).get(key);
-    return Strings.isNullOrEmpty(propertyValue) ? Optional.empty() : Optional.of(propertyValue);
-  }
-
-  public static Optional<Long> getLongValue(Map<String, String> parameters, String key) {
-    Optional<String> propertyValue = getStringValue(parameters, key);
-    return propertyValue.isPresent() ? Optional.of(Long.parseLong(propertyValue.get()))
-        : Optional.empty();
-  }
-
-  public static Optional<Double> getDoubleProperty(Map<String, String> parameters, String key) {
-    Optional<String> propertyValue = getStringValue(parameters, key);
-    return propertyValue.isPresent() ? Optional.of(Double.parseDouble(propertyValue.get()))
-        : Optional.empty();
-  }
-
-  /**
-   * Returns the value of the parameter as string, making sure the parameter is set and the string
-   * is not null or empty.
-   *
-   * @param parameters The parameters map.
-   * @param key The parameter key.
-   */
-  public static String getRequiredStringValue(Map<String, String> parameters, String key) {
-    Optional<String> propertyValue = getStringValue(parameters, key);
-    checkArgument(
-        propertyValue.isPresent(), String.format("Property [%s] not set or empty.", key));
-    return checkNotNullOrEmpty(propertyValue.get());
-  }
-
-  public static Long getRequiredLongValue(Map<String, String> parameters, String key) {
-    Optional<Long> propertyValue = getLongValue(parameters, key);
-    checkArgument(
-        propertyValue.isPresent(), String.format("Property [%s] not set or empty.", key));
-    return propertyValue.get();
-  }
-
-  public static Double getRequiredDoubleValue(Map<String, String> parameters, String key) {
-    Optional<Double> propertyValue = getDoubleProperty(parameters, key);
-    checkArgument(
-        propertyValue.isPresent(), String.format("Property [%s] not set or empty.", key));
-    return propertyValue.get();
-  }
 
   /**
    * Loads a property file from the class path as base path and returns the
