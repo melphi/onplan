@@ -19,6 +19,7 @@ public abstract class AbstractAdviserPredicate implements AdviserPredicate {
 
   @Override
   public String getParameterValue(String parameterName) {
+    checkNotNullOrEmpty(parameterName);
     return predicateExecutionContext.getParameterValue(parameterName);
   }
 

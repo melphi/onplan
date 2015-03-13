@@ -1,8 +1,8 @@
-package com.onplan.adviser.predicate.scripting;
+package com.onplan.adviser.strategy.scripting;
 
 import com.onplan.adviser.TemplateMetaData;
-import com.onplan.adviser.predicate.AbstractAdviserPredicate;
-import com.onplan.adviser.predicate.PredicateExecutionContext;
+import com.onplan.adviser.strategy.AbstractStrategy;
+import com.onplan.adviser.strategy.StrategyExecutionContext;
 import com.onplan.domain.transitory.PriceTick;
 
 import javax.script.Invocable;
@@ -14,28 +14,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.adviser.ScriptingEngineUtils.*;
 
 @TemplateMetaData(
-    displayName = "JavaScript predicate",
-    availableParameters = {JavaScripPredicate.PARAMETER_JAVASCRIPT_EXPRESSION})
-public class JavaScripPredicate extends AbstractAdviserPredicate {
+    displayName = "JavaScript strategy",
+    availableParameters = {JavaScriptStrategy.PARAMETER_JAVASCRIPT_EXPRESSION})
+public class JavaScriptStrategy extends AbstractStrategy {
   public static final String PARAMETER_JAVASCRIPT_EXPRESSION = "javascriptExpression";
 
   private Invocable scriptEngine;
   private String javaScripExpression;
 
-  public JavaScripPredicate(PredicateExecutionContext predicateExecutionContext) {
-    super(predicateExecutionContext);
-  }
-
-  @Override
-  public boolean apply(final PriceTick priceTick) {
-    Object result = null;
-    try {
-      result = scriptEngine.invokeFunction(FUNCTION_APPLY, priceTick);
-    } catch (Exception e) {
-      // TODO(robertom): I think you can do better than this.
-      throw new IllegalArgumentException(e);
-    }
-    return null != result && result.equals(true);
+  public JavaScriptStrategy(StrategyExecutionContext strategyExecutionContext) {
+    super(strategyExecutionContext);
   }
 
   @Override
@@ -43,11 +31,11 @@ public class JavaScripPredicate extends AbstractAdviserPredicate {
     javaScripExpression = checkNotNull(getParameterValue(PARAMETER_JAVASCRIPT_EXPRESSION));
     ScriptEngine engine = createJavaScriptEngine();
     /*
-     * TODO(robertom): Wrap PredicateExecutionContext in a JavaScriptPredicateExecutionContext and
-     * reintroduce PredicateExecutionContext.newBuilder().
+     * TODO(robertom): Wrap StrategyExecutionContext in a JavaScriptStrategyExecutionContext,
+     * and reintroduce PredicateExecutionContext.newBuilder().
      */
     engine.getContext().getBindings(ScriptContext.ENGINE_SCOPE)
-        .put(BINDING_NAME_CONTEXT, predicateExecutionContext);
+        .put(BINDING_NAME_CONTEXT, strategyExecutionContext);
     try {
       engine.eval(javaScripExpression);
     } catch (Exception e) {
@@ -67,6 +55,16 @@ public class JavaScripPredicate extends AbstractAdviserPredicate {
           String.format("Error [%s] while calling initializing script with init().",
               e.getMessage()),
           e);
+    }
+  }
+
+  @Override
+  public void onPriceTick(PriceTick priceTick) {
+    try {
+      scriptEngine.invokeFunction(FUNCTION_APPLY, priceTick);
+    } catch (Exception e) {
+      // TODO(robertom): Exceptions need to be managed.
+      throw new IllegalArgumentException(e);
     }
   }
 }

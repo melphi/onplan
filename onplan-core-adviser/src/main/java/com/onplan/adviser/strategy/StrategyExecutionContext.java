@@ -3,7 +3,6 @@ package com.onplan.adviser.strategy;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.onplan.service.HistoricalPriceServiceRemote;
 import com.onplan.service.InstrumentServiceRemote;
 
@@ -22,10 +21,6 @@ public final class StrategyExecutionContext implements Serializable {
   private final Map<String, String> parameters;
   private final Set<String> registeredInstruments;
 
-  public static Builder newBuilder() {
-    return new Builder();
-  }
-
   public String getStrategyId() {
     return this.strategyId;
   }
@@ -42,15 +37,20 @@ public final class StrategyExecutionContext implements Serializable {
     return strategyListener;
   }
 
-  public Map<String, String> getParameters() {
-    return parameters;
+  public String getParameterValue(String parameterName) {
+    //TODO(robertom): What if the user sets a null parameter in JavaScript?
+    return parameters.get(parameterName);
+  }
+
+  public Map<String, String> getParametersCopy() {
+    return ImmutableMap.copyOf(parameters);
   }
 
   public Set<String> getRegisteredInstruments() {
     return registeredInstruments;
   }
 
-  private StrategyExecutionContext(String strategyId,
+  public StrategyExecutionContext(String strategyId,
       HistoricalPriceServiceRemote historicalPriceService,
       InstrumentServiceRemote instrumentService, StrategyListener strategyListener,
       Map<String, String> parameters, Set<String> registeredInstruments) {
@@ -88,49 +88,5 @@ public final class StrategyExecutionContext implements Serializable {
         .add("parameters", parameters)
         .add("registeredInstruments", registeredInstruments)
         .toString();
-  }
-
-  public static class Builder {
-    private String strategyId;
-    private HistoricalPriceServiceRemote historicalPriceService;
-    private InstrumentServiceRemote instrumentService;
-    private StrategyListener strategyListener;
-    private Map<String, String> executionParameters;
-    private Set<String> registeredInstruments;
-
-    public Builder setStrategyId(String strategyId) {
-      this.strategyId = checkNotNullOrEmpty(strategyId);
-      return this;
-    }
-
-    public Builder setHistoricalPriceService(HistoricalPriceServiceRemote historicalPriceService) {
-      this.historicalPriceService = checkNotNull(historicalPriceService);
-      return this;
-    }
-
-    public Builder setInstrumentService(InstrumentServiceRemote instrumentService) {
-      this.instrumentService = checkNotNull(instrumentService);
-      return this;
-    }
-
-    public Builder setStrategyListener(StrategyListener strategyListener) {
-      this.strategyListener = checkNotNull(strategyListener);
-      return this;
-    }
-
-    public Builder setExecutionParameters(Map<String, String> executionParameters) {
-      this.executionParameters = ImmutableMap.copyOf(checkNotNull(executionParameters));
-      return this;
-    }
-
-    public Builder setRegisteredInstruments(Set<String> registeredInstruments) {
-      this.registeredInstruments = ImmutableSet.copyOf(checkNotNull(registeredInstruments));
-      return this;
-    }
-
-    public StrategyExecutionContext build() {
-      return new StrategyExecutionContext(strategyId, historicalPriceService, instrumentService,
-          strategyListener, executionParameters, registeredInstruments);
-    }
   }
 }

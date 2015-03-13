@@ -114,7 +114,7 @@ public class JavaScripPredicateTest {
   @Test
   public void testApplyScriptWithContextParameters() throws Exception {
     String script = "apply = function(priceTick) {" +
-        "return (priceTick.closePriceAsk >= executionContext.getParameterValue('minValue'));"+
+        "return (priceTick.closePriceAsk >= ctx.getParameterValue('minValue'));"+
         "};";
     AdviserPredicate adviserPredicate =
         createAdviserPredicate(script, ImmutableMap.of("minValue", "0.00002"));
@@ -128,7 +128,7 @@ public class JavaScripPredicateTest {
   @Test
   public void testApplyScriptWithHistoricalPriceService() throws Exception {
     String script = "apply = function(priceTick) {" +
-        "return executionContext.getHistoricalPriceService().getServiceConnectionInfo()" +
+        "return ctx.getHistoricalPriceService().getServiceConnectionInfo()" +
         "   .getIsConnected();"+
         "};";
     AdviserPredicate adviserPredicate = createAdviserPredicate(script);
@@ -142,7 +142,7 @@ public class JavaScripPredicateTest {
   @Test
   public void testApplyScriptWithInstrumentService() throws Exception {
     String script = "apply = function(priceTick) {" +
-        "return (executionContext.getInstrumentService()" +
+        "return (ctx.getInstrumentService()" +
         "   .getInstrumentInfo('CS.EURUSD.TODAY')" +
         "   .getPriceMinimalDecimalPosition() == 4);"+
         "};";

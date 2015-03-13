@@ -18,10 +18,16 @@ public interface Strategy extends Adviser {
   public void init() throws Exception;
 
   /**
-   * Returns a copy of the execution parameters which are defined in the
-   * {@link StrategyExecutionContext}.
+   * Returns the parameter value.
+   *
+   * @param parameterName The parameter name.
    */
-  public Map<String, String> getExecutionParameters();
+  public String getParameterValue(String parameterName);
+
+  /**
+   * Returns a copy of the parameters set.
+   */
+  public Map<String, String> getParametersCopy();
 
   /**
    * Returns a copy of the instruments which the strategy listens to as defined in the

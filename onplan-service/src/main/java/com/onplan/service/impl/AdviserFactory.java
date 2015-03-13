@@ -26,14 +26,13 @@ public final class AdviserFactory {
     checkNotNull(instrumentService, "instrumentService is null.");
     checkNotNull(historicalPriceService, "historicalPriceService is null.");
     try {
-      StrategyExecutionContext strategyExecutionContext = StrategyExecutionContext.newBuilder()
-          .setStrategyId(strategyConfiguration.getId())
-          .setExecutionParameters(strategyConfiguration.getExecutionParameters())
-          .setStrategyListener(strategyListener)
-          .setInstrumentService(instrumentService)
-          .setHistoricalPriceService(historicalPriceService)
-          .setRegisteredInstruments(strategyConfiguration.getInstruments())
-          .build();
+      StrategyExecutionContext strategyExecutionContext = new StrategyExecutionContext(
+          strategyConfiguration.getId(),
+          historicalPriceService,
+          instrumentService,
+          strategyListener,
+          strategyConfiguration.getExecutionParameters(),
+          strategyConfiguration.getInstruments());
       Class clazz = getClass(strategyConfiguration.getClassName());
       return (Strategy) clazz.getConstructor(StrategyExecutionContext.class)
           .newInstance(strategyExecutionContext);

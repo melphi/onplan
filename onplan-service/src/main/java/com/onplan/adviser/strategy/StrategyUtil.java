@@ -27,7 +27,7 @@ public final class StrategyUtil {
         templateInfo.getClassName(),
         templateInfo.getAvailableParameters(),
         strategy.getId(),
-        strategy.getExecutionParameters(),
+        strategy.getParametersCopy(),
         strategy.getRegisteredInstruments(),
         strategy.getStrategyStatistics());
   }

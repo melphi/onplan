@@ -1,7 +1,7 @@
 package com.onplan.adviser.strategy;
 
 import com.google.common.base.Objects;
-import com.google.common.collect.ImmutableMap;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.onplan.adviser.SeverityLevel;
 import com.onplan.adviser.StrategyStatistics;
@@ -11,8 +11,10 @@ import org.joda.time.DateTime;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 public abstract class AbstractStrategy implements Strategy {
   protected final StrategyExecutionContext strategyExecutionContext;
@@ -25,14 +27,40 @@ public abstract class AbstractStrategy implements Strategy {
     this.strategyListener = checkNotNull(strategyExecutionContext.getStrategyListener());
   }
 
-  public Map<String, String> getExecutionParameters() {
+  @Override
+  public String getParameterValue(String parameterName) {
     checkNotNull(strategyExecutionContext);
-    return ImmutableMap.copyOf(strategyExecutionContext.getParameters());
+    checkNotNullOrEmpty(parameterName);
+    return strategyExecutionContext.getParameterValue(parameterName);
+  }
+
+  @Override
+  public Map<String, String> getParametersCopy() {
+    checkNotNull(strategyExecutionContext);
+    return strategyExecutionContext.getParametersCopy();
   }
 
   public Collection<String> getRegisteredInstruments() {
     checkNotNull(strategyExecutionContext);
     return ImmutableSet.copyOf(strategyExecutionContext.getRegisteredInstruments());
+  }
+
+  public Optional<String> getStringValue(String parameterName) {
+    checkNotNullOrEmpty(parameterName);
+    String propertyValue = getParameterValue(parameterName);
+    return Strings.isNullOrEmpty(propertyValue) ? Optional.empty() : Optional.of(propertyValue);
+  }
+
+  public Optional<Long> getLongValue(String parameterName) {
+    Optional<String> propertyValue = getStringValue(parameterName);
+    return propertyValue.isPresent() ? Optional.of(Long.parseLong(propertyValue.get()))
+        : Optional.empty();
+  }
+
+  public Optional<Double> getDoubleValue(String parameterName) {
+    Optional<String> propertyValue = getStringValue(parameterName);
+    return propertyValue.isPresent() ? Optional.of(Double.parseDouble(propertyValue.get()))
+        : Optional.empty();
   }
 
   public String getId() {

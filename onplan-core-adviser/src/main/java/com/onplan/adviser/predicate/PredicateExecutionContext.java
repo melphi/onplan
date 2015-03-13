@@ -35,6 +35,7 @@ public final class PredicateExecutionContext {
   }
 
   public String getParameterValue(String parameterName) {
+    //TODO(robertom): What if the user sets a null parameter in JavaScript?
     return parameters.get(parameterName);
   }
 

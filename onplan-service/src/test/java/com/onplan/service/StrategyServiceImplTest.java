@@ -282,7 +282,7 @@ public class StrategyServiceImplTest {
 
   private static void assertValidStrategy(Strategy strategy) {
     assertNotNull(strategy);
-    assertNotNull(strategy.getExecutionParameters());
+    assertNotNull(strategy.getParametersCopy());
     assertNotNull(strategy.getStrategyStatistics());
     assertNotNull(strategy.getRegisteredInstruments());
     assertTrue(!Strings.isNullOrEmpty(strategy.getId()));
@@ -293,7 +293,7 @@ public class StrategyServiceImplTest {
     assertNotNull(strategyInfo);
     assertNotNull(strategy);
     assertEquals(strategy.getId(), strategyInfo.getId());
-    assertEquals(strategy.getExecutionParameters(), strategyInfo.getExecutionParameters());
+    assertEquals(strategy.getParametersCopy(), strategyInfo.getExecutionParameters());
     assertEquals(strategy.getRegisteredInstruments(), strategyInfo.getRegisteredInstruments());
     TemplateMetaData templateMetaData = strategy.getClass().getAnnotation(TemplateMetaData.class);
     assertEquals(templateMetaData.displayName(), strategyInfo.getDisplayName());
@@ -320,7 +320,7 @@ public class StrategyServiceImplTest {
     assertEquals(strategyConfiguration.getId(), strategy.getId());
     assertEquals(strategyConfiguration.getClassName(), strategy.getClass().getName());
     assertEquals(
-        strategyConfiguration.getExecutionParameters(), strategy.getExecutionParameters());
+        strategyConfiguration.getExecutionParameters(), strategy.getParametersCopy());
     assertEquals(strategyConfiguration.getInstruments(), strategy.getRegisteredInstruments());
   }
 }
