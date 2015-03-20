@@ -87,8 +87,8 @@ public final class AlertInfo implements Serializable {
   }
 
   public AlertInfo(String id, String instrumentId, SeverityLevel severityLevel,
-                   Iterable<AdviserPredicateInfo> predicatesChainInfo, String message, long createdOn,
-                   long lastFiredOn, boolean repeat) {
+      Iterable<AdviserPredicateInfo> predicatesChainInfo, String message, long createdOn,
+      long lastFiredOn, boolean repeat) {
     this.id = id;
     this.instrumentId = instrumentId;
     this.predicatesChainInfo = predicatesChainInfo;

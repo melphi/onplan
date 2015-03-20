@@ -1,7 +1,7 @@
 package com.onplan.adviser.strategy;
 
 import com.onplan.adviser.Adviser;
-import com.onplan.adviser.StrategyStatistics;
+import com.onplan.adviser.StrategyStatisticsSnapshot;
 
 import java.util.Collection;
 import java.util.Map;
@@ -36,7 +36,7 @@ public interface Strategy extends Adviser {
   public Collection<String> getRegisteredInstruments();
 
   /**
-   * Returns a copy of the current strategy statistics.
+   * Returns a snapshot of the current strategy statistics.
    */
-  public StrategyStatistics getStrategyStatistics();
+  public StrategyStatisticsSnapshot getStrategyStatisticsSnapshot();
 }

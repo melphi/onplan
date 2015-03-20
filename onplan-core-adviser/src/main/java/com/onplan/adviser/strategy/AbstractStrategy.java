@@ -4,7 +4,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.onplan.adviser.SeverityLevel;
-import com.onplan.adviser.StrategyStatistics;
+import com.onplan.adviser.StrategyStatisticsSnapshot;
 import com.onplan.adviser.alert.AlertEvent;
 import com.onplan.domain.transitory.PriceTick;
 import org.joda.time.DateTime;
@@ -67,14 +67,19 @@ public abstract class AbstractStrategy implements Strategy {
     return strategyExecutionContext.getStrategyId();
   }
 
-  public StrategyStatistics getStrategyStatistics() {
+  @Override
+  public StrategyStatisticsSnapshot getStrategyStatisticsSnapshot() {
     synchronized (strategyStatistics) {
-      return new StrategyStatistics(
+      long averageCompletionNanoTime = Math.round(
+          strategyStatistics.getCumulatedCompletionNanoTime() /
+              strategyStatistics.getReceivedTicks());
+      return new StrategyStatisticsSnapshot(
           strategyStatistics.getLastReceivedTickTimestamp(),
           strategyStatistics.getReceivedTicks(),
           strategyStatistics.getEventsDispatchedCounter(),
           strategyStatistics.getLastCompletionNanoTime(),
-          strategyStatistics.getMaxCompletionNanoTime());
+          strategyStatistics.getMaxCompletionNanoTime(),
+          averageCompletionNanoTime);
     }
   }
 
@@ -94,6 +99,7 @@ public abstract class AbstractStrategy implements Strategy {
     synchronized (strategyStatistics) {
       strategyStatistics.setLastCompletionNanoTime(lastCompletionNanoTime);
       strategyStatistics.incrementReceivedTicks();
+      strategyStatistics.incrementCumulatedCompletionNanoTime(lastCompletionNanoTime);
       strategyStatistics.setLastReceivedTickTimestamp(priceTick.getTimestamp());
       if (lastCompletionNanoTime > strategyStatistics.getMaxCompletionNanoTime()) {
         strategyStatistics.setMaxCompletionNanoTime(lastCompletionNanoTime);

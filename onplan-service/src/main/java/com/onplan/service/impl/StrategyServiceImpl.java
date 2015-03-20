@@ -18,6 +18,7 @@ import com.onplan.domain.configuration.StrategyConfiguration;
 import com.onplan.domain.transitory.PriceTick;
 import com.onplan.persistence.StrategyConfigurationDao;
 import com.onplan.service.EventNotificationService;
+import com.onplan.service.InstrumentSubscriptionListener;
 import com.onplan.service.StrategyService;
 import org.apache.log4j.Logger;
 
@@ -83,6 +84,12 @@ public final class StrategyServiceImpl extends AbstractAdviserService implements
       result.add(StrategyUtil.getStrategyInfo(strategy));
     }
     return result.build();
+  }
+
+  @Override
+  public void setInstrumentSubscriptionListener(
+      InstrumentSubscriptionListener instrumentSubscriptionListener) {
+    super.setInstrumentSubscriptionListener(instrumentSubscriptionListener);
   }
 
   @Override

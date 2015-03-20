@@ -3,11 +3,11 @@ package com.onplan.connector.igindex.client;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.onplan.domain.transitory.InstrumentInfo;
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
@@ -19,10 +19,11 @@ public class IgIndexResponseParserTest {
 
   @Test
   public void testCreateInstrumentInfoList() throws IOException {
-    File fileMarketSearchTermResponse = new File(
-        getClass().getClassLoader().getResource(FILE_MARKET_SEARCH_TERM_RESPONSE).getFile());
+    InputStream fileMarketSearchTermResponse =
+        getClass().getResourceAsStream(FILE_MARKET_SEARCH_TERM_RESPONSE);
     List<InstrumentInfo> result = IgIndexResponseParser.createInstrumentInfoList(
-        FileUtils.readFileToString(fileMarketSearchTermResponse));
+        IOUtils.toString(fileMarketSearchTermResponse));
+    fileMarketSearchTermResponse.close();
 
     assertNotNull(result);
     assertTrue(result.size() == 50);
@@ -37,10 +38,10 @@ public class IgIndexResponseParserTest {
 
   @Test
   public void testCreateInstrumentInfo() throws IOException {
-    File fileMarketEpicResponse = new File(
-        getClass().getClassLoader().getResource(FILE_MARKET_EPIC_RESPONSE).getFile());
-    InstrumentInfo instrumentInfo = IgIndexResponseParser.createInstrumentInfo(
-        FileUtils.readFileToString(fileMarketEpicResponse));
+    InputStream fileMarketEpicResponse = getClass().getResourceAsStream(FILE_MARKET_EPIC_RESPONSE);
+    InstrumentInfo instrumentInfo =
+        IgIndexResponseParser.createInstrumentInfo(IOUtils.toString(fileMarketEpicResponse));
+    fileMarketEpicResponse.close();
     assertInstrumentInfo(instrumentInfo);
   }
 

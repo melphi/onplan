@@ -21,7 +21,6 @@ import com.onplan.service.impl.VirtualMachineServiceImpl;
 import com.onplan.service.placeholder.AlertServicePlaceholder;
 import org.apache.log4j.Logger;
 
-import java.util.Collection;
 import java.util.Properties;
 
 import static com.onplan.util.MorePreconditions.checkAndGetBoolean;
@@ -33,8 +32,10 @@ public class GuiceModule extends AbstractModule {
 
   @Override
   protected void configure() {
+    Properties properties;
     try {
-      loadPropertyFiles();
+      properties = loadAllPropertiesFromClassPath();
+      Names.bindProperties(binder(), properties);
     } catch (Exception e) {
       LOGGER.error("Error while loading all the properties file from the class path.", e);
       throw new IllegalArgumentException(e);
@@ -46,7 +47,7 @@ public class GuiceModule extends AbstractModule {
     bind(SystemEventHistoryDao.class).to(MongoDbSystemEventDao.class);
 
     // To save resources AlertService can be disabled and replaced by a placeholder.
-    if (checkAndGetBoolean(Names.named(PROPERTY_ALERT_SERVICE_DISABLED).value())) {
+    if (checkAndGetBoolean(properties.getProperty(PROPERTY_ALERT_SERVICE_DISABLED))) {
       LOGGER.warn("AlertService disabled, using a placeholder instead of the real service.");
       bind(AlertService.class).to(AlertServicePlaceholder.class);
     } else {
@@ -56,13 +57,5 @@ public class GuiceModule extends AbstractModule {
     bind(StrategyService.class).to(StrategyServiceImpl.class);
     bind(EventNotificationService.class).to(EventNotificationServiceImpl.class);
     bind(VirtualMachineService.class).to(VirtualMachineServiceImpl.class);
-  }
-
-  private void loadPropertyFiles() throws Exception {
-    Collection<Properties> allProperties = loadAllPropertiesFromClassPath();
-    LOGGER.info(String.format("Loading [%d] properties files.", allProperties.size()));
-    for (Properties properties : allProperties) {
-      Names.bindProperties(binder(), properties);
-    }
   }
 }

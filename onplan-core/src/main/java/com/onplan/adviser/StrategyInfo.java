@@ -13,7 +13,7 @@ public final class StrategyInfo extends TemplateInfo {
   private String id;
   private Map<String, String> executionParameters;
   private Collection<String> registeredInstruments;
-  private StrategyStatistics strategyStatistics;
+  private StrategyStatisticsSnapshot strategyStatisticsSnapshot;
 
   public String getId() {
     return id;
@@ -39,12 +39,12 @@ public final class StrategyInfo extends TemplateInfo {
     this.registeredInstruments = registeredInstruments;
   }
 
-  public StrategyStatistics getStrategyStatistics() {
-    return strategyStatistics;
+  public StrategyStatisticsSnapshot getStrategyStatisticsSnapshot() {
+    return strategyStatisticsSnapshot;
   }
 
-  public void setStrategyStatistics(StrategyStatistics strategyStatistics) {
-    this.strategyStatistics = strategyStatistics;
+  public void setStrategyStatisticsSnapshot(StrategyStatisticsSnapshot strategyStatisticsSnapshot) {
+    this.strategyStatisticsSnapshot = strategyStatisticsSnapshot;
   }
 
   public StrategyInfo() {
@@ -53,12 +53,12 @@ public final class StrategyInfo extends TemplateInfo {
 
   public StrategyInfo(String displayName, String className, Iterable<String> availableParameters,
       String id, Map<String, String> executionParameters, Collection<String> registeredInstruments,
-      StrategyStatistics strategyStatistics) {
+      StrategyStatisticsSnapshot strategyStatisticsSnapshot) {
     super(displayName, className, availableParameters);
     this.id = id;
     this.executionParameters = executionParameters;
     this.registeredInstruments = registeredInstruments;
-    this.strategyStatistics = strategyStatistics;
+    this.strategyStatisticsSnapshot = strategyStatisticsSnapshot;
   }
 
   @Override
@@ -76,13 +76,13 @@ public final class StrategyInfo extends TemplateInfo {
         Objects.equal(this.availableParameters, strategyInfo.availableParameters) &&
         Objects.equal(this.executionParameters, strategyInfo.executionParameters) &&
         Objects.equal(this.registeredInstruments, strategyInfo.registeredInstruments) &&
-        Objects.equal(this.strategyStatistics, strategyInfo.strategyStatistics);
+        Objects.equal(this.strategyStatisticsSnapshot, strategyInfo.strategyStatisticsSnapshot);
   }
 
   @Override
   public int hashCode() {
     return Objects.hashCode(id, displayName, className, availableParameters, executionParameters,
-        registeredInstruments, strategyStatistics);
+        registeredInstruments, strategyStatisticsSnapshot);
   }
 
   @Override
@@ -94,7 +94,7 @@ public final class StrategyInfo extends TemplateInfo {
         .add("availableParameters", availableParameters)
         .add("executionParameters", executionParameters)
         .add("registeredInstruments", registeredInstruments)
-        .add("strategyStatistics", strategyStatistics)
+        .add("strategyStatisticsSnapshot", strategyStatisticsSnapshot)
         .toString();
   }
 }

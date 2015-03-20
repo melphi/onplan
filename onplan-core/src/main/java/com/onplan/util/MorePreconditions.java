@@ -46,9 +46,12 @@ public final class MorePreconditions {
    * @return The boolean translation of the string.
    * @exception java.lang.IllegalArgumentException The string can not be converted to a boolean.
    */
-  public static boolean checkAndGetBoolean(final String value) throws IllegalArgumentException{
+  public static boolean checkAndGetBoolean(String value) throws IllegalArgumentException{
+    if (!Strings.isNullOrEmpty(value)) {
+      value = value.trim();
+    }
     checkArgument(TRUE.equalsIgnoreCase(value) || FALSE.equalsIgnoreCase(value),
-        String.format("Expected a boolean value of [%s] or [%s].", TRUE, FALSE));
+        String.format("Expected a boolean value of %s/%s but was [%s].", TRUE, FALSE, value));
     return Boolean.getBoolean(value);
   }
 }

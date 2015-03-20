@@ -23,7 +23,7 @@ public class StrategyServiceRest implements StrategyServiceRemote {
   }
 
   @Override
-  public void addStrategy(StrategyConfiguration strategyConfiguration) throws Exception {
+  public String addStrategy(StrategyConfiguration strategyConfiguration) throws Exception {
     throw new IllegalArgumentException("Not yet implemented.");
   }
 

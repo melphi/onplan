@@ -29,6 +29,6 @@ public final class StrategyUtil {
         strategy.getId(),
         strategy.getParametersCopy(),
         strategy.getRegisteredInstruments(),
-        strategy.getStrategyStatistics());
+        strategy.getStrategyStatisticsSnapshot());
   }
 }

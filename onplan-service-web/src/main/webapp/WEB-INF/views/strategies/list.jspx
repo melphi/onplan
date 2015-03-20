@@ -1,8 +1,13 @@
 <div xmlns:util="urn:jsptagdir:/WEB-INF/tags/util"
+     xmlns:c="http://java.sun.com/jsp/jstl/core"
      xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
   <jsp:directive.page contentType="text/html;charset=UTF-8" />
   <jsp:output omit-xml-declaration="yes" />
   <util:import-controllers name="strategiesControllers" />
+
+  <c:set var="completionTimeToolTipText" value="The completion time is the difference between the
+    tick received time and the strategy completion time, this includes the delay due to any other
+    strategy or routine which is executed before this strategy."/>
 
   <h1>Active strategies</h1>
 
@@ -37,29 +42,33 @@
             <li>
               <span>Received ticks: </span>
               <span ng-bind-template=
-                        "{{strategy.strategyStatistics.receivedTicks | number}}"/>
+                  "{{strategy.strategyStatisticsSnapshot.receivedTicks | number}}"/>
             </li>
             <li>
               <span>Last received tick: </span>
               <span ng-bind-template=
-                        "{{strategy.strategyStatistics.lastReceivedTickTimestamp | datetime}}"/>
+                  "{{strategy.strategyStatisticsSnapshot.lastReceivedTickTimestamp | datetime}}"/>
             </li>
             <li>
               <span>Events dispatched: </span>
               <span ng-bind-template=
-                        "{{strategy.strategyStatistics.eventsDispatchedCounter | number}}"/>
+                  "{{strategy.strategyStatisticsSnapshot.eventsDispatchedCounter | number}}"/>
             </li>
             <li>
-              <span>Last completion (ms): </span>
+              <span title="${completionTimeToolTipText}">Average completion (ms): </span>
               <span ng-bind-template=
-                        "{{strategy.strategyStatistics.lastCompletionNanoTime |
-                        nanotomilliseconds}}"/>
+                  "{{strategy.strategyStatisticsSnapshot.averageCompletionNanoTime
+                  | nanotomilliseconds}}"/>
             </li>
             <li>
-              <span>Max completion (ms): </span>
-              <span ng-bind-template=
-                        "{{strategy.strategyStatistics.maxCompletionNanoTime |
-                        nanotomilliseconds}}"/>
+              <span title="${completionTimeToolTipText}">Last completion (ms): </span>
+              <span ng-bind-template="{{strategy.strategyStatisticsSnapshot.lastCompletionNanoTime |
+                  nanotomilliseconds}}"/>
+            </li>
+            <li>
+              <span title="${completionTimeToolTipText}">Max completion (ms): </span>
+              <span ng-bind-template="{{strategy.strategyStatisticsSnapshot.maxCompletionNanoTime |
+                  nanotomilliseconds}}"/>
             </li>
           </ul>
         </td>
@@ -70,4 +79,10 @@
       <button ng-click="ctrl.loadSampleStrategies()">Load sample strategies</button>
     </div>
   </div>
+
+  <script>
+    $(function() {
+      $(document).tooltip();
+    });
+  </script>
 </div>

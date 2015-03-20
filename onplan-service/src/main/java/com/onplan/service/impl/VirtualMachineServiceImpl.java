@@ -13,16 +13,16 @@ public final class VirtualMachineServiceImpl implements VirtualMachineService {
   @Override
   public VirtualMachineInfo getVirtualMachineInfo() {
     long collectionsCount = 0;
-    long accumulatedTime = 0;
+    long cumulatedTime = 0;
     double averageCollectionTime = 0;
     Collection<GarbageCollectorMXBean> garbageCollectors =
         ManagementFactory.getGarbageCollectorMXBeans();
     for (GarbageCollectorMXBean garbageCollector : garbageCollectors) {
       collectionsCount += garbageCollector.getCollectionCount();
-      accumulatedTime += garbageCollector.getCollectionTime();
+      cumulatedTime += garbageCollector.getCollectionTime();
     }
     if(collectionsCount > 0) {
-      averageCollectionTime = accumulatedTime / collectionsCount;
+      averageCollectionTime = cumulatedTime / collectionsCount;
     }
 
     int availableProcessors = Runtime.getRuntime().availableProcessors();

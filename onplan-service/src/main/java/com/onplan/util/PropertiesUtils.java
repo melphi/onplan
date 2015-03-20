@@ -1,22 +1,21 @@
 package com.onplan.util;
 
-import com.google.common.collect.ImmutableList;
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
-import java.util.Collection;
 import java.util.Properties;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 public final class PropertiesUtils {
-  private static final String PROPERTIES_FILE_EXTENSION = "properties";
+  private static final FileFilter PROPERTIES_FILE_FILTER = new FileFilter() {
+    @Override
+    public boolean accept(File file) {
+      return file.getName().endsWith(".properties");
+    }
+  };
 
   /**
    * Loads a property file from the class path as base path and returns the
@@ -34,22 +33,25 @@ public final class PropertiesUtils {
   }
 
   /**
-   * Loads all the property files found in the class path and returns the collection of
-   * {@link java.util.Properties} object.
+   * Loads all the property files found in the class path and merges the result in a single
+   * {@link java.util.Properties} object. In case of duplicated keys raises an exception.
    *
-   * @throws IOException Error while loading the properties file.
+   * @throws Exception Error while loading the properties file or files contain duplicated keys.
    */
-  public static Collection<Properties> loadAllPropertiesFromClassPath()
+  public static Properties loadAllPropertiesFromClassPath()
       throws Exception {
-    ImmutableList.Builder<Properties> result = ImmutableList.builder();
-    URL baseUrl = PropertiesUtils.class.getClassLoader().getResource(".");
-    checkNotNull(baseUrl);
-    Collection<File> files = FileUtils.listFiles(
-        new File(baseUrl.getFile()), new String[]{PROPERTIES_FILE_EXTENSION}, false);
+    Properties result = new Properties();
+    URL baseUrl = checkNotNull(PropertiesUtils.class.getClassLoader().getResource("."));
+    File[] files = new File(baseUrl.getFile()).listFiles(PROPERTIES_FILE_FILTER);
     for (File file : files) {
-      result.add(loadPropertiesFromFile(file));
+      InputStream fileStream = new FileInputStream(file);
+      Properties newProperties = new Properties();
+      newProperties.load(fileStream);
+      fileStream.close();
+      checkNotIntersects(newProperties.keySet(), result.keySet());
+      result.putAll(newProperties);
     }
-    return result.build();
+    return result;
   }
 
   private static Properties loadPropertiesFromFile(File file) throws IOException {
@@ -58,6 +60,17 @@ public final class PropertiesUtils {
     InputStream inputStream = new FileInputStream(file);
     Properties properties = new Properties();
     properties.load(inputStream);
+    inputStream.close();
     return properties;
+  }
+
+  private static void checkNotIntersects(Set set1, Set set2) {
+    checkNotNull(set1);
+    checkNotNull(set2);
+    for (Object object : set1) {
+      if (set2.contains(object)) {
+        throw new IllegalArgumentException(String.format("Element [%s] is duplicated.", object));
+      }
+    }
   }
 }
