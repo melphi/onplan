@@ -5,11 +5,12 @@ import com.onplan.adviser.TemplateInfo;
 import com.onplan.domain.configuration.StrategyConfiguration;
 import com.onplan.service.StrategyServiceRemote;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
 @RestController
 @RequestMapping(value = "/rest/strategies", produces = "application/json")
@@ -18,19 +19,24 @@ public class StrategyServiceRest implements StrategyServiceRemote {
   private StrategyServiceRemote strategyService;
 
   @Override
-  public boolean removeStrategy(String strategyId) throws Exception {
-    throw new IllegalArgumentException("Not yet implemented.");
+  @RequestMapping(value = "/{strategyId}", method = RequestMethod.DELETE)
+  public boolean removeStrategy(@PathVariable("strategyId") String strategyId) throws Exception {
+    checkNotNullOrEmpty(strategyId);
+    return strategyService.removeStrategy(strategyId);
   }
 
   @Override
-  public String addStrategy(StrategyConfiguration strategyConfiguration) throws Exception {
-    throw new IllegalArgumentException("Not yet implemented.");
+  @RequestMapping(value = "/", method = RequestMethod.POST)
+  public String addStrategy(@RequestBody StrategyConfiguration strategyConfiguration)
+      throws Exception {
+    checkNotNull(strategyConfiguration);
+    return strategyService.addStrategy(strategyConfiguration);
   }
 
   @Override
   @RequestMapping(value = "/loadsamplestrategies", method = RequestMethod.GET)
-  public void loadSampleStrategies() throws Exception {
-    strategyService.loadSampleStrategies();
+  public long loadSampleStrategies() throws Exception {
+    return strategyService.loadSampleStrategies();
   }
 
   @Override
@@ -40,12 +46,18 @@ public class StrategyServiceRest implements StrategyServiceRemote {
   }
 
   @Override
-  public List<TemplateInfo> getStrategiesTemplateInfo() {
-    throw new IllegalArgumentException("Not yet implemented.");
+  @RequestMapping(value = "/strategytemplateid", method = RequestMethod.GET)
+  public List<String> getStrategyTemplatesIds() {
+    return strategyService.getStrategyTemplatesIds();
   }
 
+  // TODO(robertom): Refactor template ids with a proper alphanumeric id.
+  // The expression "templateId:.+" is used to avoid the string truncation after the last dot.
   @Override
-  public TemplateInfo getStrategyTemplateInfo(String className) {
-    throw new IllegalArgumentException("Not yet implemented.");
+  @RequestMapping(value = "/strategytemplate/{templateId:.+}", method = RequestMethod.GET)
+  public TemplateInfo getStrategyTemplateInfo(@PathVariable("templateId") String templateId) {
+    checkNotNullOrEmpty(templateId);
+    TemplateInfo templateInfo = strategyService.getStrategyTemplateInfo(templateId);
+    return templateInfo;
   }
 }

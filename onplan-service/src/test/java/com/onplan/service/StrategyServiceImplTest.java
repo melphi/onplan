@@ -77,6 +77,12 @@ public class StrategyServiceImplTest {
     }
   }
 
+  @Test(expected = Exception.class)
+  public void testLoadAllStrategiesTwice() throws Exception {
+    strategyService.loadAllStrategies();
+    strategyService.loadAllStrategies();
+  }
+
   @Test
   public void testUnLoadAllStrategies() throws Exception {
     strategyService.loadAllStrategies();
@@ -183,7 +189,22 @@ public class StrategyServiceImplTest {
   }
 
   @Test
-  public void testLoadSampleStrategies() throws Exception {
+  public void testLoadSampleStrategiesBeforeInitialization() throws Exception {
+    strategyService.loadSampleStrategies();
+    List<Strategy> sampleStrategies = strategyService.getStrategies();
+    assertEquals(INITIAL_STRATEGIES_LIST_SIZE, sampleStrategies.size());
+    strategyService.unLoadAllStrategies();
+    strategyService.loadAllStrategies();
+    List<Strategy> savedStrategies = strategyService.getStrategies();
+    assertEquals(INITIAL_STRATEGIES_LIST_SIZE, savedStrategies.size());
+    for (Strategy savedStrategy : savedStrategies) {
+      assertTrue(sampleStrategies.contains(savedStrategy));
+    }
+  }
+
+  @Test
+  public void testLoadSampleStrategiesAfterInitialization() throws Exception {
+    strategyService.loadAllStrategies();
     strategyService.loadSampleStrategies();
     List<Strategy> sampleStrategies = strategyService.getStrategies();
     assertEquals(INITIAL_STRATEGIES_LIST_SIZE, sampleStrategies.size());
@@ -215,12 +236,12 @@ public class StrategyServiceImplTest {
 
   @Test
   public void testGetStrategiesTemplateInfo() throws Exception {
-    List<TemplateInfo> templatesInfo = strategyService.getStrategiesTemplateInfo();
-    TemplateInfo templateInfo = templatesInfo.stream()
-        .filter(record -> record.getClassName().equals(IntegrationTestStrategy.class.getName()))
+    List<String> templatesIds = strategyService.getStrategyTemplatesIds();
+    assertTrue(templatesIds.size() == 2);
+    assertTrue(templatesIds.stream()
         .findFirst()
-        .get();
-    assertMatch(templateInfo, IntegrationTestStrategy.class);
+        .get()
+        .equals(IntegrationTestStrategy.class.getName()));
   }
 
   @Test
@@ -283,7 +304,7 @@ public class StrategyServiceImplTest {
   private static void assertValidStrategy(Strategy strategy) {
     assertNotNull(strategy);
     assertNotNull(strategy.getParametersCopy());
-    assertNotNull(strategy.getStrategyStatistics());
+    assertNotNull(strategy.getStrategyStatisticsSnapshot());
     assertNotNull(strategy.getRegisteredInstruments());
     assertTrue(!Strings.isNullOrEmpty(strategy.getId()));
     assertTrue(!strategy.getRegisteredInstruments().isEmpty());

@@ -53,6 +53,9 @@
           <scanIntervalSeconds>10</scanIntervalSeconds>
           <stopKey>foo</stopKey>
           <stopPort>9090</stopPort>
+          <webAppConfig>
+            <defaultsDescriptor>src/test/resources/webdefault.xml</defaultsDescriptor>
+          </webAppConfig>
           <webApp>
             <contextPath>/</contextPath>
             <descriptor>${project.basedir}/src/main/webapp/WEB-INF/web.xml</descriptor>

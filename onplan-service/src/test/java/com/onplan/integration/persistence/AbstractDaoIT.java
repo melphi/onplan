@@ -69,6 +69,17 @@ public abstract class AbstractDaoIT<T extends PersistentObject> extends Abstract
   }
 
   @Test
+  public void testSaveAndGet() throws Exception {
+    T object = createSampleObjectWithNullId();
+    T returnedObject = checkNotNull(dao.saveAndGet(object));
+    T savedObject = dao.findById(returnedObject.getId());
+    object.setId(returnedObject.getId());
+    assertValidObject(savedObject);
+    assertEquals(object, savedObject);
+    assertEquals(returnedObject, savedObject);
+  }
+
+  @Test
   public void testSaveExisting() throws Exception {
     T object = createSampleObjectWithNullId();
     String id = checkNotNullOrEmpty(dao.save(object));

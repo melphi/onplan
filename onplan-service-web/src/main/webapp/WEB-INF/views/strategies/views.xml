@@ -4,4 +4,7 @@
     <definition extends="default" name="strategies/list">
         <put-attribute name="body" value="/WEB-INF/views/strategies/list.jspx"/>
     </definition>
+  <definition extends="default" name="strategies/create">
+    <put-attribute name="body" value="/WEB-INF/views/strategies/create.jspx"/>
+  </definition>
 </tiles-definitions>

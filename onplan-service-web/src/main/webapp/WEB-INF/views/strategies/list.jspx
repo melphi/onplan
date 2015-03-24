@@ -11,13 +11,18 @@
 
   <h1>Active strategies</h1>
 
-  <div ng-controller="ListStrategiesController as ctrl">
+  <div id="strategiesList" ng-controller="ListStrategiesController as ctrl">
+    <div>
+      <button onclick="location.href='create'">Add strategy</button>
+    </div>
+
     <table>
       <tr>
         <th>Strategy</th>
         <th>Instruments</th>
         <th>Parameters</th>
         <th>Statistics</th>
+        <th/>
       </tr>
       <tr ng-repeat="strategy in ctrl.strategies track by $index">
         <td>
@@ -72,6 +77,9 @@
             </li>
           </ul>
         </td>
+        <td>
+          <button ng-click="ctrl.delete(strategy.id)">Remove</button>
+        </td>
       </tr>
     </table>
 
@@ -80,9 +88,9 @@
     </div>
   </div>
 
-  <script>
+  <script type="text/javascript">
     $(function() {
-      $(document).tooltip();
+      $('#strategiesList').tooltip();
     });
   </script>
 </div>

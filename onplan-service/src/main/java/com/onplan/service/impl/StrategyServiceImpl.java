@@ -1,7 +1,6 @@
 package com.onplan.service.impl;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.onplan.adviser.StrategyInfo;
@@ -10,7 +9,7 @@ import com.onplan.adviser.alert.AlertEvent;
 import com.onplan.adviser.automatedorder.AutomatedOrderEvent;
 import com.onplan.adviser.strategy.Strategy;
 import com.onplan.adviser.strategy.StrategyListener;
-import com.onplan.adviser.strategy.StrategyUtil;
+import com.onplan.adviser.strategy.scripting.JavaScriptStrategy;
 import com.onplan.adviser.strategy.system.IntegrationTestStrategy;
 import com.onplan.connector.HistoricalPriceService;
 import com.onplan.connector.InstrumentService;
@@ -24,10 +23,13 @@ import org.apache.log4j.Logger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.Collection;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Strings.isNullOrEmpty;
+import static com.onplan.adviser.strategy.StrategyUtil.*;
 import static com.onplan.service.impl.AdviserFactory.createStrategy;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
 
@@ -39,8 +41,8 @@ public final class StrategyServiceImpl extends AbstractAdviserService implements
   private final StrategyPool strategiesPool = new StrategyPool();
   private final List<Strategy> registeredStrategies = Lists.newArrayList();
   // TODO(robertom): Register available strategies at runtime.
-  private final Iterable<Class<? extends Strategy>> availableStrategies =
-      ImmutableList.of(IntegrationTestStrategy.class);
+  private final Collection<Class<? extends Strategy>> availableStrategies =
+      ImmutableList.of(IntegrationTestStrategy.class, JavaScriptStrategy.class);
 
   private StrategyConfigurationDao strategyConfigurationDao;
   private InstrumentService instrumentService;
@@ -81,7 +83,7 @@ public final class StrategyServiceImpl extends AbstractAdviserService implements
   public List<StrategyInfo> getStrategiesInfo() {
     ImmutableList.Builder<StrategyInfo> result = ImmutableList.builder();
     for (Strategy strategy : registeredStrategies) {
-      result.add(StrategyUtil.getStrategyInfo(strategy));
+      result.add(getStrategyInfo(strategy));
     }
     return result.build();
   }
@@ -93,18 +95,18 @@ public final class StrategyServiceImpl extends AbstractAdviserService implements
   }
 
   @Override
-  public List<TemplateInfo> getStrategiesTemplateInfo() {
-    ImmutableList.Builder<TemplateInfo> result = ImmutableList.builder();
+  public List<String> getStrategyTemplatesIds() {
+    List<String> result = Lists.newArrayListWithCapacity(availableStrategies.size());
     try {
       for (Class clazz : availableStrategies) {
-        result.add(StrategyUtil.getStrategyTemplateInfo(clazz));
+        result.add(getTemplateId(clazz));
       }
     } catch (Exception e) {
       LOGGER.error(
           String.format("Error while loading available strategies [%s].", e.getMessage()));
       throw e;
     }
-    return result.build();
+    return result;
   }
 
   @Override
@@ -117,7 +119,7 @@ public final class StrategyServiceImpl extends AbstractAdviserService implements
       return null;
     }
     try {
-      return StrategyUtil.getStrategyTemplateInfo(clazz);
+      return getTemplateInfo(clazz);
     } catch (Exception e) {
       LOGGER.warn(String.format(
           "Error while getting the strategy template info for [%s]: [%s]",
@@ -130,23 +132,26 @@ public final class StrategyServiceImpl extends AbstractAdviserService implements
   @Override
   public String addStrategy(StrategyConfiguration strategyConfiguration) throws Exception {
     checkStrategyConfiguration(strategyConfiguration);
-    // TODO(robertom): Implement a configuration rollback in case of exception.
-    String id = strategyConfigurationDao.save(strategyConfiguration);
+    StrategyConfiguration oldStrategyConfiguration = null;
     try {
-      if (!Strings.isNullOrEmpty(strategyConfiguration.getId())) {
+      if (!isNullOrEmpty(strategyConfiguration.getId())) {
+        oldStrategyConfiguration = strategyConfigurationDao.findById(strategyConfiguration.getId());
         unLoadStrategy(strategyConfiguration.getId());
       }
-      strategyConfiguration = strategyConfigurationDao.findById(id);
+      strategyConfiguration = strategyConfigurationDao.saveAndGet(strategyConfiguration);
       loadStrategy(strategyConfiguration);
     } catch (Exception e) {
+      if (null != oldStrategyConfiguration) {
+        strategyConfigurationDao.save(oldStrategyConfiguration);
+      }
       LOGGER.error(String.format(
           "Error while loading strategy configuration [%s]: [%s].",
           strategyConfiguration,
           e.getMessage()));
       throw e;
     }
-    LOGGER.info(String.format("Strategy [%s] saved in database.", id));
-    return id;
+    LOGGER.info(String.format("Strategy [%s] saved in database.", strategyConfiguration.getId()));
+    return strategyConfiguration.getId();
   }
 
   @Override
@@ -167,7 +172,7 @@ public final class StrategyServiceImpl extends AbstractAdviserService implements
   }
 
   @Override
-  public void loadSampleStrategies() throws Exception {
+  public long loadSampleStrategies() throws Exception {
     List<StrategyConfiguration> oldStrategies = strategyConfigurationDao.findAll();
     List<StrategyConfiguration> sampleStrategies =
         strategyConfigurationDao.getSampleStrategiesConfiguration();
@@ -178,7 +183,9 @@ public final class StrategyServiceImpl extends AbstractAdviserService implements
     strategyConfigurationDao.removeAll();
     strategyConfigurationDao.insertAll(sampleStrategies);
     try {
+      unLoadAllStrategies();
       loadAllStrategies();
+      return sampleStrategies.size();
     } catch (Exception e) {
       LOGGER.error(String.format("Error while loading strategies: [%s].", e.getMessage()));
       strategyConfigurationDao.removeAll();
@@ -190,6 +197,7 @@ public final class StrategyServiceImpl extends AbstractAdviserService implements
   @Override
   public void loadAllStrategies() throws Exception {
     LOGGER.info("Loading strategies configuration from database.");
+    checkArgument(strategiesPool.poolSize() == 0, "Unload all the registered strategies first.");
     List<StrategyConfiguration> strategyConfigurations = strategyConfigurationDao.findAll();
     LOGGER.info(String.format("{%s] strategies found in database.", strategyConfigurations.size()));
     for (StrategyConfiguration strategyConfiguration : strategyConfigurations) {
@@ -213,8 +221,6 @@ public final class StrategyServiceImpl extends AbstractAdviserService implements
 
   @Override
   public void unLoadAllStrategies() throws Exception {
-    LOGGER.info(String.format(
-        "Un-loading all the [%d] registered strategies.", registeredStrategies.size()));
     for (Strategy strategy : ImmutableList.copyOf(registeredStrategies)) {
       unLoadStrategy(strategy.getId());
     }
@@ -239,6 +245,8 @@ public final class StrategyServiceImpl extends AbstractAdviserService implements
 
   private void loadStrategy(StrategyConfiguration strategyConfiguration) throws Exception {
     checkStrategyConfiguration(strategyConfiguration);
+    checkArgument(!strategiesPool.containsStrategy(strategyConfiguration.getId()), String.format(
+        "Strategy with id [%s] is already in the pool.", strategyConfiguration.getId()));
     Strategy strategy = createStrategy(
         strategyConfiguration, strategyListener, instrumentService, historicalPriceService);
     strategy.init();

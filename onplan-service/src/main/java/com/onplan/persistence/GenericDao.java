@@ -33,6 +33,14 @@ public interface GenericDao<T extends PersistentObject> {
   public String save(T object) throws Exception;
 
   /**
+   * Inserts or updates an object and returns the saved object.
+   *
+   * @param object The object to be inserted or updated.
+   * @exception java.lang.Exception Error while saving objects.
+   */
+  public T saveAndGet(T object) throws Exception;
+
+  /**
    * Remove an object from the database. Returns true if the object was found, false otherwise.
    *
    * @param object The object to be removed.

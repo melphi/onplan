@@ -54,6 +54,12 @@ public abstract class TestingAbstractDao<T extends PersistentObject>  implements
   }
 
   @Override
+  public T saveAndGet(T object) throws Exception {
+    checkNotNull(object);
+    return findById(save(object));
+  }
+
+  @Override
   public boolean remove(T object) {
     checkNotNull(object);
     return removeById(object.getId());

@@ -66,5 +66,6 @@ public class JavaScriptStrategy extends AbstractStrategy {
       // TODO(robertom): Exceptions need to be managed.
       throw new IllegalArgumentException(e);
     }
+    // TODO(robertom): Update statistics.
   }
 }

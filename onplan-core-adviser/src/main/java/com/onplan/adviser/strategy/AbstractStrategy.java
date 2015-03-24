@@ -70,9 +70,12 @@ public abstract class AbstractStrategy implements Strategy {
   @Override
   public StrategyStatisticsSnapshot getStrategyStatisticsSnapshot() {
     synchronized (strategyStatistics) {
-      long averageCompletionNanoTime = Math.round(
-          strategyStatistics.getCumulatedCompletionNanoTime() /
-              strategyStatistics.getReceivedTicks());
+      long averageCompletionNanoTime = 0;
+      if(strategyStatistics.getReceivedTicks() > 0) {
+        averageCompletionNanoTime = Math.round(
+            strategyStatistics.getCumulatedCompletionNanoTime() /
+            strategyStatistics.getReceivedTicks());
+      }
       return new StrategyStatisticsSnapshot(
           strategyStatistics.getLastReceivedTickTimestamp(),
           strategyStatistics.getReceivedTicks(),

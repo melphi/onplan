@@ -4,7 +4,7 @@ angularApp.controller('ListAlertsController', function($http) {
 
 	self.alerts = {};
 
-  self.getActiveAlerts = function() {
+  self.list = function() {
   	$http.get('/rest/alerts/').then(function(response) {
      	self.alerts = response.data;
     });
@@ -14,5 +14,5 @@ angularApp.controller('ListAlertsController', function($http) {
   	$http.get('/rest/alerts/loadsamplealerts').then(getActiveAlerts);
   }
 
-  self.getActiveAlerts();
+  self.list();
 });

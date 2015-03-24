@@ -82,6 +82,14 @@ public abstract class AbstractMongoDbDao<T extends PersistentObject> implements 
     }
   }
 
+  // TODO(robertom): Unit test this function.
+  @Override
+  public T saveAndGet(T object) throws Exception {
+    checkNotNull(object);
+    String id = save(object);
+    return findById(id);
+  }
+
   @Override
   public boolean remove(T object) {
     checkNotNull(object);

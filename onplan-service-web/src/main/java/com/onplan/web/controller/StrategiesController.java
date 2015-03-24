@@ -5,10 +5,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @Controller
-@RequestMapping(value = "/strategies")
+@RequestMapping(value = "/strategies/*")
 public class StrategiesController {
-  @RequestMapping(value = "/list", method = RequestMethod.GET)
+  @RequestMapping(value = "list", method = RequestMethod.GET)
   public String list() {
     return "strategies/list";
+  }
+
+  @RequestMapping(value = "create", method = RequestMethod.GET)
+  public String create() {
+    return "strategies/create";
   }
 }

@@ -8,7 +8,7 @@ import com.onplan.adviser.TemplateMetaData;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class StrategyUtil {
-  public static TemplateInfo getStrategyTemplateInfo(Class<? extends Strategy> clazz) {
+  public static TemplateInfo getTemplateInfo(Class<? extends Strategy> clazz) {
     TemplateMetaData templateMetaData = clazz.getAnnotation(TemplateMetaData.class);
     checkNotNull(templateMetaData, String.format(
         "Strategy [%s] does not implement the annotation [%s].",
@@ -20,8 +20,12 @@ public final class StrategyUtil {
         ImmutableList.copyOf(templateMetaData.availableParameters()));
   }
 
+  public static String getTemplateId(Class<? extends Strategy> clazz) {
+    return getTemplateInfo(clazz).getClassName();
+  }
+
   public static StrategyInfo getStrategyInfo(final Strategy strategy) {
-    TemplateInfo templateInfo = getStrategyTemplateInfo(strategy.getClass());
+    TemplateInfo templateInfo = getTemplateInfo(strategy.getClass());
     return new StrategyInfo(
         templateInfo.getDisplayName(),
         templateInfo.getClassName(),

@@ -35,8 +35,8 @@ public final class StrategyPool {
     return counter;
   }
 
-  // TODO(robertom): Sort strategies by priority / average milliseconds.
-  public synchronized void addStrategy(Strategy strategy) {
+  // TODO(robertom): Evaluate to sort strategies by priority / average milliseconds.
+  public synchronized void addStrategy(final Strategy strategy) {
     checkNotNull(strategy);
     for (String instrumentId : strategy.getRegisteredInstruments()) {
       int index = Arrays.binarySearch(poolKeys, instrumentId);
@@ -55,7 +55,7 @@ public final class StrategyPool {
    *
    * @param strategyId The strategy id.
    */
-  public synchronized boolean removeStrategy(String strategyId) {
+  public synchronized boolean removeStrategy(final String strategyId) {
     checkNotNullOrEmpty(strategyId);
     for (int i = 0; i < poolStrategies.length; i++) {
       for (int j = 0; j < poolStrategies[i].length; j++) {
@@ -73,7 +73,24 @@ public final class StrategyPool {
     return false;
   }
 
-  // TODO(robertom): Run high priority strategies in a separated thread.
+   /**
+    * Returns true if the strategy is registered in the pool.
+    *
+    * @param strategyId The strategy id.
+    */
+   public synchronized boolean containsStrategy(final String strategyId) {
+     checkNotNullOrEmpty(strategyId);
+     for (int i = 0; i < poolStrategies.length; i++) {
+       for (int j = 0; j < poolStrategies[i].length; j++) {
+         if (strategyId.equals(poolStrategies[i][j].getId())) {
+           return true;
+         }
+       }
+     }
+     return false;
+   }
+
+  // TODO(robertom): Implement a thread pool.
   public synchronized void processPriceTick(final PriceTick priceTick) {
     int index = Arrays.binarySearch(poolKeys, priceTick.getInstrumentId());
     if (index >= 0) {

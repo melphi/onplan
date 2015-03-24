@@ -1,7 +1,7 @@
 package com.onplan.integration.service;
 
+import com.google.common.base.Strings;
 import com.onplan.adviser.StrategyInfo;
-import com.onplan.adviser.TemplateInfo;
 import com.onplan.adviser.strategy.Strategy;
 import com.onplan.domain.configuration.StrategyConfiguration;
 import com.onplan.integration.AbstractIT;
@@ -20,12 +20,10 @@ public class StrategyServiceIT extends AbstractIT {
 
   @Test
   public void testGetStrategiesTemplateInfo() {
-    List<TemplateInfo> result = strategyService.getStrategiesTemplateInfo();
+    List<String> result = strategyService.getStrategyTemplatesIds();
     assertTrue(!result.isEmpty());
-    for (TemplateInfo templateInfo : result) {
-      assertNotNull(templateInfo.getDisplayName());
-      assertNotNull(templateInfo.getClassName());
-      assertNotNull(templateInfo.getAvailableParameters());
+    for (String templateId : result) {
+      assertTrue(!Strings.isNullOrEmpty(templateId));
     }
   }
 

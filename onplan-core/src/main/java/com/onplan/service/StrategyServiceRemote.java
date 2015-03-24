@@ -26,11 +26,11 @@ public interface StrategyServiceRemote extends Serializable {
 
   /**
    * Loads a collection of sample strategies, deleting and replacing all the ones which have been
-   * instantiated.
+   * instantiated. Returns the number of loaded strategies.
    *
    * @throws Exception error while loading the collection of sample strategies.
    */
-  public void loadSampleStrategies() throws Exception;
+  public long loadSampleStrategies() throws Exception;
 
   /**
    * Returns the collection of strategies info which have been instantiated.
@@ -38,9 +38,9 @@ public interface StrategyServiceRemote extends Serializable {
   public List<StrategyInfo> getStrategiesInfo();
 
   /**
-   * Returns the collection of available strategy templates info.
+   * Returns the ids of the available strategy templates.
    */
-  public List<TemplateInfo> getStrategiesTemplateInfo();
+  public List<String> getStrategyTemplatesIds();
 
   /**
    * Returns the strategy template info by the its class displayName or null if the template was
