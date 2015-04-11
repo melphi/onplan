@@ -34,8 +34,8 @@ public class TestingPriceFactory {
   /**
    * Generates a collection of {@value com.onplan.domain.transitory.PriceTick}.
    *
-   * The first price ask value is the lower endpoint, the last price ask value is the
-   * higher endpoint, all the remaining prices are randomly generated.
+   * The first price ask value is the lower factory, the last price ask value is the
+   * higher factory, all the remaining prices are randomly generated.
    */
   // TODO(robertom): Remove this method, replace with a deterministic one.
   public static List<PriceTick> createPriceTicks(

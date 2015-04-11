@@ -11,7 +11,6 @@ public class GuiceServletModule extends ServletModule {
 
     // Servlet.
     serve("/").with(StartUpServlet.class);
-    serve("/resetConfiguration").with(ResetConfigurationServlet.class);
 
     // Remoting servlet.
     serve("/instrumentService").with(InstrumentServiceServlet.class);

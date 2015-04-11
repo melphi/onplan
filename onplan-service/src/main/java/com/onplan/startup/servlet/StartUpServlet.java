@@ -32,8 +32,7 @@ public class StartUpServlet extends HttpServlet {
   private static final Logger LOGGER = Logger.getLogger(StartUpServlet.class);
   private static final String HOME_PAGE_CONTENT = "<html><body>" +
       "<h1>OnPlan Service</h1>" +
-      "<p>Service is running!</p>" +
-      "<p>Click <a href=\"resetConfiguration\">here</a> to reset the configuration.</p>" +
+      "<p>Service is up and running!</p>" +
       "</body></html>";
 
   @Inject

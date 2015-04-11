@@ -13,10 +13,6 @@
   </filter-mapping>
 
   <listener>
-    <listener-class>com.onplan.startup.GuiceServletConfig</listener-class>
+    <listener-class>com.onplan.startup.GuiceListener</listener-class>
   </listener>
-
-  <welcome-file-list>
-    <welcome-file>index.html</welcome-file>
-  </welcome-file-list>
 </web-app>
