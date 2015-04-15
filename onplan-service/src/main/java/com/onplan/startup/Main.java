@@ -17,12 +17,15 @@ import javax.servlet.ServletException;
 /**
  * Application entry point, executes the application via an embedded server.
  */
+// TODO(robertom): Check https://github.com/rohitdev/project-templates/tree/master/UndertowSpringDeployment
+// for a better implementation.
 public class Main {
   private static final Logger logger = Logger.getLogger(Main.class);
   private static final String GUICE_FILTER_NAME = "guiceFilter";
   private static final String DEFAULT_DEPLOYMENT_NAME = "onplan-server";
   private static final String DEFAULT_HOST = "localhost";
-  private static final int DEFAULT_PORT = 8080;
+  private static final String DEFAULT_CONTEXT_PATH = "/";
+  private static final int DEFAULT_PORT = 8181;
 
   public static void main(String[] args) {
     logger.info("Starting server.");
@@ -35,7 +38,7 @@ public class Main {
 
     DeploymentInfo deploymentInfo = Servlets.deployment()
         .setClassLoader(Main.class.getClassLoader())
-        .setContextPath("/")
+        .setContextPath(DEFAULT_CONTEXT_PATH)
         .addFilter(guiceFilter)
         .addFilterUrlMapping(GUICE_FILTER_NAME, "/*", DispatcherType.ASYNC)
         .addListener(guiceListener)
@@ -47,8 +50,8 @@ public class Main {
 
     PathHandler path = null;
     try {
-      path = Handlers.path(Handlers.redirect("/"))
-          .addPrefixPath("/", manager.start());
+      path = Handlers.path(Handlers.redirect(DEFAULT_CONTEXT_PATH))
+          .addPrefixPath(DEFAULT_CONTEXT_PATH, manager.start());
     } catch (ServletException e) {
       logger.error(e);
       throw new IllegalArgumentException(e);
