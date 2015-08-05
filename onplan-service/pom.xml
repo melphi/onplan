@@ -61,7 +61,7 @@
         <artifactId>maven-war-plugin</artifactId>
         <version>2.3</version>
         <configuration>
-          <warName>${artifactId}.war</warName>
+          <warName>${artifactId}</warName>
         </configuration>
       </plugin>
 
