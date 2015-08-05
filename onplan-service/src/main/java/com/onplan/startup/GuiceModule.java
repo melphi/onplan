@@ -26,6 +26,7 @@ import java.util.Properties;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.onplan.util.MorePreconditions.checkAndGetBoolean;
 import static com.onplan.util.PropertiesUtils.loadAllPropertiesFromClassPath;
+import static java.lang.String.format;
 
 public class GuiceModule extends AbstractModule {
   private static final Logger LOGGER = Logger.getLogger(GuiceModule.class);
@@ -39,7 +40,8 @@ public class GuiceModule extends AbstractModule {
       checkArgument(!properties.isEmpty(), "No properties found.");
       Names.bindProperties(binder(), properties);
     } catch (Exception e) {
-      LOGGER.error("Error while loading all the properties file from the class path.", e);
+      LOGGER.error(
+          format("Error while loading properties files from class path. [%s]", e.getMessage()), e);
       throw new IllegalArgumentException(e);
     }
 
