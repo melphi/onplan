@@ -13,6 +13,18 @@
   <artifactId>onplan-service</artifactId>
   <packaging>war</packaging>
 
+  <profiles>
+    <profile>
+      <id>default</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <deploy.warName>${artifactId}.war</deploy.warName>
+      </properties>
+    </profile>
+  </profiles>
+
   <build>
     <resources>
       <resource>
@@ -60,6 +72,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <version>2.3</version>
+        <configuration>
+          <warName>${deploy.warName}</warName>
+        </configuration>
       </plugin>
 
       <plugin>
