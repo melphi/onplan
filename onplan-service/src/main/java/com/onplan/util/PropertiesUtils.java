@@ -41,7 +41,7 @@ public final class PropertiesUtils {
   public static Properties loadAllPropertiesFromClassPath()
       throws Exception {
     Properties result = new Properties();
-    URL baseUrl = checkNotNull(PropertiesUtils.class.getClassLoader().getResource("."));
+    URL baseUrl = checkNotNull(ClassLoader.getSystemClassLoader().getResource("."));
     File[] files = new File(baseUrl.getFile()).listFiles(PROPERTIES_FILE_FILTER);
     for (File file : files) {
       InputStream fileStream = new FileInputStream(file);

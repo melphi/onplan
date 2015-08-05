@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 
 import java.util.Properties;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.onplan.util.MorePreconditions.checkAndGetBoolean;
 import static com.onplan.util.PropertiesUtils.loadAllPropertiesFromClassPath;
 
@@ -35,6 +36,7 @@ public class GuiceModule extends AbstractModule {
     Properties properties;
     try {
       properties = loadAllPropertiesFromClassPath();
+      checkArgument(!properties.isEmpty(), "No properties found.");
       Names.bindProperties(binder(), properties);
     } catch (Exception e) {
       LOGGER.error("Error while loading all the properties file from the class path.", e);
