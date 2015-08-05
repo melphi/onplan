@@ -199,7 +199,7 @@ public final class StrategyServiceImpl extends AbstractAdviserService implements
     LOGGER.info("Loading strategies configuration from database.");
     checkArgument(strategiesPool.poolSize() == 0, "Unload all the registered strategies first.");
     List<StrategyConfiguration> strategyConfigurations = strategyConfigurationDao.findAll();
-    LOGGER.info(String.format("{%s] strategies found in database.", strategyConfigurations.size()));
+    LOGGER.info(String.format("[%s] strategies found in database.", strategyConfigurations.size()));
     for (StrategyConfiguration strategyConfiguration : strategyConfigurations) {
       try {
         loadStrategy(strategyConfiguration);

@@ -20,7 +20,7 @@ public class IgIndexResponseParserTest {
   @Test
   public void testCreateInstrumentInfoList() throws IOException {
     InputStream fileMarketSearchTermResponse =
-        getClass().getResourceAsStream(FILE_MARKET_SEARCH_TERM_RESPONSE);
+        ClassLoader.getSystemResourceAsStream(FILE_MARKET_SEARCH_TERM_RESPONSE);
     List<InstrumentInfo> result = IgIndexResponseParser.createInstrumentInfoList(
         IOUtils.toString(fileMarketSearchTermResponse));
     fileMarketSearchTermResponse.close();
@@ -38,7 +38,8 @@ public class IgIndexResponseParserTest {
 
   @Test
   public void testCreateInstrumentInfo() throws IOException {
-    InputStream fileMarketEpicResponse = getClass().getResourceAsStream(FILE_MARKET_EPIC_RESPONSE);
+    InputStream fileMarketEpicResponse =
+        ClassLoader.getSystemResourceAsStream(FILE_MARKET_EPIC_RESPONSE);
     InstrumentInfo instrumentInfo =
         IgIndexResponseParser.createInstrumentInfo(IOUtils.toString(fileMarketEpicResponse));
     fileMarketEpicResponse.close();
