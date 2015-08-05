@@ -46,7 +46,8 @@ public final class PropertiesUtils {
   public static Properties loadAllPropertiesFromClassPath()
       throws Exception {
     Properties result = new Properties();
-    URL baseUrl = checkNotNull(ClassLoader.getSystemClassLoader().getResource("."));
+    URL baseUrl = checkNotNull(
+        PropertiesUtils.class.getClassLoader().getResource("./"), "Class path not found.");
     File[] files = new File(baseUrl.getFile()).listFiles(PROPERTIES_FILE_FILTER);
     for (File file : files) {
       LOGGER.info(format("Loading property file [%s]", file.getName()));
