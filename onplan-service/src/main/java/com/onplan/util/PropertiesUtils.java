@@ -1,5 +1,7 @@
 package com.onplan.util;
 
+import org.apache.log4j.Logger;
+
 import java.io.*;
 import java.net.URL;
 import java.util.Properties;
@@ -8,8 +10,11 @@ import java.util.Set;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.onplan.util.MorePreconditions.checkNotNullOrEmpty;
+import static java.lang.String.format;
 
 public final class PropertiesUtils {
+  private static final Logger LOGGER = Logger.getLogger(PropertiesUtils.class);
+
   private static final FileFilter PROPERTIES_FILE_FILTER = new FileFilter() {
     @Override
     public boolean accept(File file) {
@@ -28,7 +33,7 @@ public final class PropertiesUtils {
       throws Exception {
     checkNotNullOrEmpty(propertiesFile);
     URL fileUrl = PropertiesUtils.class.getClassLoader().getResource(propertiesFile);
-    checkNotNull(fileUrl, String.format("File [%s] not found.", propertiesFile));
+    checkNotNull(fileUrl, format("File [%s] not found.", propertiesFile));
     return loadPropertiesFromFile(new File(fileUrl.getFile()));
   }
 
@@ -44,6 +49,7 @@ public final class PropertiesUtils {
     URL baseUrl = checkNotNull(ClassLoader.getSystemClassLoader().getResource("."));
     File[] files = new File(baseUrl.getFile()).listFiles(PROPERTIES_FILE_FILTER);
     for (File file : files) {
+      LOGGER.info(format("Loading property file [%s]", file.getName()));
       InputStream fileStream = new FileInputStream(file);
       Properties newProperties = new Properties();
       newProperties.load(fileStream);
@@ -69,7 +75,7 @@ public final class PropertiesUtils {
     checkNotNull(set2);
     for (Object object : set1) {
       if (set2.contains(object)) {
-        throw new IllegalArgumentException(String.format("Element [%s] is duplicated.", object));
+        throw new IllegalArgumentException(format("Element [%s] is duplicated.", object));
       }
     }
   }
