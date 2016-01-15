@@ -1,6 +1,0 @@
-<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page" version="2.0">
-  <jsp:output omit-xml-declaration="yes" />
-  <jsp:directive.attribute name="name" type="java.lang.String" required="true"
-      description="Name of the AngularJS file which contains the controllers." />
-  <script src="/js/controller/${name}.js"><!-- Intentionally empty --></script>
-</jsp:root>
