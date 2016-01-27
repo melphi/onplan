@@ -6,5 +6,5 @@ public interface VirtualMachineServiceRemote {
   /**
    * Returns the JVM information.
    */
-  public VirtualMachineInfo getVirtualMachineInfo();
+  VirtualMachineInfo getVirtualMachineInfo();
 }

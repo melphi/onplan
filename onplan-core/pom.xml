@@ -6,13 +6,22 @@
         <artifactId>onplan</artifactId>
         <groupId>com.melphi</groupId>
         <version>1.0-SNAPSHOT</version>
-        <relativePath>../onplan/pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>onplan-core</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
+
+    <properties>
+        <thrift.executable>/usr/local/bin/thrift</thrift.executable>
+        <thrift.sourceFolder>${project.basedir}/src/main/resources/thrift</thrift.sourceFolder>
+        <thrift.targetJava>${project.basedir}/src/main/java/thrift</thrift.targetJava>
+        <thrift.targetJavascript>
+            ${project.basedir}/src/main/javascript/thrift
+        </thrift.targetJavascript>
+    </properties>
 
     <build>
         <plugins>
@@ -25,10 +34,63 @@
                     <target>${com.java.version}</target>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <target>
+                                <fileset id="thrift.src.files" dir="${thrift.sourceFolder}">
+                                    <include name="**/*.thrift"/>
+                                </fileset>
+                                <apply executable="${thrift.executable}"
+                                       resultproperty="thrift.compile.result"
+                                       failifexecutionfails="true"
+                                       failonerror="true"
+                                       searchpath="true"
+                                       dir="${thrift.sourceFolder}">
+                                    <arg value="-out"/>
+                                    <arg value="${thrift.targetJava}"/>
+                                    <arg value="--gen"/>
+                                    <arg value="java"/>
+                                    <srcfile/>
+                                    <fileset refid="thrift.src.files"/>
+                                </apply>
+                                <apply executable="${thrift.executable}"
+                                       resultproperty="thrift.compile.result"
+                                       failifexecutionfails="true"
+                                       failonerror="true"
+                                       searchpath="true"
+                                       dir="${thrift.sourceFolder}">
+                                    <arg value="-out"/>
+                                    <arg value="${thrift.targetJavascript}"/>
+                                    <arg value="--gen"/>
+                                    <arg value="js:node"/>
+                                    <srcfile/>
+                                    <fileset refid="thrift.src.files"/>
+                                </apply>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
     <dependencies>
+        <!-- Remoting -->
+        <dependency>
+            <groupId>org.apache.thrift</groupId>
+            <artifactId>libthrift</artifactId>
+            <version>0.9.3</version>
+        </dependency>
+
         <!-- Util -->
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -54,4 +116,11 @@
             <version>4.11</version>
         </dependency>
     </dependencies>
+
+    <!--<pluginRepositories>-->
+        <!--<pluginRepository>-->
+            <!--<id>dtrott</id>-->
+            <!--<url>http://maven.davidtrott.com/repository</url>-->
+        <!--</pluginRepository>-->
+    <!--</pluginRepositories>-->
 </project>
